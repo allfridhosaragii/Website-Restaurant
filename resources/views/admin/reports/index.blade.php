@@ -416,24 +416,23 @@
         options: {
             activeIndex: -1, // Custom state
             responsive: true,
-            maintainAspectRatio: true,
-            resizeDelay: 200, // Debounce resize
+            aspectRatio: window.innerWidth < 768 ? 1 : 2, // Square on mobile for larger size
+            resizeDelay: 200, 
             animation: {
-                duration: 600, // Faster initial animation
+                duration: 600, 
                 easing: 'easeOutQuart'
             },
             animations: {
-                // Disable animation for activeIndex changes to make it responsive
                 colors: false,
                 x: false,
                 y: false
             },
             layout: { 
                 padding: {
-                    top: 10, 
-                    left: 10, 
-                    right: 10, 
-                    bottom: 30 
+                    top: window.innerWidth < 768 ? 20 : 10, 
+                    left: window.innerWidth < 768 ? 20 : 10, 
+                    right: window.innerWidth < 768 ? 20 : 10, 
+                    bottom: window.innerWidth < 768 ? 50 : 30 // More space for legend on mobile
                 } 
             }, 
             onHover: (e, elements, chart) => {
@@ -503,7 +502,7 @@
         options: {
             activeIndex: -1,
             responsive: true,
-            maintainAspectRatio: true,
+            aspectRatio: window.innerWidth < 768 ? 1 : 2,
             resizeDelay: 200,
             animation: {
                 duration: 600,
@@ -516,10 +515,10 @@
             },
             layout: { 
                 padding: {
-                    top: 10, 
-                    left: 10, 
-                    right: 10, 
-                    bottom: 30 
+                    top: window.innerWidth < 768 ? 20 : 10, 
+                    left: window.innerWidth < 768 ? 20 : 10, 
+                    right: window.innerWidth < 768 ? 20 : 10, 
+                    bottom: window.innerWidth < 768 ? 50 : 30 
                 } 
             },
             onHover: (e, elements, chart) => {
