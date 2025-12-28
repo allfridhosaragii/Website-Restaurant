@@ -75,7 +75,7 @@ class AdminReportController extends Controller
         return view('admin.reports.index', compact(
             'orders',
             'statusStats',
-            'paymentStats',
+            'reservationStats',
             'totalRevenue',
             'totalOrders',
             'monthTabs',
