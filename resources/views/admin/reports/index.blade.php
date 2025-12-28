@@ -96,8 +96,8 @@
                 <h6 class="mb-0">Daftar Transaksi</h6>
             </div>
             <div class="card-body p-0">
-                <div class="table-responsive no-scrollbar" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
-                    <table class="table table-hover mb-0" style="min-width: 800px;">
+                <div class="scroll-container no-scrollbar">
+                    <table class="table table-hover mb-0 table-mobile-scroll" style="min-width: 800px;">
                         <thead class="table-light">
                             <tr>
                                 <th>Order ID</th>
@@ -240,6 +240,18 @@
         canvas {
             max-height: 200px !important;
         }
+    }
+    
+    /* Force table to be scrollable on mobile */
+    .table-mobile-scroll th,
+    .table-mobile-scroll td {
+        white-space: nowrap;
+    }
+    .scroll-container {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 </style>
 @endpush
