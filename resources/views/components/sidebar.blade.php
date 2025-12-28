@@ -102,7 +102,7 @@
             @endif
             @if(auth()->user()->hasAdminPermission('reports'))
             <li class="sidebar-nav-item">
-                <a href="#" class="sidebar-nav-link">
+                <a href="{{ url('/admin/report') }}" class="sidebar-nav-link {{ request()->is('admin/report*') ? 'active' : '' }}">
                     <i class="bi bi-file-earmark-text"></i>
                     <span>Laporan</span>
                 </a>
