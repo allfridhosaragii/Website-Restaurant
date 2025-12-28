@@ -4041,19 +4041,29 @@ input {
 
 /* Dark Mode Table Styles */
 [data-theme="dark"] .table {
+    --bs-table-bg: transparent !important;
+    --bs-table-color: var(--text-primary) !important;
     color: var(--text-primary);
     background-color: var(--bg-secondary);
 }
 
 [data-theme="dark"] .table th,
 [data-theme="dark"] .table td {
-    color: var(--text-primary);
+    color: var(--text-primary) !important;
+    background-color: transparent !important;
     border-color: var(--border-medium);
+}
+
+[data-theme="dark"] .table>tbody>tr>td,
+[data-theme="dark"] .table>tbody>tr>th {
+    color: #E6EFEF !important;
+    background-color: transparent !important;
 }
 
 [data-theme="dark"] .table thead,
 [data-theme="dark"] .table-light,
 [data-theme="dark"] thead.table-light {
+    --bs-table-bg: var(--surface) !important;
     background-color: var(--surface) !important;
     color: var(--text-primary) !important;
 }
@@ -4067,17 +4077,19 @@ input {
 }
 
 [data-theme="dark"] .table tbody tr {
-    background-color: var(--bg-secondary);
+    --bs-table-bg: transparent !important;
+    background-color: var(--bg-secondary) !important;
     color: var(--text-primary);
 }
 
 [data-theme="dark"] .table-hover tbody tr:hover {
-    background-color: var(--surface-light);
+    --bs-table-hover-bg: var(--surface-light) !important;
+    background-color: var(--surface-light) !important;
     color: var(--text-primary);
 }
 
 [data-theme="dark"] .table strong {
-    color: var(--text-primary);
+    color: #E6EFEF !important;
 }
 
 /* Dark Mode Card Styles */
