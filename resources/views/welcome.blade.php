@@ -723,44 +723,56 @@
         }, config.startDelay);
         // --- Helper Function: Type Text (Word-aware) ---
         function typeText(element, text, onComplete) {
-            // Split text into words (keeping spaces as separate items)
-            const words = text.split(/(\s+)/);
-            let wordIndex = 0;
+            // Split text into words and spaces separately
+            const tokens = text.split(/(\s+)/);
+            let tokenIndex = 0;
             let charIndex = 0;
             let currentWordSpan = null;
+            let isSpace = false;
             
             function typeChar() {
-                // Check if we finished all words
-                if (wordIndex >= words.length) {
+                // Check if we finished all tokens
+                if (tokenIndex >= tokens.length) {
                     onComplete();
                     return;
                 }
                 
-                const currentWord = words[wordIndex];
+                const currentToken = tokens[tokenIndex];
                 
                 // Skip empty strings
-                if (currentWord === '') {
-                    wordIndex++;
+                if (currentToken === '') {
+                    tokenIndex++;
                     setTimeout(typeChar, 0);
                     return;
                 }
                 
-                // If starting a new word, create a word wrapper
+                // Check if current token is whitespace
+                isSpace = /^\s+$/.test(currentToken);
+                
+                // If starting a new token
                 if (charIndex === 0) {
-                    currentWordSpan = document.createElement('span');
-                    // Use nowrap to keep entire word together
-                    currentWordSpan.style.whiteSpace = 'nowrap';
-                    currentWordSpan.style.display = 'inline';
-                    element.appendChild(currentWordSpan);
+                    if (!isSpace) {
+                        // Create nowrap wrapper for actual words only
+                        currentWordSpan = document.createElement('span');
+                        currentWordSpan.style.whiteSpace = 'nowrap';
+                        currentWordSpan.style.display = 'inline';
+                        element.appendChild(currentWordSpan);
+                    }
                 }
                 
-                const char = currentWord.charAt(charIndex);
+                const char = currentToken.charAt(charIndex);
                 
                 // Create span for character
                 const charSpan = document.createElement('span');
                 charSpan.textContent = char;
                 charSpan.className = 'char-reveal';
-                currentWordSpan.appendChild(charSpan);
+                
+                // Append to word wrapper or directly to element (for spaces)
+                if (isSpace) {
+                    element.appendChild(charSpan);
+                } else {
+                    currentWordSpan.appendChild(charSpan);
+                }
                 
                 charIndex++;
                 
@@ -769,9 +781,9 @@
                 if (char === ' ') delay += config.spacePause;
                 if (['.', ',', '!', '?'].includes(char)) delay += config.punctuationPause;
                 
-                // Check if word is complete
-                if (charIndex >= currentWord.length) {
-                    wordIndex++;
+                // Check if token is complete
+                if (charIndex >= currentToken.length) {
+                    tokenIndex++;
                     charIndex = 0;
                     currentWordSpan = null;
                 }
