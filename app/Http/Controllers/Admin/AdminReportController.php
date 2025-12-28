@@ -40,18 +40,20 @@ class AdminReportController extends Controller
             $order->item_count = $order->items->sum('quantity');
         }
 
-        // Statistics for chart
+        // Order Stats (Simplified: Berhasil/Gagal)
         $statusStats = [
-            'completed' => $orders->where('status', 'completed')->count(),
-            'processing' => $orders->where('status', 'processing')->count(),
-            'pending' => $orders->where('status', 'pending')->count(),
-            'cancelled' => $orders->where('status', 'cancelled')->count(),
+            'success' => $orders->whereIn('status', ['completed', 'processing', 'pending'])->count(),
+            'failed' => $orders->where('status', 'cancelled')->count()
         ];
 
-        // Payment stats for donut chart
-        $paymentStats = [
-            'paid' => $orders->where('payment_status', 'paid')->count(),
-            'unpaid' => $orders->where('payment_status', 'unpaid')->count(),
+        // Reservation Stats
+        $reservations = Reservation::whereMonth('date', $month)
+            ->whereYear('date', $year)
+            ->get();
+
+        $reservationStats = [
+            'success' => $reservations->whereIn('status', ['accepted', 'pending'])->count(),
+            'failed' => $reservations->where('status', 'rejected')->count()
         ];
 
         // Monthly totals
@@ -126,6 +128,16 @@ class AdminReportController extends Controller
             'unpaid' => $orders->where('payment_status', 'unpaid')->count(),
         ];
 
+        // Reservation Stats
+        $reservations = Reservation::whereMonth('date', $month)
+            ->whereYear('date', $year)
+            ->get();
+
+        $reservationStats = [
+            'success' => $reservations->whereIn('status', ['accepted', 'pending'])->count(),
+            'failed' => $reservations->where('status', 'rejected')->count()
+        ];
+
         // Monthly totals
         $totalRevenue = $orders->where('payment_status', 'paid')->sum('total');
         $totalOrders = $orders->count();
@@ -138,6 +150,7 @@ class AdminReportController extends Controller
             'totalRevenue' => $totalRevenue,
             'formattedRevenue' => 'Rp ' . number_format($totalRevenue, 0, ',', '.'),
             'inProcess' => $statusStats['pending'] + $statusStats['processing'],
+            'reservationStats' => $reservationStats,
         ]);
     }
 }
