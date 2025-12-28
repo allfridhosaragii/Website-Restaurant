@@ -489,20 +489,16 @@
         background-color: #0C2A36;
     }
     .parallax-bg {
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         width: 100%;
-        height: 120%;
+        height: 100vh;
         background-image: url('https://res.cloudinary.com/dh9ysyfit/image/upload/v1766046687/IMG_7856_esb0xz.jpg');
         background-size: cover;
-        background-position: center top;
+        background-position: center;
         background-repeat: no-repeat;
-        will-change: transform;
-        transform: translate3d(0, 0, 0);
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-        perspective: 1000px;
+        z-index: 0;
     }
     .hero-overlay {
         position: absolute;
@@ -648,49 +644,6 @@
 @endpush
 @push('scripts')
 <script>
-    // ========================================
-    // Smooth Parallax Effect for Hero Background
-    // ========================================
-    (function() {
-        const parallaxBg = document.getElementById('heroParallax');
-        const heroSection = document.getElementById('home');
-        
-        if (!parallaxBg || !heroSection) return;
-        
-        let currentY = 0;
-        let targetY = 0;
-        let rafId = null;
-        const parallaxSpeed = 0.3; // Reduced for subtler effect
-        const ease = 0.1; // Smoothing factor (lower = smoother)
-        
-        function lerp(start, end, factor) {
-            return start + (end - start) * factor;
-        }
-        
-        function animate() {
-            const heroRect = heroSection.getBoundingClientRect();
-            
-            // Only animate when hero is visible
-            if (heroRect.bottom > 0) {
-                targetY = window.pageYOffset * parallaxSpeed;
-                currentY = lerp(currentY, targetY, ease);
-                
-                // Round to avoid sub-pixel rendering issues
-                const roundedY = Math.round(currentY * 100) / 100;
-                parallaxBg.style.transform = `translate3d(0, ${roundedY}px, 0)`;
-            }
-            
-            rafId = requestAnimationFrame(animate);
-        }
-        
-        // Start animation loop
-        animate();
-        
-        // Cleanup on page unload
-        window.addEventListener('beforeunload', function() {
-            if (rafId) cancelAnimationFrame(rafId);
-        });
-    })();
     
     document.addEventListener('DOMContentLoaded', function() {
         // Luxuriously smooth typing animation
