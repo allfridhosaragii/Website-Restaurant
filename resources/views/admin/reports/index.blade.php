@@ -269,51 +269,56 @@
         return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
     
-    const charts = []; // Registry for all charts
-
+    // Registry not needed for hardcoded approach but kept for global click
+    // const charts = []; // We will use statusChart and paymentChart variables directly
+    
     // Centralized function to set active chart and clear others
     function activateChartSegment(targetChart, index) {
-        // Toggle logic for click (only if targetChart is passed with an index)
-        // Check if we are interacting with a chart
-        
-        charts.forEach(chart => {
-            if (chart === targetChart) {
-                // For the target chart, set the new index
-                // Note: The toggle logic (click same to close) should be handled before calling this or inside?
-                // Let's handle assignment here.
-                if (chart.config.options.activeIndex !== index) {
-                    chart.config.options.activeIndex = index;
-                    chart.update('none');
-                }
-            } else {
-                // For all other charts, force close if active
-                if (chart.config.options.activeIndex !== -1) {
-                    chart.config.options.activeIndex = -1;
-                    chart.update('none');
-                }
+        // 1. Set the target chart active index
+        if (targetChart.config.options.activeIndex !== index) {
+            targetChart.config.options.activeIndex = index;
+            targetChart.update('none');
+        }
+
+        // 2. EXPLICITLY Force reset the OTHER chart
+        if (targetChart === statusChart) {
+            if (paymentChart && paymentChart.config.options.activeIndex !== -1) {
+                paymentChart.config.options.activeIndex = -1;
+                paymentChart.update('none');
             }
-        });
+        } else if (targetChart === paymentChart) {
+            if (statusChart && statusChart.config.options.activeIndex !== -1) {
+                statusChart.config.options.activeIndex = -1;
+                statusChart.update('none');
+            }
+        }
     }
 
     // Helper to clear all charts
     function clearAllCharts() {
-        charts.forEach(chart => {
-            if (chart.config.options.activeIndex !== -1) {
-                chart.config.options.activeIndex = -1;
-                chart.update('none');
-            }
-        });
+        if (statusChart && statusChart.config.options.activeIndex !== -1) {
+            statusChart.config.options.activeIndex = -1;
+            statusChart.update('none');
+        }
+        if (paymentChart && paymentChart.config.options.activeIndex !== -1) {
+            paymentChart.config.options.activeIndex = -1;
+            paymentChart.update('none');
+        }
     }
     
     // Global click listener to close all effects when clicking/tapping outside charts
-    document.addEventListener('click', function(e) {
-        // Check if click is inside any chart canvas
-        const isChartClick = charts.some(chart => e.target === chart.canvas);
+    // Global click/touch listener to close all effects when tapping outside
+    const handleGlobalClick = (e) => {
+        // Check if click is inside any chart canvas (using ID check which is safest)
+        const isCanvas = e.target.id === 'statusChart' || e.target.id === 'paymentChart';
         
-        if (!isChartClick) {
+        if (!isCanvas) {
             clearAllCharts();
         }
-    });
+    };
+    
+    document.addEventListener('click', handleGlobalClick);
+    document.addEventListener('touchstart', handleGlobalClick, {passive: true});
 
     // Custom Plugin for Halo/Ring Effect
     const glowPlugin = {
