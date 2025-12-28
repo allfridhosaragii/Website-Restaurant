@@ -58,7 +58,7 @@ class AdminReportController extends Controller
 
         // Generate month tabs (last 6 months)
         $monthTabs = [];
-        for ($i = 5; $i >= 0; $i--) {
+        for ($i = 11; $i >= 0; $i--) {
             $date = now()->subMonths($i);
             $monthTabs[] = [
                 'month' => $date->month,
