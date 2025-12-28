@@ -554,7 +554,7 @@
         // Show loading state (optional)
         document.getElementById('transactionTableBody').style.opacity = '0.5';
 
-        fetch(`/admin/report/api?month=${month}&year=${year}`)
+        fetch(`/admin/report/api?month=${month}&year=${year}&t=${new Date().getTime()}`)
             .then(response => response.json())
             .then(data => {
                 // Update Stats
