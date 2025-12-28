@@ -281,11 +281,13 @@
     
     // Centralized function to set active chart and clear others
     function activateChartSegment(targetChart, index) {
-        // 1. Set the target chart active index
+        // Detect mobile
+        const isMobile = window.innerWidth < 768;
+        const updateMode = isMobile ? 'none' : undefined; // Instant on mobile
+
+        // 1. Set activeIndex for the target chart
         if (targetChart.config.options.activeIndex !== index) {
             targetChart.config.options.activeIndex = index;
-            targetChart.update('none');
-            // No update here, updateChartColors will trigger it
         }
 
         // 2. EXPLICITLY Force reset the OTHER chart
@@ -293,32 +295,34 @@
             if (reservationChart && reservationChart.config.options.activeIndex !== -1) {
                 reservationChart.config.options.activeIndex = -1;
                 resetChartColors(reservationChart); // Reset colors
-                reservationChart.update('none');
+                reservationChart.update(updateMode);
             }
         } else if (targetChart === reservationChart) {
             if (statusChart && statusChart.config.options.activeIndex !== -1) {
                 statusChart.config.options.activeIndex = -1;
                 resetChartColors(statusChart); // Reset colors
-                statusChart.update('none');
+                statusChart.update(updateMode);
             }
         }
         
         // 3. Update Colors for Dimming Effect
         updateChartColors(targetChart, index);
-        targetChart.update('none'); // Update the target chart after color change
+        targetChart.update(updateMode); // Update the target chart after color change
     }
 
-    // Helper to clear all charts
     function clearAllCharts() {
+        const isMobile = window.innerWidth < 768;
+        const updateMode = isMobile ? 'none' : undefined;
+
         if (statusChart && statusChart.config.options.activeIndex !== -1) {
             statusChart.config.options.activeIndex = -1;
             resetChartColors(statusChart);
-            statusChart.update('none');
+            statusChart.update(updateMode);
         }
         if (reservationChart && reservationChart.config.options.activeIndex !== -1) {
             reservationChart.config.options.activeIndex = -1;
             resetChartColors(reservationChart);
-            reservationChart.update('none');
+            reservationChart.update(updateMode);
         }
     }
 
@@ -353,18 +357,20 @@
     }
     
     // Global click listener to close all effects when clicking/tapping outside charts
-    // Global click/touch listener to close all effects when tapping outside
     const handleGlobalClick = (e) => {
-        // Check if click is inside any chart canvas (using ID check which is safest)
-        const isCanvas = e.target.id === 'statusChart' || e.target.id === 'reservationChart';
+        // Check if click is inside any chart canvas
+        // On mobile, taps on canvas might bubble up, so we need to be careful not to clear immediately if the click originated from interact.
+        // But chart.js onClick handles the logic. If we click OUTSIDE chart elements (but on canvas), clearAllCharts is called by chart onClick.
+        // If we click COMPLETELY outside canvas, this global listener handles it.
+        const isCanvas = e.target.tagName === 'CANVAS';
         
         if (!isCanvas) {
             clearAllCharts();
         }
     };
     
+    // Use 'click' which works on both desktop and mobile safely
     document.addEventListener('click', handleGlobalClick);
-    document.addEventListener('touchstart', handleGlobalClick, {passive: true});
 
     // Custom Plugin for Halo/Ring Effect
     const glowPlugin = {
