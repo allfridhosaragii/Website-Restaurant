@@ -346,7 +346,6 @@
             layout: { padding: 20 }, // Extra padding for shadow
             onHover: (e, elements, chart) => {
                 // Determine if it's a mouse event (Desktop hover)
-                // Touch events usually fire 'mousemove' too but we can check source or type
                 const isMouse = e.native && e.native.pointerType !== 'touch';
                 
                 if (isMouse) {
@@ -354,20 +353,27 @@
                     if (chart.config.options.activeIndex !== newIndex) {
                         chart.config.options.activeIndex = newIndex;
                         chart.update('none'); // Update efficiently
+                        
+                        // Close other chart if active
+                        if (newIndex !== -1 && paymentChart && paymentChart.config.options.activeIndex !== -1) {
+                            paymentChart.config.options.activeIndex = -1;
+                            paymentChart.update('none');
+                        }
                     }
                 }
             },
             onClick: (e, elements, chart) => {
                 // Handle click (Mobile Tap or Desktop Click)
-                // If clicked an element
                 if (elements[0]) {
                     const newIndex = elements[0].index;
-                    // If clicking different one, switch. If clicking same, keep it (or toggle? user said "teken warna lain bakal muncul" -> switch)
-                    // User didn't say clicking same should close, but usually toggle is good. 
-                    // Let's set it.
                     chart.config.options.activeIndex = newIndex;
+                    
+                    // Close other chart
+                    if (paymentChart && paymentChart.config.options.activeIndex !== -1) {
+                        paymentChart.config.options.activeIndex = -1;
+                        paymentChart.update('none');
+                    }
                 } else {
-                    // Clicked background/outside segments -> Close
                     chart.config.options.activeIndex = -1;
                 }
                 chart.update('none');
@@ -422,12 +428,24 @@
                     if (chart.config.options.activeIndex !== newIndex) {
                         chart.config.options.activeIndex = newIndex;
                         chart.update('none');
+                        
+                        // Close other chart
+                        if (newIndex !== -1 && statusChart && statusChart.config.options.activeIndex !== -1) {
+                            statusChart.config.options.activeIndex = -1;
+                            statusChart.update('none');
+                        }
                     }
                 }
             },
             onClick: (e, elements, chart) => {
                 if (elements[0]) {
                     chart.config.options.activeIndex = elements[0].index;
+                    
+                    // Close other chart
+                    if (statusChart && statusChart.config.options.activeIndex !== -1) {
+                        statusChart.config.options.activeIndex = -1;
+                        statusChart.update('none');
+                    }
                 } else {
                     chart.config.options.activeIndex = -1;
                 }
