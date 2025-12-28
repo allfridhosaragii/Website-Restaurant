@@ -602,22 +602,17 @@
     .char-reveal {
         display: inline-block;
         opacity: 0;
-        animation: etherealReveal 1.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+        animation: etherealReveal 0.6s ease-out forwards;
         white-space: pre; 
-        will-change: transform, opacity, filter;
+        will-change: opacity, filter;
     }
     @keyframes etherealReveal {
         0% { 
             opacity: 0; 
-            transform: translateY(12px) scale(0.95); 
-            filter: blur(8px); 
-        }
-        20% {
-            opacity: 1;
+            filter: blur(2px); 
         }
         100% { 
             opacity: 1; 
-            transform: translateY(0) scale(1); 
             filter: blur(0); 
         }
     }
