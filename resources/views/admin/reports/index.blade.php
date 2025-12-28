@@ -617,12 +617,24 @@
             if (elements.length > 0) {
                 const index = elements[0].index;
                 if (chart.config.options.activeIndex === index) {
+                    // Toggle off - hide tooltip
                     activateChartSegment(chart, -1);
+                    chart.setActiveElements([]);
+                    chart.tooltip.setActiveElements([], { x: 0, y: 0 });
+                    chart.update('none');
                 } else {
+                    // Activate segment and show tooltip
                     activateChartSegment(chart, index);
+                    chart.setActiveElements([{ datasetIndex: 0, index: index }]);
+                    chart.tooltip.setActiveElements([{ datasetIndex: 0, index: index }], { x: x, y: y });
+                    chart.update('none');
                 }
             } else {
+                // Clear all
                 activateChartSegment(chart, -1);
+                chart.setActiveElements([]);
+                chart.tooltip.setActiveElements([], { x: 0, y: 0 });
+                chart.update('none');
             }
         }
 
