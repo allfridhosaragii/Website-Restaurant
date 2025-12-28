@@ -96,8 +96,8 @@
                 <h6 class="mb-0">Daftar Transaksi</h6>
             </div>
             <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
+                <div class="table-responsive no-scrollbar" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                    <table class="table table-hover mb-0" style="min-width: 800px;">
                         <thead class="table-light">
                             <tr>
                                 <th>Order ID</th>
