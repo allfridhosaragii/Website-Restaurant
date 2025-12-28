@@ -490,14 +490,16 @@
     }
     .parallax-bg {
         position: absolute;
-        top: 0;
+        top: -10%;
         left: 0;
         width: 100%;
-        height: 100%;
+        height: 120%;
         background-image: url('https://res.cloudinary.com/dh9ysyfit/image/upload/v1766046687/IMG_7856_esb0xz.jpg');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
+        will-change: transform;
+        transform: translate3d(0, 0, 0);
         z-index: 0;
     }
     .hero-overlay {
@@ -644,6 +646,48 @@
 @endpush
 @push('scripts')
 <script>
+    // ========================================
+    // Parallax Effect for Hero Background
+    // ========================================
+    (function() {
+        const parallaxBg = document.getElementById('heroParallax');
+        const heroSection = document.getElementById('home');
+        
+        if (!parallaxBg || !heroSection) return;
+        
+        let currentY = 0;
+        let targetY = 0;
+        let rafId = null;
+        const parallaxSpeed = 0.4;
+        const ease = 0.08;
+        
+        function lerp(start, end, factor) {
+            return start + (end - start) * factor;
+        }
+        
+        function animate() {
+            const heroRect = heroSection.getBoundingClientRect();
+            const heroHeight = heroSection.offsetHeight;
+            
+            // Only animate when hero is visible
+            if (heroRect.bottom > 0 && heroRect.top < window.innerHeight) {
+                const scrollProgress = -heroRect.top / heroHeight;
+                targetY = scrollProgress * heroHeight * parallaxSpeed;
+                currentY = lerp(currentY, targetY, ease);
+                
+                const roundedY = Math.round(currentY * 10) / 10;
+                parallaxBg.style.transform = `translate3d(0, ${roundedY}px, 0)`;
+            }
+            
+            rafId = requestAnimationFrame(animate);
+        }
+        
+        animate();
+        
+        window.addEventListener('beforeunload', function() {
+            if (rafId) cancelAnimationFrame(rafId);
+        });
+    })();
     
     document.addEventListener('DOMContentLoaded', function() {
         // Luxuriously smooth typing animation
