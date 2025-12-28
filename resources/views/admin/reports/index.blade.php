@@ -494,6 +494,11 @@
             },
 
             plugins: {
+                tooltip: {
+                    enabled: true,
+                    mode: 'nearest',
+                    intersect: true
+                },
                 legend: {
                     display: true, // Show legend on all devices
                     position: 'bottom',
@@ -573,11 +578,16 @@
                 }
             },
             plugins: {
+                tooltip: {
+                    enabled: true,
+                    mode: 'nearest',
+                    intersect: true
+                },
                 legend: {
                     display: true, // Show legend on all devices
                     position: 'bottom',
-                    labels: { 
-                        padding: 20, 
+                    labels: {
+                        padding: 20,
                         usePointStyle: true,
                         boxWidth: 6,
                         font: { size: 10 }
