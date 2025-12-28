@@ -600,10 +600,9 @@
         box-shadow: 0 0 5px rgba(200, 155, 58, 0.5); /* Subtle glow */
     }
     .char-reveal {
-        display: inline-block;
+        display: inline;
         opacity: 0;
         animation: etherealReveal 0.6s ease-out forwards;
-        white-space: pre; 
         will-change: opacity, filter;
     }
     @keyframes etherealReveal {
