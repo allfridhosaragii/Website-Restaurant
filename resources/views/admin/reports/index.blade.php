@@ -452,17 +452,20 @@
                     top: window.innerWidth < 768 ? 20 : 10, 
                     left: window.innerWidth < 768 ? 20 : 10, 
                     right: window.innerWidth < 768 ? 20 : 10, 
-                    bottom: window.innerWidth < 768 ? 50 : 30 // More space for legend on mobile
+                    bottom: window.innerWidth < 768 ? 50 : 30 
                 } 
             }, 
+            hover: {
+                mode: window.innerWidth < 768 ? null : 'nearest',
+                intersect: true
+            },
             onHover: (e, elements, chart) => {
+                // Hard disable hover logic on mobile to prevent ghost clicks/flickering
+                if (window.innerWidth < 768) return;
+
                 const isMouse = e.native && e.native.pointerType !== 'touch';
                 if (isMouse) {
                     const newIndex = elements[0] ? elements[0].index : -1;
-                    // For hover, we directly set.
-                    // If hovering nothing (newIndex -1), we don't necessarily want to clear everything immediately on mouseout? 
-                    // User said: "mouse gaperlu di click bar muncul bayangan nya". Implies selection follows mouse.
-                    // So if I hover out, it should clear.
                     activateChartSegment(chart, newIndex);
                 }
             },
@@ -543,7 +546,13 @@
                     bottom: window.innerWidth < 768 ? 50 : 30 
                 } 
             },
+            hover: {
+                mode: window.innerWidth < 768 ? null : 'nearest',
+                intersect: true
+            },
             onHover: (e, elements, chart) => {
+                if (window.innerWidth < 768) return;
+
                 const isMouse = e.native && e.native.pointerType !== 'touch';
                 if (isMouse) {
                     const newIndex = elements[0] ? elements[0].index : -1;
