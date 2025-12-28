@@ -495,12 +495,13 @@
 
             plugins: {
                 legend: {
-                    position: 'bottom',
+                    display: true,
+                    position: window.innerWidth < 768 ? 'right' : 'bottom',
                     labels: { 
-                        padding: 20, 
+                        padding: window.innerWidth < 768 ? 10 : 20, 
                         usePointStyle: true,
                         boxWidth: 6,
-                        font: { size: 10 }
+                        font: { size: window.innerWidth < 768 ? 9 : 10 }
                     }
                 }
             }
@@ -573,12 +574,13 @@
             },
             plugins: {
                 legend: {
-                    position: 'bottom',
+                    display: true,
+                    position: window.innerWidth < 768 ? 'right' : 'bottom',
                     labels: { 
-                        padding: 20, 
+                        padding: window.innerWidth < 768 ? 10 : 20, 
                         usePointStyle: true,
                         boxWidth: 6,
-                        font: { size: 10 }
+                        font: { size: window.innerWidth < 768 ? 9 : 10 }
                     }
                 }
             }
