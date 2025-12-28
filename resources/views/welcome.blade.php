@@ -493,14 +493,16 @@
         top: 0;
         left: 0;
         width: 100%;
-        height: 130%;
+        height: 120%;
         background-image: url('https://res.cloudinary.com/dh9ysyfit/image/upload/v1766046687/IMG_7856_esb0xz.jpg');
         background-size: cover;
         background-position: center top;
         background-repeat: no-repeat;
         will-change: transform;
-        transform: translateZ(0);
-        transition: transform 0.05s linear;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        perspective: 1000px;
     }
     .hero-overlay {
         position: absolute;
@@ -647,7 +649,7 @@
 @push('scripts')
 <script>
     // ========================================
-    // Parallax Effect for Hero Background
+    // Smooth Parallax Effect for Hero Background
     // ========================================
     (function() {
         const parallaxBg = document.getElementById('heroParallax');
@@ -655,37 +657,39 @@
         
         if (!parallaxBg || !heroSection) return;
         
-        let ticking = false;
-        let lastScrollY = 0;
-        const parallaxSpeed = 0.5; // How much slower the bg moves (0.5 = half speed)
+        let currentY = 0;
+        let targetY = 0;
+        let rafId = null;
+        const parallaxSpeed = 0.3; // Reduced for subtler effect
+        const ease = 0.1; // Smoothing factor (lower = smoother)
         
-        function updateParallax() {
-            const scrolled = window.pageYOffset;
+        function lerp(start, end, factor) {
+            return start + (end - start) * factor;
+        }
+        
+        function animate() {
             const heroRect = heroSection.getBoundingClientRect();
             
-            // Only animate when hero is in viewport
+            // Only animate when hero is visible
             if (heroRect.bottom > 0) {
-                const yPos = scrolled * parallaxSpeed;
-                parallaxBg.style.transform = `translate3d(0, ${yPos}px, 0)`;
+                targetY = window.pageYOffset * parallaxSpeed;
+                currentY = lerp(currentY, targetY, ease);
+                
+                // Round to avoid sub-pixel rendering issues
+                const roundedY = Math.round(currentY * 100) / 100;
+                parallaxBg.style.transform = `translate3d(0, ${roundedY}px, 0)`;
             }
             
-            ticking = false;
+            rafId = requestAnimationFrame(animate);
         }
         
-        function onScroll() {
-            lastScrollY = window.pageYOffset;
-            
-            if (!ticking) {
-                window.requestAnimationFrame(updateParallax);
-                ticking = true;
-            }
-        }
+        // Start animation loop
+        animate();
         
-        // Use passive listener for better scroll performance
-        window.addEventListener('scroll', onScroll, { passive: true });
-        
-        // Initial position
-        updateParallax();
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (rafId) cancelAnimationFrame(rafId);
+        });
     })();
     
     document.addEventListener('DOMContentLoaded', function() {
