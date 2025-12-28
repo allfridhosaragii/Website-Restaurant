@@ -81,10 +81,10 @@
             <div class="col-6 col-md-6">
                 <div class="card h-100">
                     <div class="card-header bg-transparent chart-card-header px-2 py-2">
-                        <h6 class="mb-0 text-truncate">Status Pembayaran</h6>
+                        <h6 class="mb-0 text-truncate">Status Reservasi</h6>
                     </div>
                     <div class="card-body d-flex align-items-center justify-content-center chart-card-body p-2">
-                        <canvas id="paymentChart" style="max-height: 250px; width: 100%;"></canvas>
+                        <canvas id="reservationChart" style="max-height: 250px; width: 100%;"></canvas>
                     </div>
                 </div>
             </div>
@@ -259,7 +259,7 @@
 @push('scripts')
 <script>
     let statusChart = null;
-    let paymentChart = null;
+    let reservationChart = null;
 
     // Helper to convert hex to rgba
     function hexToRgba(hex, alpha) {
@@ -282,11 +282,11 @@
 
         // 2. EXPLICITLY Force reset the OTHER chart
         if (targetChart === statusChart) {
-            if (paymentChart && paymentChart.config.options.activeIndex !== -1) {
-                paymentChart.config.options.activeIndex = -1;
-                paymentChart.update('none');
+            if (reservationChart && reservationChart.config.options.activeIndex !== -1) {
+                reservationChart.config.options.activeIndex = -1;
+                reservationChart.update('none');
             }
-        } else if (targetChart === paymentChart) {
+        } else if (targetChart === reservationChart) {
             if (statusChart && statusChart.config.options.activeIndex !== -1) {
                 statusChart.config.options.activeIndex = -1;
                 statusChart.update('none');
@@ -300,9 +300,9 @@
             statusChart.config.options.activeIndex = -1;
             statusChart.update('none');
         }
-        if (paymentChart && paymentChart.config.options.activeIndex !== -1) {
-            paymentChart.config.options.activeIndex = -1;
-            paymentChart.update('none');
+        if (reservationChart && reservationChart.config.options.activeIndex !== -1) {
+            reservationChart.config.options.activeIndex = -1;
+            reservationChart.update('none');
         }
     }
     
@@ -310,7 +310,7 @@
     // Global click/touch listener to close all effects when tapping outside
     const handleGlobalClick = (e) => {
         // Check if click is inside any chart canvas (using ID check which is safest)
-        const isCanvas = e.target.id === 'statusChart' || e.target.id === 'paymentChart';
+        const isCanvas = e.target.id === 'statusChart' || e.target.id === 'reservationChart';
         
         if (!isCanvas) {
             clearAllCharts();
@@ -369,10 +369,10 @@
     statusChart = new Chart(statusCtx, {
         type: 'doughnut',
         data: {
-            labels: ['Selesai', 'Diproses', 'Menunggu', 'Dibatalkan'],
+            labels: ['Berhasil', 'Gagal'],
             datasets: [{
-                data: [{{ $statusStats['completed'] }}, {{ $statusStats['processing'] }}, {{ $statusStats['pending'] }}, {{ $statusStats['cancelled'] }}],
-                backgroundColor: ['#198754', '#0dcaf0', '#ffc107', '#dc3545'],
+                data: [{{ $statusStats['success'] }}, {{ $statusStats['failed'] }}],
+                backgroundColor: ['#198754', '#dc3545'],
                 borderWidth: 0,
                 cutout: '65%',
                 hoverOffset: 4
@@ -445,14 +445,14 @@
 
 
 
-    const paymentCtx = document.getElementById('paymentChart').getContext('2d');
-    paymentChart = new Chart(paymentCtx, {
+    const reservationCtx = document.getElementById('reservationChart').getContext('2d');
+    reservationChart = new Chart(reservationCtx, {
         type: 'doughnut',
         data: {
-            labels: ['Lunas', 'Belum Bayar'],
+            labels: ['Berhasil', 'Gagal'],
             datasets: [{
-                data: [{{ $paymentStats['paid'] }}, {{ $paymentStats['unpaid'] }}],
-                backgroundColor: ['#fd7e14', '#7c3aed'],
+                data: [{{ $reservationStats['success'] }}, {{ $reservationStats['failed'] }}],
+                backgroundColor: ['#198754', '#dc3545'], // Green, Red
                 borderWidth: 0,
                 cutout: '70%',
                 hoverOffset: 4
@@ -533,18 +533,16 @@
 
                 // Update Charts
                 statusChart.data.datasets[0].data = [
-                    data.statusStats.completed,
-                    data.statusStats.processing,
-                    data.statusStats.pending,
-                    data.statusStats.cancelled
+                    data.statusStats.success,
+                    data.statusStats.failed
                 ];
                 statusChart.update();
 
-                paymentChart.data.datasets[0].data = [
-                    data.paymentStats.paid, 
-                    data.paymentStats.unpaid
+                reservationChart.data.datasets[0].data = [
+                    data.reservationStats.success, 
+                    data.reservationStats.failed
                 ];
-                paymentChart.update();
+                reservationChart.update();
 
                 // Update Table
                 const tbody = document.getElementById('transactionTableBody');
