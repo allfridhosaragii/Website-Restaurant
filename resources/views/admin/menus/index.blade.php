@@ -1,4 +1,4 @@
-@extends('layouts.guest')
+@extends('layouts.admin')
 @section('title', __('messages.manage_menus'))
 @section('content')
 <section class="section bg-cream">

@@ -1,4 +1,4 @@
-@extends('layouts.guest')
+@extends('layouts.admin')
 @section('title', 'Manajemen Reservasi')
 @section('content')
 <section class="section bg-cream">
