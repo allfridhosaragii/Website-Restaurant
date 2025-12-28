@@ -79,4 +79,63 @@ class AdminReportController extends Controller
             'year'
         ));
     }
+
+    public function api(Request $request)
+    {
+        $month = $request->get('month', now()->month);
+        $year = $request->get('year', now()->year);
+
+        // Get all orders for the selected month
+        $orders = DB::table('orders')
+            ->join('users', 'orders.user_id', '=', 'users.id')
+            ->whereMonth('orders.created_at', $month)
+            ->whereYear('orders.created_at', $year)
+            ->select(
+                'orders.*',
+                'users.name as customer_name',
+                'users.email as customer_email'
+            )
+            ->orderBy('orders.created_at', 'desc')
+            ->get();
+
+        // Get order items for each order
+        foreach ($orders as $order) {
+            $order->items = DB::table('order_items')
+                ->join('menus', 'order_items.menu_id', '=', 'menus.id')
+                ->where('order_items.order_id', $order->id)
+                ->select('order_items.*', 'menus.name as menu_name')
+                ->get();
+            $order->item_count = $order->items->sum('quantity');
+            $order->formatted_total = 'Rp ' . number_format($order->total, 0, ',', '.');
+            $order->formatted_date = Carbon::parse($order->created_at)->translatedFormat('d M Y, H:i');
+        }
+
+        // Statistics for chart
+        $statusStats = [
+            'completed' => $orders->where('status', 'completed')->count(),
+            'processing' => $orders->where('status', 'processing')->count(),
+            'pending' => $orders->where('status', 'pending')->count(),
+            'cancelled' => $orders->where('status', 'cancelled')->count(),
+        ];
+
+        // Payment stats
+        $paymentStats = [
+            'paid' => $orders->where('payment_status', 'paid')->count(),
+            'unpaid' => $orders->where('payment_status', 'unpaid')->count(),
+        ];
+
+        // Monthly totals
+        $totalRevenue = $orders->where('payment_status', 'paid')->sum('total');
+        $totalOrders = $orders->count();
+
+        return response()->json([
+            'orders' => $orders,
+            'statusStats' => $statusStats,
+            'paymentStats' => $paymentStats,
+            'totalOrders' => $totalOrders,
+            'totalRevenue' => $totalRevenue,
+            'formattedRevenue' => 'Rp ' . number_format($totalRevenue, 0, ',', '.'),
+            'inProcess' => $statusStats['pending'] + $statusStats['processing'],
+        ]);
+    }
 }

@@ -23,10 +23,10 @@
             <div class="card-body">
                 <div class="d-flex gap-2 flex-wrap align-items-center">
                     @foreach($monthTabs as $tab)
-                    <a href="?month={{ $tab['month'] }}&year={{ $tab['year'] }}" 
-                       class="btn rounded-pill px-4 {{ $tab['active'] ? 'btn-warning text-dark' : 'btn-outline-secondary' }}">
+                    <button onclick="loadData({{ $tab['month'] }}, {{ $tab['year'] }}, this)" 
+                       class="btn rounded-pill px-4 month-tab {{ $tab['active'] ? 'btn-warning text-dark' : 'btn-outline-secondary' }}">
                         {{ $tab['label'] }}
-                    </a>
+                    </button>
                     @endforeach
                     <button class="btn btn-outline-secondary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#filterModal">
                         <i class="bi bi-funnel"></i>
@@ -39,25 +39,25 @@
         <div class="row g-4 mb-4">
             <div class="col-md-3">
                 <div class="card text-center p-3">
-                    <h4 class="mb-0 text-primary">{{ $totalOrders }}</h4>
+                    <h4 class="mb-0 text-primary" id="totalOrders">{{ $totalOrders }}</h4>
                     <small class="text-muted">Total Pesanan</small>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card text-center p-3">
-                    <h4 class="mb-0 text-success">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</h4>
+                    <h4 class="mb-0 text-success" id="totalRevenue">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</h4>
                     <small class="text-muted">Total Pendapatan</small>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card text-center p-3">
-                    <h4 class="mb-0 text-warning">{{ $statusStats['pending'] + $statusStats['processing'] }}</h4>
+                    <h4 class="mb-0 text-warning" id="inProcess">{{ $statusStats['pending'] + $statusStats['processing'] }}</h4>
                     <small class="text-muted">Dalam Proses</small>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card text-center p-3">
-                    <h4 class="mb-0 text-info">{{ $statusStats['completed'] }}</h4>
+                    <h4 class="mb-0 text-info" id="completed">{{ $statusStats['completed'] }}</h4>
                     <small class="text-muted">Selesai</small>
                 </div>
             </div>
@@ -107,7 +107,7 @@
                                 <th class="text-end">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="transactionTableBody">
                             @forelse($orders as $order)
                             <tr>
                                 <td>
@@ -216,9 +216,12 @@
 
 @push('scripts')
 <script>
-    // Status Donut Chart
+    let statusChart = null;
+    let paymentChart = null;
+
+    // Initial Charts
     const statusCtx = document.getElementById('statusChart').getContext('2d');
-    new Chart(statusCtx, {
+    statusChart = new Chart(statusCtx, {
         type: 'doughnut',
         data: {
             labels: ['Selesai', 'Diproses', 'Menunggu', 'Dibatalkan'],
@@ -235,18 +238,14 @@
             plugins: {
                 legend: {
                     position: 'bottom',
-                    labels: {
-                        padding: 20,
-                        usePointStyle: true
-                    }
+                    labels: { padding: 20, usePointStyle: true }
                 }
             }
         }
     });
 
-    // Payment Donut Chart
     const paymentCtx = document.getElementById('paymentChart').getContext('2d');
-    new Chart(paymentCtx, {
+    paymentChart = new Chart(paymentCtx, {
         type: 'doughnut',
         data: {
             labels: ['Lunas', 'Belum Bayar'],
@@ -263,13 +262,108 @@
             plugins: {
                 legend: {
                     position: 'bottom',
-                    labels: {
-                        padding: 20,
-                        usePointStyle: true
-                    }
+                    labels: { padding: 20, usePointStyle: true }
                 }
             }
         }
     });
+
+    // Function to load data via AJAX
+    function loadData(month, year, button) {
+        // Update tabs UI
+        document.querySelectorAll('.month-tab').forEach(btn => {
+            btn.classList.remove('btn-warning', 'text-dark');
+            btn.classList.add('btn-outline-secondary');
+        });
+        if(button) {
+            button.classList.remove('btn-outline-secondary');
+            button.classList.add('btn-warning', 'text-dark');
+        }
+
+        // Show loading state (optional)
+        document.getElementById('transactionTableBody').style.opacity = '0.5';
+
+        fetch(`/admin/report/api?month=${month}&year=${year}`)
+            .then(response => response.json())
+            .then(data => {
+                // Update Stats
+                document.getElementById('totalOrders').innerText = data.totalOrders;
+                document.getElementById('totalRevenue').innerText = data.formattedRevenue;
+                document.getElementById('inProcess').innerText = data.inProcess;
+                document.getElementById('completed').innerText = data.statusStats.completed;
+
+                // Update Charts
+                statusChart.data.datasets[0].data = [
+                    data.statusStats.completed,
+                    data.statusStats.processing,
+                    data.statusStats.pending,
+                    data.statusStats.cancelled
+                ];
+                statusChart.update();
+
+                paymentChart.data.datasets[0].data = [
+                    data.paymentStats.paid, 
+                    data.paymentStats.unpaid
+                ];
+                paymentChart.update();
+
+                // Update Table
+                const tbody = document.getElementById('transactionTableBody');
+                tbody.innerHTML = '';
+
+                if (data.orders.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <i class="bi bi-inbox fs-1 text-muted"></i>
+                                <p class="text-muted mb-0">Tidak ada transaksi pada periode ini</p>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    data.orders.forEach(order => {
+                        let statusBadge = '';
+                        if (order.status == 'completed') statusBadge = '<span class="badge bg-success">Selesai</span>';
+                        else if (order.status == 'processing') statusBadge = '<span class="badge bg-info">Diproses</span>';
+                        else if (order.status == 'pending') statusBadge = '<span class="badge bg-warning text-dark">Menunggu</span>';
+                        else statusBadge = '<span class="badge bg-danger">Dibatalkan</span>';
+
+                        let paymentBadge = '';
+                        if (order.payment_status == 'paid') paymentBadge = '<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Lunas</span>';
+                        else paymentBadge = '<span class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i>Belum</span>';
+
+                        const tr = `
+                            <tr>
+                                <td><strong>#${(order.order_number || order.id).substring(0, 8)}</strong></td>
+                                <td>
+                                    <div>
+                                        <strong>${order.customer_name}</strong>
+                                        <br><small class="text-muted">${order.customer_email}</small>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-secondary">${order.item_count} item</span></td>
+                                <td><strong>${order.formatted_total}</strong></td>
+                                <td>${statusBadge}</td>
+                                <td>${paymentBadge}</td>
+                                <td>${order.formatted_date}</td>
+                                <td class="text-end">
+                                    <a href="/admin/orders/${order.id}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        `;
+                        tbody.innerHTML += tr;
+                    });
+                }
+                
+                document.getElementById('transactionTableBody').style.opacity = '1';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('transactionTableBody').style.opacity = '1';
+                alert('Gagal memuat data');
+            });
+    }
 </script>
 @endpush

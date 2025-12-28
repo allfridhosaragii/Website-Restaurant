@@ -470,6 +470,7 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::get('/reservations/{id}', [AdminReservationController::class, 'show']);
     Route::put('/reservations/{id}/status', [AdminReservationController::class, 'updateStatus']);
     Route::get('/activities', [AdminActivityController::class, 'index']);
+    Route::get('/report/api', [\App\Http\Controllers\Admin\AdminReportController::class, 'api']);
     Route::get('/report', [\App\Http\Controllers\Admin\AdminReportController::class, 'index']);
     Route::get('/developer', [\App\Http\Controllers\Admin\AdminCmsController::class, 'index']);
     Route::get('/developer/pages', [\App\Http\Controllers\Admin\AdminCmsController::class, 'pages']);
