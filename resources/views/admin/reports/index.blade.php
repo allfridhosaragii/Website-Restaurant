@@ -585,6 +585,39 @@
         }
     });
 
+    // MOBILE FIX: Explicit touch event handlers that bypass Chart.js event system
+    if (window.innerWidth < 768) {
+        const statusCanvas = document.getElementById('statusChart');
+        const reservationCanvas = document.getElementById('reservationChart');
+
+        function handleChartTouch(e, chart) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const touch = e.changedTouches[0];
+            const rect = e.target.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            
+            const syntheticEvent = { native: e, x: x, y: y };
+            const elements = chart.getElementsAtEventForMode(syntheticEvent, 'nearest', { intersect: true }, false);
+            
+            if (elements.length > 0) {
+                const index = elements[0].index;
+                if (chart.config.options.activeIndex === index) {
+                    activateChartSegment(chart, -1);
+                } else {
+                    activateChartSegment(chart, index);
+                }
+            } else {
+                activateChartSegment(chart, -1);
+            }
+        }
+
+        statusCanvas.addEventListener('touchend', (e) => handleChartTouch(e, statusChart), { passive: false });
+        reservationCanvas.addEventListener('touchend', (e) => handleChartTouch(e, reservationChart), { passive: false });
+    }
+
     // Function to load data via AJAX
     function loadData(month, year, button, silent = false) {
         // Update global state
