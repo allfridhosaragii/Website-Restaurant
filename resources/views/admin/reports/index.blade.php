@@ -495,7 +495,7 @@
 
             plugins: {
                 legend: {
-                    display: window.innerWidth >= 768, // Hide on mobile, show on desktop
+                    display: true, // Show legend on all devices
                     position: 'bottom',
                     labels: { 
                         padding: 20, 
@@ -574,7 +574,7 @@
             },
             plugins: {
                 legend: {
-                    display: window.innerWidth >= 768, // Hide on mobile, show on desktop
+                    display: true, // Show legend on all devices
                     position: 'bottom',
                     labels: { 
                         padding: 20, 
