@@ -459,10 +459,11 @@
                 mode: window.innerWidth < 768 ? null : 'nearest',
                 intersect: true
             },
+            // Fix for "Flickering" (Muncul-Hilang-Muncul):
+            // On real mobile devices, a tap triggers touchstart -> mousemove -> click.
+            // This causes multiple render cycles. enforcing ONLY 'click' on mobile kills the ghost inputs.
+            events: window.innerWidth < 768 ? ['click'] : ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'],
             onHover: (e, elements, chart) => {
-                // Hard disable hover logic on mobile to prevent ghost clicks/flickering
-                if (window.innerWidth < 768) return;
-
                 const isMouse = e.native && e.native.pointerType !== 'touch';
                 if (isMouse) {
                     const newIndex = elements[0] ? elements[0].index : -1;
@@ -550,9 +551,8 @@
                 mode: window.innerWidth < 768 ? null : 'nearest',
                 intersect: true
             },
+            events: window.innerWidth < 768 ? ['click'] : ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'],
             onHover: (e, elements, chart) => {
-                if (window.innerWidth < 768) return;
-
                 const isMouse = e.native && e.native.pointerType !== 'touch';
                 if (isMouse) {
                     const newIndex = elements[0] ? elements[0].index : -1;
