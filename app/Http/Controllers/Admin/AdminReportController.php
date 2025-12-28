@@ -57,6 +57,11 @@ class AdminReportController extends Controller
         ];
 
         // Monthly totals
+        // Specific counts for cards
+        $completedCount = $orders->where('status', 'completed')->count();
+        $inProcessCount = $orders->whereIn('status', ['processing', 'pending'])->count();
+
+        // Monthly totals
         $totalRevenue = $orders->where('payment_status', 'paid')->sum('total');
         $totalOrders = $orders->count();
 
@@ -78,6 +83,8 @@ class AdminReportController extends Controller
             'reservationStats',
             'totalRevenue',
             'totalOrders',
+            'completedCount',
+            'inProcessCount',
             'monthTabs',
             'month',
             'year'
@@ -115,18 +122,15 @@ class AdminReportController extends Controller
         }
 
         // Statistics for chart
+        // Order Stats (Simplified: Berhasil/Gagal)
         $statusStats = [
-            'completed' => $orders->where('status', 'completed')->count(),
-            'processing' => $orders->where('status', 'processing')->count(),
-            'pending' => $orders->where('status', 'pending')->count(),
-            'cancelled' => $orders->where('status', 'cancelled')->count(),
+            'success' => $orders->whereIn('status', ['completed', 'processing', 'pending'])->count(),
+            'failed' => $orders->where('status', 'cancelled')->count()
         ];
-
-        // Payment stats
-        $paymentStats = [
-            'paid' => $orders->where('payment_status', 'paid')->count(),
-            'unpaid' => $orders->where('payment_status', 'unpaid')->count(),
-        ];
+        
+        // Specific counts for cards/table
+        $completedCount = $orders->where('status', 'completed')->count();
+        $inProcessCount = $orders->whereIn('status', ['processing', 'pending'])->count();
 
         // Reservation Stats
         $reservations = Reservation::whereMonth('date', $month)
@@ -144,12 +148,12 @@ class AdminReportController extends Controller
 
         return response()->json([
             'orders' => $orders,
-            'statusStats' => $statusStats,
-            'paymentStats' => $paymentStats,
             'totalOrders' => $totalOrders,
             'totalRevenue' => $totalRevenue,
             'formattedRevenue' => 'Rp ' . number_format($totalRevenue, 0, ',', '.'),
-            'inProcess' => $statusStats['pending'] + $statusStats['processing'],
+            'inProcess' => $inProcessCount,
+            'completedCount' => $completedCount, // Send specific count for cards
+            'statusStats' => $statusStats,
             'reservationStats' => $reservationStats,
         ]);
     }

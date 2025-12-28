@@ -54,13 +54,13 @@
             </div>
             <div class="col-md-3">
                 <div class="card text-center p-3">
-                    <h4 class="mb-0 text-warning" id="inProcess">{{ $statusStats['pending'] + $statusStats['processing'] }}</h4>
+                    <h4 class="mb-0 text-warning" id="inProcess">{{ $inProcessCount }}</h4>
                     <small class="text-muted">Dalam Proses</small>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card text-center p-3">
-                    <h4 class="mb-0 text-info" id="completed">{{ $statusStats['completed'] }}</h4>
+                    <h4 class="mb-0 text-info" id="completed">{{ $completedCount }}</h4>
                     <small class="text-muted">Selesai</small>
                 </div>
             </div>
@@ -528,8 +528,8 @@
                 // Update Stats
                 document.getElementById('totalOrders').innerText = data.totalOrders;
                 document.getElementById('totalRevenue').innerText = data.formattedRevenue;
-                document.getElementById('inProcess').innerText = data.inProcess;
-                document.getElementById('completed').innerText = data.statusStats.completed;
+                document.getElementById('inProcess').innerText = data.inProcessCount; // Use specific count key
+                document.getElementById('completed').innerText = data.completedCount; // Use specific count key
 
                 // Update Charts
                 statusChart.data.datasets[0].data = [
