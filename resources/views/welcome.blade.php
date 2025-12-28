@@ -622,17 +622,17 @@
     .min-h-title { min-height: 1.2em; }
     .min-h-subtitle { 
         min-height: 3em;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        word-break: normal;
+        word-wrap: normal;
+        overflow-wrap: normal;
+        word-break: keep-all;
         hyphens: none;
         -webkit-hyphens: none;
         -ms-hyphens: none;
     }
     .hero-subtitle {
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        word-break: normal;
+        word-wrap: normal;
+        overflow-wrap: normal;
+        word-break: keep-all;
         hyphens: none;
         -webkit-hyphens: none;
         -ms-hyphens: none;
