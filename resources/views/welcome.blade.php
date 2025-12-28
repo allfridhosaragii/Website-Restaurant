@@ -2,6 +2,9 @@
 
 @section('content')
 <section class="hero-section" id="home">
+    <!-- Parallax Background Layer -->
+    <div class="parallax-bg" id="heroParallax"></div>
+    <div class="hero-overlay"></div>
     <div class="container-fluid px-4 px-lg-5">
         <div class="row align-items-center min-vh-100 py-5">
             <div class="col-lg-8 hero-content">
@@ -479,12 +482,39 @@
 <link rel="preload" as="image" href="https://res.cloudinary.com/dh9ysyfit/image/upload/v1766046687/IMG_7856_esb0xz.jpg">
 <style>
     .hero-section {
+        position: relative;
         padding-top: 0;
         margin-top: -80px;
-        background-image: linear-gradient(to right, rgba(12, 42, 54, 0.92) 0%, rgba(12, 42, 54, 0.7) 50%, rgba(12, 42, 54, 0.22) 100%), url('https://res.cloudinary.com/dh9ysyfit/image/upload/v1766046687/IMG_7856_esb0xz.jpg');
+        overflow: hidden;
+        background-color: #0C2A36;
+    }
+    .parallax-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 130%;
+        background-image: url('https://res.cloudinary.com/dh9ysyfit/image/upload/v1766046687/IMG_7856_esb0xz.jpg');
         background-size: cover;
-        background-position: center;
+        background-position: center top;
         background-repeat: no-repeat;
+        will-change: transform;
+        transform: translateZ(0);
+        transition: transform 0.05s linear;
+    }
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to right, rgba(12, 42, 54, 0.92) 0%, rgba(12, 42, 54, 0.7) 50%, rgba(12, 42, 54, 0.22) 100%);
+        z-index: 1;
+        pointer-events: none;
+    }
+    .hero-section .container-fluid {
+        position: relative;
+        z-index: 2;
     }
     .hero-section .container {
         padding-top: 80px;
@@ -616,6 +646,48 @@
 @endpush
 @push('scripts')
 <script>
+    // ========================================
+    // Parallax Effect for Hero Background
+    // ========================================
+    (function() {
+        const parallaxBg = document.getElementById('heroParallax');
+        const heroSection = document.getElementById('home');
+        
+        if (!parallaxBg || !heroSection) return;
+        
+        let ticking = false;
+        let lastScrollY = 0;
+        const parallaxSpeed = 0.5; // How much slower the bg moves (0.5 = half speed)
+        
+        function updateParallax() {
+            const scrolled = window.pageYOffset;
+            const heroRect = heroSection.getBoundingClientRect();
+            
+            // Only animate when hero is in viewport
+            if (heroRect.bottom > 0) {
+                const yPos = scrolled * parallaxSpeed;
+                parallaxBg.style.transform = `translate3d(0, ${yPos}px, 0)`;
+            }
+            
+            ticking = false;
+        }
+        
+        function onScroll() {
+            lastScrollY = window.pageYOffset;
+            
+            if (!ticking) {
+                window.requestAnimationFrame(updateParallax);
+                ticking = true;
+            }
+        }
+        
+        // Use passive listener for better scroll performance
+        window.addEventListener('scroll', onScroll, { passive: true });
+        
+        // Initial position
+        updateParallax();
+    })();
+    
     document.addEventListener('DOMContentLoaded', function() {
         // Luxuriously smooth typing animation
         const titleContainer = document.getElementById('typing-title-content');
