@@ -442,8 +442,7 @@
             }
         }
 
-    });
-    charts.push(statusChart); // Register
+
 
     const paymentCtx = document.getElementById('paymentChart').getContext('2d');
     paymentChart = new Chart(paymentCtx, {
@@ -506,7 +505,6 @@
             }
         }
     });
-    charts.push(paymentChart);
 
     // Function to load data via AJAX
     function loadData(month, year, button) {
