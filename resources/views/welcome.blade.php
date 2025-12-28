@@ -8,22 +8,22 @@
     <div class="container-fluid px-4 px-lg-5">
         <div class="row align-items-center min-vh-100 py-5">
             <div class="col-lg-8 hero-content">
-                <span class="badge bg-gradient-secondary text-dark mb-3 px-3 py-2 rounded-pill animate-fadeInUp">
+                <span class="badge bg-gradient-secondary text-dark mb-3 px-3 py-2 rounded-pill">
                     <i class="bi bi-star-fill me-1"></i> <span data-i18n="hero_subtitle">{!! cms('homepage.hero.subtitle', __('messages.hero_subtitle')) !!}</span>
                 </span>
-                <h1 class="hero-title animate-fadeInUp delay-1 text-white min-h-title">
+                <h1 class="hero-title text-white min-h-title">
                     <span id="typing-title-content" data-i18n="hero_title_full">
                         {!! cms('homepage.hero.title', __('messages.hero_title_1') . ' ' . __('messages.hero_title_2') . ' ' . __('messages.hero_title_3'), 'richtext') !!}
                     </span>
                     <span class="typing-cursor" id="title-cursor">|</span>
                 </h1>
-                <p class="hero-subtitle animate-fadeInUp delay-2 text-light opacity-75 min-h-subtitle">
+                <p class="hero-subtitle text-light opacity-75 min-h-subtitle">
                     <span id="typing-subtitle-content" data-i18n="hero_desc">
                         {!! cms('homepage.hero.description', __('messages.hero_desc'), 'richtext') !!}
                     </span>
                     <span class="typing-cursor" id="subtitle-cursor" style="display:none">|</span>
                 </p>
-                <div class="hero-actions animate-fadeInUp delay-3">
+                <div class="hero-actions">
                     <a href="{{ url('/menu') }}" class="btn btn-lg rounded-pill px-5 me-3 shadow-lg btn-glass-gold">
                         <i class="bi bi-book me-2"></i><span data-i18n="explore_menu">{{ __('messages.explore_menu') }}</span>
                     </a>
@@ -31,7 +31,7 @@
                         <i class="bi bi-calendar-check me-2"></i><span data-i18n="reservation">{{ __('messages.reservation') }}</span>
                     </a>
                 </div>
-                <div class="row mt-5 animate-fadeInUp delay-4">
+                <div class="row mt-5">
                     <div class="col-4">
                         <h3 class="text-gold mb-0 display-6 fw-bold">50+</h3>
                         <small class="text-white-50 text-uppercase fw-semibold" style="letter-spacing: 1px;" data-i18n="menu_choice">{{ __('messages.menu_choice') }}</small>
