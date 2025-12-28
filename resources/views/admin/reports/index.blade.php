@@ -426,7 +426,7 @@
                 data: [{{ $statusStats['success'] }}, {{ $statusStats['failed'] }}],
                 backgroundColor: ['#198754', '#dc3545'],
                 borderWidth: 0,
-                cutout: '65%',
+                cutout: '70%',
                 hoverOffset: 4
             }]
         },
