@@ -74,7 +74,9 @@
                         <h6 class="mb-0 text-truncate">Status Pesanan</h6>
                     </div>
                     <div class="card-body d-flex align-items-center justify-content-center chart-card-body p-2">
-                        <canvas id="statusChart" style="max-height: 250px; width: 100%;"></canvas>
+                        <div class="position-relative w-100" style="min-height: 250px;">
+                            <canvas id="statusChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -84,7 +86,9 @@
                         <h6 class="mb-0 text-truncate">Status Reservasi</h6>
                     </div>
                     <div class="card-body d-flex align-items-center justify-content-center chart-card-body p-2">
-                        <canvas id="reservationChart" style="max-height: 250px; width: 100%;"></canvas>
+                        <div class="position-relative w-100" style="min-height: 250px;">
+                            <canvas id="reservationChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -237,8 +241,9 @@
         .chart-card-body {
             padding: 0.5rem !important;
         }
+        /* Allow chart to grow */
         canvas {
-            max-height: 200px !important;
+            max-height: none !important; 
         }
     }
     
@@ -416,7 +421,8 @@
         options: {
             activeIndex: -1, // Custom state
             responsive: true,
-            aspectRatio: window.innerWidth < 768 ? 1 : 2, // Square on mobile for larger size
+            maintainAspectRatio: false, // Allow custom height via CSS container
+            aspectRatio: window.innerWidth < 768 ? 1 : 2, 
             resizeDelay: 200, 
             animation: {
                 duration: 600, 
@@ -502,6 +508,7 @@
         options: {
             activeIndex: -1,
             responsive: true,
+            maintainAspectRatio: false,
             aspectRatio: window.innerWidth < 768 ? 1 : 2,
             resizeDelay: 200,
             animation: {
