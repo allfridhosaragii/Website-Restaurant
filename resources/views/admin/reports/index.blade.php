@@ -332,6 +332,11 @@
             activeIndex: -1, // Custom state
             responsive: true,
             maintainAspectRatio: true,
+            resizeDelay: 200, // Debounce resize
+            animation: {
+                duration: 600, // Faster initial animation
+                easing: 'easeOutQuart'
+            },
             layout: { padding: 20 }, // Extra padding for shadow
             onClick: (e, elements, chart) => {
                 const newIndex = elements[0] ? elements[0].index : -1;
@@ -342,7 +347,8 @@
                 } else {
                     chart.config.options.activeIndex = newIndex;
                 }
-                chart.update();
+                // Update without animation for instant snap, or 'active' for smooth
+                chart.update(); 
             },
             plugins: {
                 legend: {
@@ -376,6 +382,11 @@
             activeIndex: -1,
             responsive: true,
             maintainAspectRatio: true,
+            resizeDelay: 200,
+            animation: {
+                duration: 600,
+                easing: 'easeOutQuart'
+            },
             layout: { padding: 20 },
             onClick: (e, elements, chart) => {
                 const newIndex = elements[0] ? elements[0].index : -1;
