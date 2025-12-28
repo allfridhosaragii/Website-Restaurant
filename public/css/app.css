@@ -4038,3 +4038,62 @@ input {
 .row>* {
     max-width: 100%;
 }
+
+/* Dark Mode Table Styles */
+[data-theme="dark"] .table {
+    color: var(--text-primary);
+    background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .table th,
+[data-theme="dark"] .table td {
+    color: var(--text-primary);
+    border-color: var(--border-medium);
+}
+
+[data-theme="dark"] .table thead,
+[data-theme="dark"] .table-light,
+[data-theme="dark"] thead.table-light {
+    background-color: var(--surface) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .table-light th,
+[data-theme="dark"] .table-light td,
+[data-theme="dark"] thead.table-light th {
+    background-color: var(--surface) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-medium) !important;
+}
+
+[data-theme="dark"] .table tbody tr {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .table-hover tbody tr:hover {
+    background-color: var(--surface-light);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .table strong {
+    color: var(--text-primary);
+}
+
+/* Dark Mode Card Styles */
+[data-theme="dark"] .card {
+    background-color: var(--surface);
+    border-color: var(--border-medium);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .card h4,
+[data-theme="dark"] .card h5,
+[data-theme="dark"] .card h6 {
+    color: var(--text-primary);
+}
+
+/* Dark Mode Section Background */
+[data-theme="dark"] .bg-cream {
+    background-color: var(--bg-primary) !important;
+}
