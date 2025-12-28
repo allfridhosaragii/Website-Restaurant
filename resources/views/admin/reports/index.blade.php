@@ -615,19 +615,33 @@
                 document.getElementById('inProcess').innerText = data.inProcessCount; // Use specific count key
                 document.getElementById('completed').innerText = data.completedCount; // Use specific count key
 
-                // Update Charts
+                // Update Charts - PRESERVE ACTIVE STATE
+                const statusActiveIndex = statusChart.config.options.activeIndex;
+                const reservationActiveIndex = reservationChart.config.options.activeIndex;
+
                 statusChart.data.datasets[0].data = [
                     data.statusStats.success,
                     data.statusStats.failed
                 ];
-                statusChart.update();
+                // Restore original colors before update, then re-apply active state after
+                resetChartColors(statusChart);
+                statusChart.update('none');
+                if (statusActiveIndex >= 0) {
+                    updateChartColors(statusChart, statusActiveIndex);
+                    statusChart.update('none');
+                }
 
                 reservationChart.data.datasets[0].data = [
                     data.reservationStats.success, 
                     data.reservationStats.pending,
                     data.reservationStats.failed
                 ];
-                reservationChart.update();
+                resetChartColors(reservationChart);
+                reservationChart.update('none');
+                if (reservationActiveIndex >= 0) {
+                    updateChartColors(reservationChart, reservationActiveIndex);
+                    reservationChart.update('none');
+                }
 
                 // Update Table
                 const tbody = document.getElementById('transactionTableBody');
