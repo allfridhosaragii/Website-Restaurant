@@ -336,10 +336,10 @@
                     const model = arc.getProps(['x', 'y', 'startAngle', 'endAngle', 'outerRadius', 'innerRadius', 'options'], true);
                     
                     // Config for halo
-                    const gap = 3; 
-                    const ringWidth = 10;
+                    const gap = 0; 
+                    const ringWidth = 14;
                     const color = model.options.backgroundColor;
-                    const ringColor = hexToRgba(color, 0.4); // 40% opacity
+                    const ringColor = hexToRgba(color, 0.5); // 50% opacity
                     
                     ctx.beginPath();
                     // Inner edge of ring (starts after gap)
