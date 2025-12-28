@@ -621,7 +621,24 @@
         50% { opacity: 0.8; }
     }
     .min-h-title { min-height: 1.2em; }
-    .min-h-subtitle { min-height: 3em; }
+    .min-h-subtitle { 
+        min-height: 3em;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: normal;
+        hyphens: none;
+        -webkit-hyphens: none;
+        -ms-hyphens: none;
+    }
+    .hero-subtitle {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: normal;
+        hyphens: none;
+        -webkit-hyphens: none;
+        -ms-hyphens: none;
+        white-space: normal;
+    }
     
     /* Experience Badge - Mobile Responsive */
     @media (max-width: 768px) {
