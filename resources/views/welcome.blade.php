@@ -721,26 +721,61 @@
                 }, config.subtitleDelay);
             });
         }, config.startDelay);
-        // --- Helper Function: Type Text ---
+        // --- Helper Function: Type Text (Word-aware) ---
         function typeText(element, text, onComplete) {
-            let index = 0;
+            // Split text into words (keeping spaces as separate items)
+            const words = text.split(/(\s+)/);
+            let wordIndex = 0;
+            let charIndex = 0;
+            let currentWordSpan = null;
+            
             function typeChar() {
-                if (index >= text.length) {
+                // Check if we finished all words
+                if (wordIndex >= words.length) {
                     onComplete();
                     return;
                 }
-                const char = text.charAt(index);
-                // Create span for each char for "ethereal" fade-in effect via CSS
-                const span = document.createElement('span');
-                span.textContent = char;
-                span.className = 'char-reveal'; // Uses existing CSS animation
-                element.appendChild(span);
-                index++;
+                
+                const currentWord = words[wordIndex];
+                
+                // Skip empty strings
+                if (currentWord === '') {
+                    wordIndex++;
+                    setTimeout(typeChar, 0);
+                    return;
+                }
+                
+                // If starting a new word, create a word wrapper
+                if (charIndex === 0) {
+                    currentWordSpan = document.createElement('span');
+                    // Use nowrap to keep entire word together
+                    currentWordSpan.style.whiteSpace = 'nowrap';
+                    currentWordSpan.style.display = 'inline';
+                    element.appendChild(currentWordSpan);
+                }
+                
+                const char = currentWord.charAt(charIndex);
+                
+                // Create span for character
+                const charSpan = document.createElement('span');
+                charSpan.textContent = char;
+                charSpan.className = 'char-reveal';
+                currentWordSpan.appendChild(charSpan);
+                
+                charIndex++;
+                
                 // Calculate Delay
                 let delay = config.baseSpeed + (Math.random() * config.variance * 2 - config.variance);
-                // Add pauses for rhythm
                 if (char === ' ') delay += config.spacePause;
                 if (['.', ',', '!', '?'].includes(char)) delay += config.punctuationPause;
+                
+                // Check if word is complete
+                if (charIndex >= currentWord.length) {
+                    wordIndex++;
+                    charIndex = 0;
+                    currentWordSpan = null;
+                }
+                
                 setTimeout(typeChar, delay);
             }
             typeChar();
