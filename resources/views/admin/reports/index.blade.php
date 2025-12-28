@@ -428,7 +428,14 @@
                 x: false,
                 y: false
             },
-            layout: { padding: 20 }, // Extra padding for shadow
+            layout: { 
+                padding: {
+                    top: 10, 
+                    left: 10, 
+                    right: 10, 
+                    bottom: 30 
+                } 
+            }, 
             onHover: (e, elements, chart) => {
                 const isMouse = e.native && e.native.pointerType !== 'touch';
                 if (isMouse) {
@@ -467,7 +474,7 @@
                 legend: {
                     position: 'bottom',
                     labels: { 
-                        padding: 5, 
+                        padding: 20, 
                         usePointStyle: true,
                         boxWidth: 6,
                         font: { size: 10 }
@@ -507,7 +514,14 @@
                 x: false,
                 y: false
             },
-            layout: { padding: 20 },
+            layout: { 
+                padding: {
+                    top: 10, 
+                    left: 10, 
+                    right: 10, 
+                    bottom: 30 
+                } 
+            },
             onHover: (e, elements, chart) => {
                 const isMouse = e.native && e.native.pointerType !== 'touch';
                 if (isMouse) {
@@ -531,7 +545,7 @@
                 legend: {
                     position: 'bottom',
                     labels: { 
-                        padding: 5, 
+                        padding: 20, 
                         usePointStyle: true,
                         boxWidth: 6,
                         font: { size: 10 }
