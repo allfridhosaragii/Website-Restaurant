@@ -269,7 +269,7 @@
         return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
 
-    // Custom Plugin for Glow/Shadow Effect
+    // Custom Plugin for Halo/Ring Effect
     const glowPlugin = {
         id: 'glowEffect',
         beforeDatasetsDraw(chart, args, options) {
@@ -284,17 +284,20 @@
                     ctx.save();
                     const model = arc.getProps(['x', 'y', 'startAngle', 'endAngle', 'outerRadius', 'innerRadius', 'options'], true);
                     
+                    // Config for halo
+                    const gap = 3; 
+                    const ringWidth = 10;
+                    const color = model.options.backgroundColor;
+                    const ringColor = hexToRgba(color, 0.4); // 40% opacity
+                    
                     ctx.beginPath();
-                    ctx.arc(model.x, model.y, model.outerRadius, model.startAngle, model.endAngle);
-                    ctx.arc(model.x, model.y, model.innerRadius, model.endAngle, model.startAngle, true);
+                    // Inner edge of ring (starts after gap)
+                    ctx.arc(model.x, model.y, model.outerRadius + gap + ringWidth, model.startAngle, model.endAngle);
+                    // Outer edge of ring
+                    ctx.arc(model.x, model.y, model.outerRadius + gap, model.endAngle, model.startAngle, true);
                     ctx.closePath();
                     
-                    ctx.fillStyle = model.options.backgroundColor;
-                    ctx.shadowColor = model.options.backgroundColor;
-                    ctx.shadowBlur = 20; // Soft glow
-                    ctx.shadowOffsetX = 0;
-                    ctx.shadowOffsetY = 0;
-                    
+                    ctx.fillStyle = ringColor;
                     ctx.fill();
                     ctx.restore();
                 }
