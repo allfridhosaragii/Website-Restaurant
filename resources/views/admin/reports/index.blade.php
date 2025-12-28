@@ -647,9 +647,9 @@
             });
     }
 
-    // Auto-refresh every 15 seconds
+    // Auto-refresh every 3 seconds for near-realtime feel
     setInterval(() => {
         loadData(currentMonth, currentYear, null, true);
-    }, 15000);
+    }, 3000);
 </script>
 @endpush
