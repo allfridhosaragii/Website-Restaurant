@@ -68,7 +68,7 @@
 
         <!-- Chart and Stats -->
         <div class="row g-4 mb-4">
-            <div class="col-md-6">
+            <div class="col-6 col-md-6">
                 <div class="card h-100">
                     <div class="card-header bg-transparent">
                         <h6 class="mb-0">Status Pesanan</h6>
@@ -78,7 +78,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-6 col-md-6">
                 <div class="card h-100">
                     <div class="card-header bg-transparent">
                         <h6 class="mb-0">Status Pembayaran</h6>
