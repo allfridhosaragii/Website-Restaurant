@@ -269,10 +269,45 @@
         return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
 
+    // Custom Plugin for Glow/Shadow Effect
+    const glowPlugin = {
+        id: 'glowEffect',
+        beforeDatasetsDraw(chart, args, options) {
+            const { ctx } = chart;
+            const activeIndex = chart.config.options.activeIndex;
+            
+            if (typeof activeIndex === 'number' && activeIndex >= 0) {
+                const meta = chart.getDatasetMeta(0);
+                const arc = meta.data[activeIndex];
+                
+                if (arc) {
+                    ctx.save();
+                    const model = arc.getProps(['x', 'y', 'startAngle', 'endAngle', 'outerRadius', 'innerRadius', 'options'], true);
+                    
+                    ctx.beginPath();
+                    ctx.arc(model.x, model.y, model.outerRadius, model.startAngle, model.endAngle);
+                    ctx.arc(model.x, model.y, model.innerRadius, model.endAngle, model.startAngle, true);
+                    ctx.closePath();
+                    
+                    ctx.fillStyle = model.options.backgroundColor;
+                    ctx.shadowColor = model.options.backgroundColor;
+                    ctx.shadowBlur = 20; // Soft glow
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 0;
+                    
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+        }
+    };
+
     // Scroll to right on load
     document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('monthTabsContainer');
-        container.scrollLeft = container.scrollWidth;
+        if(container) {
+            container.scrollLeft = container.scrollWidth;
+        }
     });
 
     // Initial Charts
@@ -284,39 +319,27 @@
             datasets: [{
                 data: [{{ $statusStats['completed'] }}, {{ $statusStats['processing'] }}, {{ $statusStats['pending'] }}, {{ $statusStats['cancelled'] }}],
                 backgroundColor: ['#198754', '#0dcaf0', '#ffc107', '#dc3545'],
-                borderColor: ['#198754', '#0dcaf0', '#ffc107', '#dc3545'],
                 borderWidth: 0,
                 cutout: '65%',
-                hoverOffset: 10,
-                offset: 0
+                hoverOffset: 4
             }]
         },
+        plugins: [glowPlugin],
         options: {
+            activeIndex: -1, // Custom state
             responsive: true,
             maintainAspectRatio: true,
-            layout: { padding: 10 },
+            layout: { padding: 20 }, // Extra padding for shadow
             onClick: (e, elements, chart) => {
-                if (elements[0]) {
-                    const dataset = chart.data.datasets[0];
-                    const index = elements[0].index;
-                    const meta = chart.getDatasetMeta(0);
-                    
-                    // Reset all
-                    dataset.borderWidth = new Array(dataset.data.length).fill(0);
-                    dataset.borderColor = dataset.backgroundColor; // Reset to solid color or just transparent
-                    
-                    // Apply glow to selected
-                    // We use array for borderWidth to target specific index
-                    const newWidths = new Array(dataset.data.length).fill(0);
-                    newWidths[index] = 12; // Thickness of glow
-                    dataset.borderWidth = newWidths;
-                    
-                    const newColors = [...dataset.backgroundColor];
-                    newColors[index] = hexToRgba(dataset.backgroundColor[index], 0.3); // Transparent glow
-                    dataset.borderColor = newColors;
-                    
-                    chart.update();
+                const newIndex = elements[0] ? elements[0].index : -1;
+                
+                // Toggle: if clicking same index, deselect (set to -1). Else set to new index.
+                if (chart.config.options.activeIndex === newIndex) {
+                    chart.config.options.activeIndex = -1;
+                } else {
+                    chart.config.options.activeIndex = newIndex;
                 }
+                chart.update();
             },
             plugins: {
                 legend: {
@@ -340,32 +363,25 @@
             datasets: [{
                 data: [{{ $paymentStats['paid'] }}, {{ $paymentStats['unpaid'] }}],
                 backgroundColor: ['#fd7e14', '#7c3aed'],
-                borderColor: ['#fd7e14', '#7c3aed'],
                 borderWidth: 0,
                 cutout: '70%',
-                hoverOffset: 10,
-                offset: 0
+                hoverOffset: 4
             }]
         },
+        plugins: [glowPlugin],
         options: {
+            activeIndex: -1,
             responsive: true,
             maintainAspectRatio: true,
-            layout: { padding: 10 },
+            layout: { padding: 20 },
             onClick: (e, elements, chart) => {
-                if (elements[0]) {
-                    const dataset = chart.data.datasets[0];
-                    const index = elements[0].index;
-                    
-                    const newWidths = new Array(dataset.data.length).fill(0);
-                    newWidths[index] = 12;
-                    dataset.borderWidth = newWidths;
-                    
-                    const newColors = [...dataset.backgroundColor];
-                    newColors[index] = hexToRgba(dataset.backgroundColor[index], 0.3);
-                    dataset.borderColor = newColors;
-                    
-                    chart.update();
+                const newIndex = elements[0] ? elements[0].index : -1;
+                if (chart.config.options.activeIndex === newIndex) {
+                    chart.config.options.activeIndex = -1;
+                } else {
+                    chart.config.options.activeIndex = newIndex;
                 }
+                chart.update();
             },
             plugins: {
                 legend: {
