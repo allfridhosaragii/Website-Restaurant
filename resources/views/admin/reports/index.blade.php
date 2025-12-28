@@ -67,7 +67,7 @@
         </div>
 
         <!-- Chart and Stats -->
-        <div class="row g-4 mb-4">
+        <div class="row g-2 g-md-4 mb-4">
             <div class="col-6 col-md-6">
                 <div class="card h-100">
                     <div class="card-header bg-transparent">
@@ -259,7 +259,12 @@
             plugins: {
                 legend: {
                     position: 'bottom',
-                    labels: { padding: 20, usePointStyle: true }
+                    labels: { 
+                        padding: 10, 
+                        usePointStyle: true,
+                        boxWidth: 8,
+                        font: { size: 11 }
+                    }
                 }
             }
         }
@@ -274,7 +279,7 @@
                 data: [{{ $paymentStats['paid'] }}, {{ $paymentStats['unpaid'] }}],
                 backgroundColor: ['#fd7e14', '#7c3aed'],
                 borderWidth: 0,
-                cutout: '65%'
+                cutout: '70%'
             }]
         },
         options: {
@@ -283,7 +288,12 @@
             plugins: {
                 legend: {
                     position: 'bottom',
-                    labels: { padding: 20, usePointStyle: true }
+                    labels: { 
+                        padding: 10, 
+                        usePointStyle: true,
+                        boxWidth: 8,
+                        font: { size: 11 }
+                    }
                 }
             }
         }
