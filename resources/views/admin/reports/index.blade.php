@@ -278,31 +278,63 @@
         if (targetChart.config.options.activeIndex !== index) {
             targetChart.config.options.activeIndex = index;
             targetChart.update('none');
+            // No update here, updateChartColors will trigger it
         }
 
         // 2. EXPLICITLY Force reset the OTHER chart
         if (targetChart === statusChart) {
             if (reservationChart && reservationChart.config.options.activeIndex !== -1) {
                 reservationChart.config.options.activeIndex = -1;
+                resetChartColors(reservationChart); // Reset colors
                 reservationChart.update('none');
             }
         } else if (targetChart === reservationChart) {
             if (statusChart && statusChart.config.options.activeIndex !== -1) {
                 statusChart.config.options.activeIndex = -1;
+                resetChartColors(statusChart); // Reset colors
                 statusChart.update('none');
             }
         }
+        
+        // 3. Update Colors for Dimming Effect
+        updateChartColors(targetChart, index);
+        targetChart.update('none'); // Update the target chart after color change
     }
 
     // Helper to clear all charts
     function clearAllCharts() {
         if (statusChart && statusChart.config.options.activeIndex !== -1) {
             statusChart.config.options.activeIndex = -1;
+            resetChartColors(statusChart);
             statusChart.update('none');
         }
         if (reservationChart && reservationChart.config.options.activeIndex !== -1) {
             reservationChart.config.options.activeIndex = -1;
+            resetChartColors(reservationChart);
             reservationChart.update('none');
+        }
+    }
+
+    // Helper: Reset colors to original solid
+    function resetChartColors(chart) {
+        const originalColors = ['#198754', '#dc3545'];
+        if (chart.data.datasets[0]) {
+            chart.data.datasets[0].backgroundColor = [...originalColors];
+        }
+    }
+
+    // Helper: Dim inactive segments
+    function updateChartColors(chart, activeIndex) {
+        const originalColors = ['#198754', '#dc3545'];
+        if (chart.data.datasets[0]) {
+             if (activeIndex === -1) {
+                chart.data.datasets[0].backgroundColor = [...originalColors];
+            } else {
+                // Map colors: Active -> Solid, Inactive -> Faded
+                chart.data.datasets[0].backgroundColor = originalColors.map((color, i) => {
+                    return i === activeIndex ? color : hexToRgba(color, 0.2); // 20% opacity for inactive
+                });
+            }
         }
     }
     
