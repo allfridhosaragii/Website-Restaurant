@@ -21,14 +21,17 @@
         <!-- Month Tabs -->
         <div class="card mb-4">
             <div class="card-body">
-                <div class="d-flex gap-2 flex-wrap align-items-center">
+                <div class="d-flex gap-2 flex-nowrap align-items-center overflow-auto no-scrollbar" id="monthTabsContainer" style="justify-content: flex-start; scroll-behavior: smooth;">
+                    <!-- Spacer to push items to right on desktop if needed, but for scrollable we want natural flow -->
+                    <div class="flex-grow-1 d-none d-md-block"></div>
+                    
                     @foreach($monthTabs as $tab)
                     <button onclick="loadData({{ $tab['month'] }}, {{ $tab['year'] }}, this)" 
-                       class="btn rounded-pill px-4 month-tab {{ $tab['active'] ? 'btn-warning text-dark' : 'btn-outline-secondary' }}">
+                       class="btn rounded-pill px-4 month-tab flex-shrink-0 {{ $tab['active'] ? 'btn-warning text-dark' : 'btn-outline-secondary' }}">
                         {{ $tab['label'] }}
                     </button>
                     @endforeach
-                    <button class="btn btn-outline-secondary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#filterModal">
+                    <button class="btn btn-outline-secondary rounded-pill px-3 flex-shrink-0" data-bs-toggle="modal" data-bs-target="#filterModal">
                         <i class="bi bi-funnel"></i>
                     </button>
                 </div>
@@ -214,10 +217,28 @@
 </div>
 @endsection
 
+@push('styles')
+<style>
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+@endpush
+
 @push('scripts')
 <script>
     let statusChart = null;
     let paymentChart = null;
+
+    // Scroll to right on load
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('monthTabsContainer');
+        container.scrollLeft = container.scrollWidth;
+    });
 
     // Initial Charts
     const statusCtx = document.getElementById('statusChart').getContext('2d');
