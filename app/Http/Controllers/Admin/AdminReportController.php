@@ -53,7 +53,8 @@ class AdminReportController extends Controller
             ->get();
 
         $reservationStats = [
-            'success' => $reservations->whereIn('status', ['accepted', 'pending'])->count(),
+            'success' => $reservations->where('status', 'accepted')->count(),
+            'pending' => $reservations->where('status', 'pending')->count(),
             'failed' => $reservations->where('status', 'rejected')->count()
         ];
 
@@ -139,7 +140,8 @@ class AdminReportController extends Controller
             ->get();
 
         $reservationStats = [
-            'success' => $reservations->whereIn('status', ['accepted', 'pending'])->count(),
+            'success' => $reservations->where('status', 'accepted')->count(),
+            'pending' => $reservations->where('status', 'pending')->count(),
             'failed' => $reservations->where('status', 'rejected')->count()
         ];
 

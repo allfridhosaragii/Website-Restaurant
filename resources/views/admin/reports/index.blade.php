@@ -324,15 +324,22 @@
 
     // Helper: Reset colors to original solid
     function resetChartColors(chart) {
-        const originalColors = ['#198754', '#dc3545'];
-        if (chart.data.datasets[0]) {
-            chart.data.datasets[0].backgroundColor = [...originalColors];
+        if (chart === statusChart) {
+             chart.data.datasets[0].backgroundColor = ['#198754', '#dc3545'];
+        } else {
+             chart.data.datasets[0].backgroundColor = ['#198754', '#ffc107', '#dc3545'];
         }
     }
 
     // Helper: Dim inactive segments
     function updateChartColors(chart, activeIndex) {
-        const originalColors = ['#198754', '#dc3545'];
+        let originalColors;
+        if (chart === statusChart) {
+            originalColors = ['#198754', '#dc3545'];
+        } else {
+            originalColors = ['#198754', '#ffc107', '#dc3545'];
+        }
+
         if (chart.data.datasets[0]) {
              if (activeIndex === -1) {
                 chart.data.datasets[0].backgroundColor = [...originalColors];
@@ -495,10 +502,10 @@
     reservationChart = new Chart(reservationCtx, {
         type: 'doughnut',
         data: {
-            labels: ['Berhasil', 'Gagal'],
+            labels: ['Berhasil', 'Menunggu', 'Gagal'],
             datasets: [{
-                data: [{{ $reservationStats['success'] }}, {{ $reservationStats['failed'] }}],
-                backgroundColor: ['#198754', '#dc3545'], // Green, Red
+                data: [{{ $reservationStats['success'] }}, {{ $reservationStats['pending'] }}, {{ $reservationStats['failed'] }}],
+                backgroundColor: ['#198754', '#ffc107', '#dc3545'], // Green, Yellow, Red
                 borderWidth: 0,
                 cutout: '70%',
                 hoverOffset: 4
@@ -600,6 +607,7 @@
 
                 reservationChart.data.datasets[0].data = [
                     data.reservationStats.success, 
+                    data.reservationStats.pending,
                     data.reservationStats.failed
                 ];
                 reservationChart.update();
