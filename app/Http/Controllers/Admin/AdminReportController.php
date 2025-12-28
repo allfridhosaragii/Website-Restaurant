@@ -47,8 +47,9 @@ class AdminReportController extends Controller
         ];
 
         // Reservation Stats
-        $reservations = Reservation::whereMonth('date', $month)
-            ->whereYear('date', $year)
+        // Reservation Stats
+        $reservations = Reservation::whereMonth('created_at', $month)
+            ->whereYear('created_at', $year)
             ->get();
 
         $reservationStats = [
@@ -133,8 +134,8 @@ class AdminReportController extends Controller
         $inProcessCount = $orders->whereIn('status', ['processing', 'pending'])->count();
 
         // Reservation Stats
-        $reservations = Reservation::whereMonth('date', $month)
-            ->whereYear('date', $year)
+        $reservations = Reservation::whereMonth('created_at', $month)
+            ->whereYear('created_at', $year)
             ->get();
 
         $reservationStats = [
