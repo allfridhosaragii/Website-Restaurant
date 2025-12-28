@@ -495,13 +495,13 @@
 
             plugins: {
                 legend: {
-                    display: true,
-                    position: window.innerWidth < 768 ? 'right' : 'bottom',
+                    display: window.innerWidth >= 768, // Hide on mobile, show on desktop
+                    position: 'bottom',
                     labels: { 
-                        padding: window.innerWidth < 768 ? 10 : 20, 
+                        padding: 20, 
                         usePointStyle: true,
                         boxWidth: 6,
-                        font: { size: window.innerWidth < 768 ? 9 : 10 }
+                        font: { size: 10 }
                     }
                 }
             }
@@ -574,13 +574,13 @@
             },
             plugins: {
                 legend: {
-                    display: true,
-                    position: window.innerWidth < 768 ? 'right' : 'bottom',
+                    display: window.innerWidth >= 768, // Hide on mobile, show on desktop
+                    position: 'bottom',
                     labels: { 
-                        padding: window.innerWidth < 768 ? 10 : 20, 
+                        padding: 20, 
                         usePointStyle: true,
                         boxWidth: 6,
-                        font: { size: window.innerWidth < 768 ? 9 : 10 }
+                        font: { size: 10 }
                     }
                 }
             }
