@@ -74,7 +74,7 @@
                         <h6 class="mb-0 text-truncate">Status Pesanan</h6>
                     </div>
                     <div class="card-body d-flex align-items-center justify-content-center chart-card-body p-2">
-                        <div class="position-relative w-100" style="min-height: 250px;">
+                        <div class="position-relative w-100" style="min-height: 320px;">
                             <canvas id="statusChart"></canvas>
                         </div>
                     </div>
@@ -86,7 +86,7 @@
                         <h6 class="mb-0 text-truncate">Status Reservasi</h6>
                     </div>
                     <div class="card-body d-flex align-items-center justify-content-center chart-card-body p-2">
-                        <div class="position-relative w-100" style="min-height: 250px;">
+                        <div class="position-relative w-100" style="min-height: 320px;">
                             <canvas id="reservationChart"></canvas>
                         </div>
                     </div>
