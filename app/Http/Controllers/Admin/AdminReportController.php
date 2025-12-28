@@ -154,7 +154,7 @@ class AdminReportController extends Controller
             'totalOrders' => $totalOrders,
             'totalRevenue' => $totalRevenue,
             'formattedRevenue' => 'Rp ' . number_format($totalRevenue, 0, ',', '.'),
-            'inProcess' => $inProcessCount,
+            'inProcessCount' => $inProcessCount,
             'completedCount' => $completedCount, // Send specific count for cards
             'statusStats' => $statusStats,
             'reservationStats' => $reservationStats,
