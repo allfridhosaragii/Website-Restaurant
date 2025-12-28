@@ -70,21 +70,21 @@
         <div class="row g-2 g-md-4 mb-4">
             <div class="col-6 col-md-6">
                 <div class="card h-100">
-                    <div class="card-header bg-transparent">
-                        <h6 class="mb-0">Status Pesanan</h6>
+                    <div class="card-header bg-transparent chart-card-header px-2 py-2">
+                        <h6 class="mb-0 text-truncate">Status Pesanan</h6>
                     </div>
-                    <div class="card-body d-flex align-items-center justify-content-center">
-                        <canvas id="statusChart" style="max-height: 250px;"></canvas>
+                    <div class="card-body d-flex align-items-center justify-content-center chart-card-body p-2">
+                        <canvas id="statusChart" style="max-height: 250px; width: 100%;"></canvas>
                     </div>
                 </div>
             </div>
             <div class="col-6 col-md-6">
                 <div class="card h-100">
-                    <div class="card-header bg-transparent">
-                        <h6 class="mb-0">Status Pembayaran</h6>
+                    <div class="card-header bg-transparent chart-card-header px-2 py-2">
+                        <h6 class="mb-0 text-truncate">Status Pembayaran</h6>
                     </div>
-                    <div class="card-body d-flex align-items-center justify-content-center">
-                        <canvas id="paymentChart" style="max-height: 250px;"></canvas>
+                    <div class="card-body d-flex align-items-center justify-content-center chart-card-body p-2">
+                        <canvas id="paymentChart" style="max-height: 250px; width: 100%;"></canvas>
                     </div>
                 </div>
             </div>
@@ -226,6 +226,21 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
     }
+    /* Mobile improvements for chart cards */
+    @media (max-width: 768px) {
+        .chart-card-header h6 {
+            font-size: 0.8rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chart-card-body {
+            padding: 0.5rem !important;
+        }
+        canvas {
+            max-height: 200px !important;
+        }
+    }
 </style>
 @endpush
 
@@ -260,10 +275,10 @@
                 legend: {
                     position: 'bottom',
                     labels: { 
-                        padding: 10, 
+                        padding: 5, 
                         usePointStyle: true,
-                        boxWidth: 8,
-                        font: { size: 11 }
+                        boxWidth: 6,
+                        font: { size: 10 }
                     }
                 }
             }
@@ -289,10 +304,10 @@
                 legend: {
                     position: 'bottom',
                     labels: { 
-                        padding: 10, 
+                        padding: 5, 
                         usePointStyle: true,
-                        boxWidth: 8,
-                        font: { size: 11 }
+                        boxWidth: 6,
+                        font: { size: 10 }
                     }
                 }
             }
