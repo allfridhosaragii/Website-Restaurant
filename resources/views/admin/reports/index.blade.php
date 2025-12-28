@@ -261,6 +261,14 @@
     let statusChart = null;
     let paymentChart = null;
 
+    // Helper to convert hex to rgba
+    function hexToRgba(hex, alpha) {
+        let r = parseInt(hex.slice(1, 3), 16);
+        let g = parseInt(hex.slice(3, 5), 16);
+        let b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
     // Scroll to right on load
     document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('monthTabsContainer');
@@ -276,9 +284,10 @@
             datasets: [{
                 data: [{{ $statusStats['completed'] }}, {{ $statusStats['processing'] }}, {{ $statusStats['pending'] }}, {{ $statusStats['cancelled'] }}],
                 backgroundColor: ['#198754', '#0dcaf0', '#ffc107', '#dc3545'],
+                borderColor: ['#198754', '#0dcaf0', '#ffc107', '#dc3545'],
                 borderWidth: 0,
                 cutout: '65%',
-                hoverOffset: 15,
+                hoverOffset: 10,
                 offset: 0
             }]
         },
@@ -290,17 +299,21 @@
                 if (elements[0]) {
                     const dataset = chart.data.datasets[0];
                     const index = elements[0].index;
+                    const meta = chart.getDatasetMeta(0);
                     
-                    // Toggle offset: if already popped (offset > 0), reset it. Else pop it and reset others.
-                    const currentOffset = dataset.offset && Array.isArray(dataset.offset) ? dataset.offset[index] : 0;
+                    // Reset all
+                    dataset.borderWidth = new Array(dataset.data.length).fill(0);
+                    dataset.borderColor = dataset.backgroundColor; // Reset to solid color or just transparent
                     
-                    // Reset all offsets first
-                    dataset.offset = new Array(dataset.data.length).fill(0);
+                    // Apply glow to selected
+                    // We use array for borderWidth to target specific index
+                    const newWidths = new Array(dataset.data.length).fill(0);
+                    newWidths[index] = 12; // Thickness of glow
+                    dataset.borderWidth = newWidths;
                     
-                    // Set active offset if it wasn't already active
-                    if (!currentOffset) {
-                        dataset.offset[index] = 20; // Pop out distnace
-                    }
+                    const newColors = [...dataset.backgroundColor];
+                    newColors[index] = hexToRgba(dataset.backgroundColor[index], 0.3); // Transparent glow
+                    dataset.borderColor = newColors;
                     
                     chart.update();
                 }
@@ -327,9 +340,10 @@
             datasets: [{
                 data: [{{ $paymentStats['paid'] }}, {{ $paymentStats['unpaid'] }}],
                 backgroundColor: ['#fd7e14', '#7c3aed'],
+                borderColor: ['#fd7e14', '#7c3aed'],
                 borderWidth: 0,
                 cutout: '70%',
-                hoverOffset: 15,
+                hoverOffset: 10,
                 offset: 0
             }]
         },
@@ -342,14 +356,13 @@
                     const dataset = chart.data.datasets[0];
                     const index = elements[0].index;
                     
-                    // Toggle offset
-                    const currentOffset = dataset.offset && Array.isArray(dataset.offset) ? dataset.offset[index] : 0;
+                    const newWidths = new Array(dataset.data.length).fill(0);
+                    newWidths[index] = 12;
+                    dataset.borderWidth = newWidths;
                     
-                    dataset.offset = new Array(dataset.data.length).fill(0);
-                    
-                    if (!currentOffset) {
-                        dataset.offset[index] = 20;
-                    }
+                    const newColors = [...dataset.backgroundColor];
+                    newColors[index] = hexToRgba(dataset.backgroundColor[index], 0.3);
+                    dataset.borderColor = newColors;
                     
                     chart.update();
                 }
