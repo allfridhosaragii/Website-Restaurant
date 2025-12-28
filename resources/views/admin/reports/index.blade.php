@@ -436,8 +436,9 @@
             responsive: true,
             maintainAspectRatio: false, // Allow custom height via CSS container
             aspectRatio: window.innerWidth < 768 ? 1 : 2, 
+            aspectRatio: window.innerWidth < 768 ? 1 : 2, 
             resizeDelay: 200, 
-            animation: {
+            animation: window.innerWidth < 768 ? false : {
                 duration: 600, 
                 easing: 'easeOutQuart'
             },
@@ -523,8 +524,9 @@
             responsive: true,
             maintainAspectRatio: false,
             aspectRatio: window.innerWidth < 768 ? 1 : 2,
+            aspectRatio: window.innerWidth < 768 ? 1 : 2,
             resizeDelay: 200,
-            animation: {
+            animation: window.innerWidth < 768 ? false : {
                 duration: 600,
                 easing: 'easeOutQuart'
             },
