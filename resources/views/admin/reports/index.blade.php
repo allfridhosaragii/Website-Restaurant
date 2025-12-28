@@ -268,6 +268,52 @@
         let b = parseInt(hex.slice(5, 7), 16);
         return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
+    
+    const charts = []; // Registry for all charts
+
+    // Centralized function to set active chart and clear others
+    function activateChartSegment(targetChart, index) {
+        // Toggle logic for click (only if targetChart is passed with an index)
+        // Check if we are interacting with a chart
+        
+        charts.forEach(chart => {
+            if (chart === targetChart) {
+                // For the target chart, set the new index
+                // Note: The toggle logic (click same to close) should be handled before calling this or inside?
+                // Let's handle assignment here.
+                if (chart.config.options.activeIndex !== index) {
+                    chart.config.options.activeIndex = index;
+                    chart.update('none');
+                }
+            } else {
+                // For all other charts, force close if active
+                if (chart.config.options.activeIndex !== -1) {
+                    chart.config.options.activeIndex = -1;
+                    chart.update('none');
+                }
+            }
+        });
+    }
+
+    // Helper to clear all charts
+    function clearAllCharts() {
+        charts.forEach(chart => {
+            if (chart.config.options.activeIndex !== -1) {
+                chart.config.options.activeIndex = -1;
+                chart.update('none');
+            }
+        });
+    }
+    
+    // Global click listener to close all effects when clicking/tapping outside charts
+    document.addEventListener('click', function(e) {
+        // Check if click is inside any chart canvas
+        const isChartClick = charts.some(chart => e.target === chart.canvas);
+        
+        if (!isChartClick) {
+            clearAllCharts();
+        }
+    });
 
     // Custom Plugin for Halo/Ring Effect
     const glowPlugin = {
@@ -345,39 +391,39 @@
             },
             layout: { padding: 20 }, // Extra padding for shadow
             onHover: (e, elements, chart) => {
-                // Determine if it's a mouse event (Desktop hover)
                 const isMouse = e.native && e.native.pointerType !== 'touch';
-                
                 if (isMouse) {
                     const newIndex = elements[0] ? elements[0].index : -1;
-                    if (chart.config.options.activeIndex !== newIndex) {
-                        chart.config.options.activeIndex = newIndex;
-                        chart.update('none'); // Update efficiently
-                        
-                        // Close other chart if active
-                        if (newIndex !== -1 && paymentChart && paymentChart.config.options.activeIndex !== -1) {
-                            paymentChart.config.options.activeIndex = -1;
-                            paymentChart.update('none');
-                        }
-                    }
+                    // For hover, we directly set.
+                    // If hovering nothing (newIndex -1), we don't necessarily want to clear everything immediately on mouseout? 
+                    // User said: "mouse gaperlu di click bar muncul bayangan nya". Implies selection follows mouse.
+                    // So if I hover out, it should clear.
+                    activateChartSegment(chart, newIndex);
                 }
             },
             onClick: (e, elements, chart) => {
-                // Handle click (Mobile Tap or Desktop Click)
                 if (elements[0]) {
                     const newIndex = elements[0].index;
-                    chart.config.options.activeIndex = newIndex;
-                    
-                    // Close other chart
-                    if (paymentChart && paymentChart.config.options.activeIndex !== -1) {
-                        paymentChart.config.options.activeIndex = -1;
-                        paymentChart.update('none');
+                    // Logic: If clicking same segment -> Toggle off? User said "teken warna lain bakal muncul" (switch).
+                    // "teken satu wara ... muncul"
+                    // Usually tap same to close is expected on mobile.
+                    // Let's check current state.
+                    if (chart.config.options.activeIndex === newIndex) {
+                        // If already active, close it (toggle)
+                         activateChartSegment(chart, -1);
+                    } else {
+                        // Switch to new
+                        activateChartSegment(chart, newIndex);
                     }
                 } else {
-                    chart.config.options.activeIndex = -1;
+                    // Click background -> Clear all (handled by global listener usually, but here specific to chart)
+                    // If user taps chart background, it IS a chart click, so global listener won't fire.
+                    // So we must clear.
+                    clearAllCharts();
                 }
-                chart.update('none');
+                // chart.update handled in helper
             },
+
             plugins: {
                 legend: {
                     position: 'bottom',
@@ -390,7 +436,9 @@
                 }
             }
         }
+
     });
+    charts.push(statusChart); // Register
 
     const paymentCtx = document.getElementById('paymentChart').getContext('2d');
     paymentChart = new Chart(paymentCtx, {
@@ -425,31 +473,20 @@
                 const isMouse = e.native && e.native.pointerType !== 'touch';
                 if (isMouse) {
                     const newIndex = elements[0] ? elements[0].index : -1;
-                    if (chart.config.options.activeIndex !== newIndex) {
-                        chart.config.options.activeIndex = newIndex;
-                        chart.update('none');
-                        
-                        // Close other chart
-                        if (newIndex !== -1 && statusChart && statusChart.config.options.activeIndex !== -1) {
-                            statusChart.config.options.activeIndex = -1;
-                            statusChart.update('none');
-                        }
-                    }
+                    activateChartSegment(chart, newIndex);
                 }
             },
             onClick: (e, elements, chart) => {
                 if (elements[0]) {
-                    chart.config.options.activeIndex = elements[0].index;
-                    
-                    // Close other chart
-                    if (statusChart && statusChart.config.options.activeIndex !== -1) {
-                        statusChart.config.options.activeIndex = -1;
-                        statusChart.update('none');
+                    const newIndex = elements[0].index;
+                    if (chart.config.options.activeIndex === newIndex) {
+                        activateChartSegment(chart, -1);
+                    } else {
+                        activateChartSegment(chart, newIndex);
                     }
                 } else {
-                    chart.config.options.activeIndex = -1;
+                    clearAllCharts();
                 }
-                chart.update('none');
             },
             plugins: {
                 legend: {
@@ -464,6 +501,7 @@
             }
         }
     });
+    charts.push(paymentChart);
 
     // Function to load data via AJAX
     function loadData(month, year, button) {
