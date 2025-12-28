@@ -277,12 +277,34 @@
                 data: [{{ $statusStats['completed'] }}, {{ $statusStats['processing'] }}, {{ $statusStats['pending'] }}, {{ $statusStats['cancelled'] }}],
                 backgroundColor: ['#198754', '#0dcaf0', '#ffc107', '#dc3545'],
                 borderWidth: 0,
-                cutout: '65%'
+                cutout: '65%',
+                hoverOffset: 15,
+                offset: 0
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: true,
+            layout: { padding: 10 },
+            onClick: (e, elements, chart) => {
+                if (elements[0]) {
+                    const dataset = chart.data.datasets[0];
+                    const index = elements[0].index;
+                    
+                    // Toggle offset: if already popped (offset > 0), reset it. Else pop it and reset others.
+                    const currentOffset = dataset.offset && Array.isArray(dataset.offset) ? dataset.offset[index] : 0;
+                    
+                    // Reset all offsets first
+                    dataset.offset = new Array(dataset.data.length).fill(0);
+                    
+                    // Set active offset if it wasn't already active
+                    if (!currentOffset) {
+                        dataset.offset[index] = 20; // Pop out distnace
+                    }
+                    
+                    chart.update();
+                }
+            },
             plugins: {
                 legend: {
                     position: 'bottom',
@@ -306,12 +328,32 @@
                 data: [{{ $paymentStats['paid'] }}, {{ $paymentStats['unpaid'] }}],
                 backgroundColor: ['#fd7e14', '#7c3aed'],
                 borderWidth: 0,
-                cutout: '70%'
+                cutout: '70%',
+                hoverOffset: 15,
+                offset: 0
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: true,
+            layout: { padding: 10 },
+            onClick: (e, elements, chart) => {
+                if (elements[0]) {
+                    const dataset = chart.data.datasets[0];
+                    const index = elements[0].index;
+                    
+                    // Toggle offset
+                    const currentOffset = dataset.offset && Array.isArray(dataset.offset) ? dataset.offset[index] : 0;
+                    
+                    dataset.offset = new Array(dataset.data.length).fill(0);
+                    
+                    if (!currentOffset) {
+                        dataset.offset[index] = 20;
+                    }
+                    
+                    chart.update();
+                }
+            },
             plugins: {
                 legend: {
                     position: 'bottom',
