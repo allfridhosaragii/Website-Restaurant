@@ -337,18 +337,40 @@
                 duration: 600, // Faster initial animation
                 easing: 'easeOutQuart'
             },
+            animations: {
+                // Disable animation for activeIndex changes to make it responsive
+                colors: false,
+                x: false,
+                y: false
+            },
             layout: { padding: 20 }, // Extra padding for shadow
-            onClick: (e, elements, chart) => {
-                const newIndex = elements[0] ? elements[0].index : -1;
+            onHover: (e, elements, chart) => {
+                // Determine if it's a mouse event (Desktop hover)
+                // Touch events usually fire 'mousemove' too but we can check source or type
+                const isMouse = e.native && e.native.pointerType !== 'touch';
                 
-                // Toggle: if clicking same index, deselect (set to -1). Else set to new index.
-                if (chart.config.options.activeIndex === newIndex) {
-                    chart.config.options.activeIndex = -1;
-                } else {
-                    chart.config.options.activeIndex = newIndex;
+                if (isMouse) {
+                    const newIndex = elements[0] ? elements[0].index : -1;
+                    if (chart.config.options.activeIndex !== newIndex) {
+                        chart.config.options.activeIndex = newIndex;
+                        chart.update('none'); // Update efficiently
+                    }
                 }
-                // Update without animation for instant snap, or 'active' for smooth
-                chart.update(); 
+            },
+            onClick: (e, elements, chart) => {
+                // Handle click (Mobile Tap or Desktop Click)
+                // If clicked an element
+                if (elements[0]) {
+                    const newIndex = elements[0].index;
+                    // If clicking different one, switch. If clicking same, keep it (or toggle? user said "teken warna lain bakal muncul" -> switch)
+                    // User didn't say clicking same should close, but usually toggle is good. 
+                    // Let's set it.
+                    chart.config.options.activeIndex = newIndex;
+                } else {
+                    // Clicked background/outside segments -> Close
+                    chart.config.options.activeIndex = -1;
+                }
+                chart.update('none');
             },
             plugins: {
                 legend: {
@@ -387,15 +409,29 @@
                 duration: 600,
                 easing: 'easeOutQuart'
             },
+            animations: {
+                colors: false,
+                x: false,
+                y: false
+            },
             layout: { padding: 20 },
-            onClick: (e, elements, chart) => {
-                const newIndex = elements[0] ? elements[0].index : -1;
-                if (chart.config.options.activeIndex === newIndex) {
-                    chart.config.options.activeIndex = -1;
-                } else {
-                    chart.config.options.activeIndex = newIndex;
+            onHover: (e, elements, chart) => {
+                const isMouse = e.native && e.native.pointerType !== 'touch';
+                if (isMouse) {
+                    const newIndex = elements[0] ? elements[0].index : -1;
+                    if (chart.config.options.activeIndex !== newIndex) {
+                        chart.config.options.activeIndex = newIndex;
+                        chart.update('none');
+                    }
                 }
-                chart.update();
+            },
+            onClick: (e, elements, chart) => {
+                if (elements[0]) {
+                    chart.config.options.activeIndex = elements[0].index;
+                } else {
+                    chart.config.options.activeIndex = -1;
+                }
+                chart.update('none');
             },
             plugins: {
                 legend: {
