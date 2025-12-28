@@ -260,6 +260,8 @@
 <script>
     let statusChart = null;
     let reservationChart = null;
+    let currentMonth = {{ $month }};
+    let currentYear = {{ $year }};
 
     // Helper to convert hex to rgba
     function hexToRgba(hex, alpha) {
@@ -540,19 +542,25 @@
     });
 
     // Function to load data via AJAX
-    function loadData(month, year, button) {
+    function loadData(month, year, button, silent = false) {
+        // Update global state
+        currentMonth = month;
+        currentYear = year;
+
         // Update tabs UI
-        document.querySelectorAll('.month-tab').forEach(btn => {
-            btn.classList.remove('btn-warning', 'text-dark');
-            btn.classList.add('btn-outline-secondary');
-        });
-        if(button) {
+        if (button) {
+            document.querySelectorAll('.month-tab').forEach(btn => {
+                btn.classList.remove('btn-warning', 'text-dark');
+                btn.classList.add('btn-outline-secondary');
+            });
             button.classList.remove('btn-outline-secondary');
             button.classList.add('btn-warning', 'text-dark');
         }
 
         // Show loading state (optional)
-        document.getElementById('transactionTableBody').style.opacity = '0.5';
+        if (!silent) {
+            document.getElementById('transactionTableBody').style.opacity = '0.5';
+        }
 
         fetch(`/admin/report/api?month=${month}&year=${year}&t=${new Date().getTime()}`)
             .then(response => response.json())
@@ -626,13 +634,22 @@
                     });
                 }
                 
-                document.getElementById('transactionTableBody').style.opacity = '1';
+                if (!silent) {
+                    document.getElementById('transactionTableBody').style.opacity = '1';
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
-                document.getElementById('transactionTableBody').style.opacity = '1';
+                if (!silent) {
+                    document.getElementById('transactionTableBody').style.opacity = '1';
+                }
                 alert('Gagal memuat data');
             });
     }
+
+    // Auto-refresh every 15 seconds
+    setInterval(() => {
+        loadData(currentMonth, currentYear, null, true);
+    }, 15000);
 </script>
 @endpush
