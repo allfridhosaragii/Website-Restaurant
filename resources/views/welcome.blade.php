@@ -487,13 +487,16 @@
         margin-top: -80px;
         overflow: hidden;
         background-color: #0C2A36;
+        /* Clip the fixed background to this section only */
+        clip-path: inset(0);
+        -webkit-clip-path: inset(0);
     }
     .parallax-bg {
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         width: 100%;
-        height: 100%;
+        height: 100vh;
         background-image: url('https://res.cloudinary.com/dh9ysyfit/image/upload/v1766046687/IMG_7856_esb0xz.jpg');
         background-size: cover;
         background-position: center;
