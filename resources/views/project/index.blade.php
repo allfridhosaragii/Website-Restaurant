@@ -7,84 +7,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <style>
-        /* Advanced Screenshot Protection - Content appears black in screenshots */
-        @media print {
-            html, body, * {
-                display: none !important;
-                visibility: hidden !important;
-                background: #000 !important;
-                color: #000 !important;
-            }
-        }
-        
-        /* DRM-style protection using color inversion trick */
-        html {
-            background: #000 !important;
-        }
-        
-        /* The main wrapper inverts colors twice - appears normal on screen, black in some screenshots */
-        .content-wrapper {
-            filter: invert(1) hue-rotate(180deg);
-            -webkit-filter: invert(1) hue-rotate(180deg);
-            background: #fff;
-        }
-        
-        .content-wrapper > * {
-            filter: invert(1) hue-rotate(180deg);
-            -webkit-filter: invert(1) hue-rotate(180deg);
-        }
-        
-        /* Overlay that shows during screenshot attempts */
-        .screenshot-protection {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 999999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 24px;
-            pointer-events: none;
-        }
-        
-        .screenshot-protection.active {
-            display: flex !important;
-        }
-        
-        /* Secure iframe overlay trick - captures screenshot tool events */
-        .secure-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 999998;
-            pointer-events: none;
-            mix-blend-mode: difference;
-            background: transparent;
-        }
-        
-        /* Prevent selection and copying */
-        body.protected {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-touch-callout: none;
-        }
-        
-        body.protected img {
-            pointer-events: none;
-            -webkit-user-drag: none;
-            user-drag: none;
-        }
-    </style>
     <style>
         :root {
             --gold-primary: #D4AF37;
@@ -710,12 +632,7 @@
         }
     </style>
 </head>
-<body class="protected">
-    <div class="screenshot-protection" id="screenshotProtection">
-        <span>🔒 Protected Content</span>
-    </div>
-    <div class="secure-overlay" id="secureOverlay"></div>
-    <div class="content-wrapper">
+<body>
     <div class="bg-mesh"></div>
     <div class="decorative-line"></div>
     <svg style="position:absolute;width:0;height:0;">
@@ -876,7 +793,6 @@
             @endif
         </footer>
     </div>
-    </div><!-- end content-wrapper -->
     <script>
         let completedSteps = new Set();
         let repoSubmissions = {};
@@ -1155,105 +1071,6 @@
             const warn = document.getElementById(`warning-${id}`);
             if (warn) warn.style.display = 'none';
         }
-
-        // Screenshot Detection - Redirect to Landing Page
-        (function() {
-            const LOCKOUT_KEY = 'project_lockout';
-            const LOCKOUT_DURATION = 30000; // 30 seconds lockout
-            
-            // Check if currently locked out
-            function isLockedOut() {
-                const lockoutTime = localStorage.getItem(LOCKOUT_KEY);
-                if (!lockoutTime) return false;
-                return Date.now() < parseInt(lockoutTime);
-            }
-            
-            // Set lockout and redirect
-            function triggerLockout(reason) {
-                const lockoutUntil = Date.now() + LOCKOUT_DURATION;
-                localStorage.setItem(LOCKOUT_KEY, lockoutUntil.toString());
-                console.log('Screenshot attempt detected: ' + reason);
-                
-                // Redirect to landing page
-                window.location.href = '/?security=1';
-            }
-            
-            // Check lockout on page load
-            if (isLockedOut()) {
-                window.location.href = '/?security=locked';
-                return;
-            }
-            
-            // Detect PrintScreen and other screenshot shortcuts
-            document.addEventListener('keydown', function(e) {
-                // PrintScreen
-                if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
-                    e.preventDefault();
-                    triggerLockout('PrintScreen');
-                    return false;
-                }
-                
-                // Ctrl+P (Print), Ctrl+S (Save), Ctrl+Shift+S
-                if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P' || e.key === 's' || e.key === 'S')) {
-                    e.preventDefault();
-                    triggerLockout('Ctrl+P/S');
-                    return false;
-                }
-                
-                // Windows+Shift+S (Snipping Tool)
-                if (e.shiftKey && (e.key === 's' || e.key === 'S') && (e.metaKey || e.getModifierState('OS'))) {
-                    e.preventDefault();
-                    triggerLockout('Win+Shift+S');
-                    return false;
-                }
-                
-                // F12 (DevTools) - optional
-                if (e.key === 'F12') {
-                    e.preventDefault();
-                    triggerLockout('DevTools');
-                    return false;
-                }
-            });
-            
-            // IMMEDIATE redirect when window loses focus - NO DELAY
-            window.addEventListener('blur', function() {
-                triggerLockout('blur');
-            });
-            
-            // Detect visibility change (tab hidden)
-            document.addEventListener('visibilitychange', function() {
-                if (document.visibilityState === 'hidden') {
-                    triggerLockout('Tab hidden');
-                }
-            });
-            
-            // Block right-click
-            document.addEventListener('contextmenu', function(e) {
-                e.preventDefault();
-                return false;
-            });
-            
-            // Block text selection
-            document.addEventListener('selectstart', function(e) {
-                e.preventDefault();
-                return false;
-            });
-            
-            // Block drag
-            document.addEventListener('dragstart', function(e) {
-                e.preventDefault();
-                return false;
-            });
-            
-            // Detect screen capture API (modern browsers)
-            if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
-                const originalGetDisplayMedia = navigator.mediaDevices.getDisplayMedia.bind(navigator.mediaDevices);
-                navigator.mediaDevices.getDisplayMedia = function() {
-                    triggerLockout('getDisplayMedia API');
-                    return Promise.reject(new Error('Screen capture blocked'));
-                };
-            }
-        })();
     </script>
 </body>
 </html>
