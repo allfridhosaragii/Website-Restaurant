@@ -20,8 +20,33 @@
     
     <!-- View Transitions API -->
     <meta name="view-transition" content="same-origin">
-    @stack('styles')
+    <style>
+        /* View Transitions - Smooth page navigation */
+        @view-transition {
+            navigation: auto;
+        }
+        
+        ::view-transition-old(root) {
+            animation: fade-out 0.25s ease-out forwards;
+        }
+        
+        ::view-transition-new(root) {
+            animation: fade-in 0.25s ease-in forwards;
+        }
+        
+        @keyframes fade-out {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.98); }
+        }
+        
+        @keyframes fade-in {
+            from { opacity: 0; transform: scale(1.02); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
 
+    </style>
+    @stack('styles')
     <script>
         window.translations = {
             en: @json(include(base_path('lang/en/messages.php'))),
@@ -123,7 +148,6 @@
     </script>
     <script src="{{ asset('js/cursor.js') }}"></script>
     <script src="{{ asset('js/performance-core.js') }}"></script>
-    <script src="{{ asset('js/view-transitions.js') }}"></script>
     <script>
         // Ultimate UI Protection
         document.addEventListener('dragstart', e => e.preventDefault());
