@@ -82,4 +82,9 @@ class User extends Authenticatable
     {
         return $this->email === 'pedoprimasaragi@gmail.com';
     }
+
+    public function isOffline(): bool
+    {
+        return $this->status === 'offline';
+    }
 }

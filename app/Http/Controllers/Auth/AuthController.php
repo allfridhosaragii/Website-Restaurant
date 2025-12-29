@@ -24,6 +24,11 @@ class AuthController extends Controller
                 'email' => 'Akun Anda telah diblokir. Silakan hubungi admin untuk informasi lebih lanjut.',
             ])->withInput($request->only('email'));
         }
+        if ($user->isOffline() && $user->is_admin) {
+            return back()->withErrors([
+                'email' => 'Akun admin Anda sedang dalam status offline. Silakan hubungi Super Admin.',
+            ])->withInput($request->only('email'));
+        }
         Auth::login($user, $request->boolean('remember'));
         \DB::table('activity_logs')->insert([
             'user_id' => $user->id,

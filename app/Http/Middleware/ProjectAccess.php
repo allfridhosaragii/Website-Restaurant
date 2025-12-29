@@ -8,17 +8,22 @@ class ProjectAccess
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $allowedEmails = [
-            'pedoprimasaragi@gmail.com',
-            'bernardprawira54@gmail.com',
-            'haiidarmirza8289@gmail.com',
-            'dimasaryadesta2@gmaiil.com',
-            'dimasaryadesta2@gmail.com',
-            'admin@super.admin',
-        ];
-        if (Auth::check() && in_array(Auth::user()->email, $allowedEmails)) {
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+
+        $user = Auth::user();
+
+        // Super admin always has access
+        if ($user->isSuperAdmin()) {
             return $next($request);
         }
+
+        // Check if admin has 'project' permission
+        if ($user->isAdmin() && $user->hasAdminPermission('project')) {
+            return $next($request);
+        }
+
         return redirect('/');
     }
 }

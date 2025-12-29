@@ -43,6 +43,7 @@ class AdminPermission extends Model
             'cms_media' => 'Media Library',
             'cms_settings' => 'Site Settings',
             'users' => 'Pengguna',
+            'project' => 'Project',
         ];
     }
 

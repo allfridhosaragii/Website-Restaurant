@@ -100,6 +100,14 @@
                 </a>
             </li>
             @endif
+            @if(auth()->user()->hasAdminPermission('project'))
+            <li class="sidebar-nav-item">
+                <a href="{{ url('/project') }}" class="sidebar-nav-link {{ request()->is('project*') ? 'active' : '' }}">
+                    <i class="bi bi-kanban"></i>
+                    <span>Project</span>
+                </a>
+            </li>
+            @endif
             @if(auth()->user()->hasAdminPermission('reports'))
             <li class="sidebar-nav-item">
                 <a href="{{ url('/admin/report') }}" class="sidebar-nav-link {{ request()->is('admin/report*') ? 'active' : '' }}">

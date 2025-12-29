@@ -151,4 +151,27 @@ class AdminAccessController extends Controller
         return redirect()->route('admin.access.index')
             ->with('success', $message);
     }
+
+    public function toggleOnlineStatus($id)
+    {
+        $admin = User::findOrFail($id);
+
+        // Prevent toggling the super admin
+        if ($admin->isSuperAdmin()) {
+            return redirect()->route('admin.access.index')
+                ->with('error', 'Tidak dapat mengubah status Super Admin!');
+        }
+
+        // Toggle: if currently offline, set to active; otherwise set to offline
+        if ($admin->status === 'offline') {
+            $admin->update(['status' => 'active']);
+            $message = $admin->name . ' sekarang Online dan dapat login.';
+        } else {
+            $admin->update(['status' => 'offline']);
+            $message = $admin->name . ' sekarang Offline dan tidak dapat login.';
+        }
+
+        return redirect()->route('admin.access.index')
+            ->with('success', $message);
+    }
 }

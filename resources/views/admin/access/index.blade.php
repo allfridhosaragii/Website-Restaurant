@@ -68,8 +68,10 @@
                                 @endif
                             </td>
                             <td>
-                                @if($admin->status === 'active' || $admin->status === null)
-                                <span class="badge bg-success">Aktif</span>
+                                @if($admin->status === 'offline')
+                                <span class="badge bg-secondary"><i class="bi bi-moon-fill me-1"></i>Offline</span>
+                                @elseif($admin->status === 'active' || $admin->status === null)
+                                <span class="badge bg-success"><i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>Online</span>
                                 @elseif($admin->status === 'suspended')
                                 <span class="badge bg-warning text-dark">Suspended</span>
                                 @else
@@ -106,6 +108,18 @@
                                                 @csrf
                                                 <button type="submit" class="dropdown-item">
                                                     <i class="bi bi-shield me-2"></i>Toggle Akses Penuh
+                                                </button>
+                                            </form>
+                                        </li>
+                                        <li>
+                                            <form action="{{ route('admin.access.toggle-online', $admin->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="dropdown-item">
+                                                    @if($admin->status === 'offline')
+                                                    <i class="bi bi-toggle-on me-2 text-success"></i>Set Online
+                                                    @else
+                                                    <i class="bi bi-toggle-off me-2 text-secondary"></i>Set Offline
+                                                    @endif
                                                 </button>
                                             </form>
                                         </li>

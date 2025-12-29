@@ -513,6 +513,7 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
         Route::put('/access/{id}', [\App\Http\Controllers\Admin\AdminAccessController::class, 'update'])->name('admin.access.update');
         Route::delete('/access/{id}', [\App\Http\Controllers\Admin\AdminAccessController::class, 'destroy'])->name('admin.access.destroy');
         Route::post('/access/{id}/toggle-super', [\App\Http\Controllers\Admin\AdminAccessController::class, 'toggleSuperAdmin'])->name('admin.access.toggle-super');
+        Route::post('/access/{id}/toggle-online', [\App\Http\Controllers\Admin\AdminAccessController::class, 'toggleOnlineStatus'])->name('admin.access.toggle-online');
     });
 });
 Route::get('lang/{locale}', function ($locale) { 
