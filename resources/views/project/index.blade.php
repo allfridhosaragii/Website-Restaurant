@@ -7,6 +7,44 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <style>
+        /* Screenshot Protection Styles */
+        @media print {
+            html, body {
+                display: none !important;
+                visibility: hidden !important;
+            }
+        }
+        
+        /* Hide content during screen capture attempts */
+        .screenshot-protection {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 999999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 24px;
+        }
+        
+        .screenshot-protection.active {
+            display: flex !important;
+        }
+        
+        /* Prevent selection and copying */
+        body.protected {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    </style>
     <style>
         :root {
             --gold-primary: #D4AF37;
@@ -632,7 +670,10 @@
         }
     </style>
 </head>
-<body>
+<body class="protected">
+    <div class="screenshot-protection" id="screenshotProtection">
+        <span>🔒 Protected Content</span>
+    </div>
     <div class="bg-mesh"></div>
     <div class="decorative-line"></div>
     <svg style="position:absolute;width:0;height:0;">
@@ -1071,6 +1112,66 @@
             const warn = document.getElementById(`warning-${id}`);
             if (warn) warn.style.display = 'none';
         }
+
+        // Screenshot Protection
+        (function() {
+            const protection = document.getElementById('screenshotProtection');
+            
+            // Block keyboard shortcuts for screenshots
+            document.addEventListener('keydown', function(e) {
+                // Block PrintScreen
+                if (e.key === 'PrintScreen') {
+                    e.preventDefault();
+                    protection.classList.add('active');
+                    setTimeout(() => protection.classList.remove('active'), 1000);
+                    return false;
+                }
+                
+                // Block Ctrl+P (Print), Ctrl+S (Save), Ctrl+Shift+S (Save As)
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P' || e.key === 's' || e.key === 'S')) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Block Windows+Shift+S (Windows Snipping Tool)
+                if ((e.metaKey || e.key === 'Meta') && e.shiftKey && (e.key === 's' || e.key === 'S')) {
+                    e.preventDefault();
+                    protection.classList.add('active');
+                    setTimeout(() => protection.classList.remove('active'), 1000);
+                    return false;
+                }
+            });
+            
+            // Show protection when tab loses focus (potential screenshot)
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'hidden') {
+                    protection.classList.add('active');
+                } else {
+                    setTimeout(() => protection.classList.remove('active'), 500);
+                }
+            });
+            
+            // Block blur events (switching windows/apps)  
+            window.addEventListener('blur', function() {
+                protection.classList.add('active');
+            });
+            
+            window.addEventListener('focus', function() {
+                setTimeout(() => protection.classList.remove('active'), 500);
+            });
+            
+            // Block right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Block drag and drop (prevent dragging content)
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+        })();
     </script>
 </body>
 </html>
