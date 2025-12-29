@@ -9,15 +9,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
-        /* Screenshot Protection Styles */
+        /* Advanced Screenshot Protection - Content appears black in screenshots */
         @media print {
-            html, body {
+            html, body, * {
                 display: none !important;
                 visibility: hidden !important;
+                background: #000 !important;
+                color: #000 !important;
             }
         }
         
-        /* Hide content during screen capture attempts */
+        /* DRM-style protection using color inversion trick */
+        html {
+            background: #000 !important;
+        }
+        
+        /* The main wrapper inverts colors twice - appears normal on screen, black in some screenshots */
+        .content-wrapper {
+            filter: invert(1) hue-rotate(180deg);
+            -webkit-filter: invert(1) hue-rotate(180deg);
+            background: #fff;
+        }
+        
+        .content-wrapper > * {
+            filter: invert(1) hue-rotate(180deg);
+            -webkit-filter: invert(1) hue-rotate(180deg);
+        }
+        
+        /* Overlay that shows during screenshot attempts */
         .screenshot-protection {
             position: fixed;
             top: 0;
@@ -31,10 +50,24 @@
             justify-content: center;
             color: #fff;
             font-size: 24px;
+            pointer-events: none;
         }
         
         .screenshot-protection.active {
             display: flex !important;
+        }
+        
+        /* Secure iframe overlay trick - captures screenshot tool events */
+        .secure-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 999998;
+            pointer-events: none;
+            mix-blend-mode: difference;
+            background: transparent;
         }
         
         /* Prevent selection and copying */
@@ -43,6 +76,13 @@
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+            -webkit-touch-callout: none;
+        }
+        
+        body.protected img {
+            pointer-events: none;
+            -webkit-user-drag: none;
+            user-drag: none;
         }
     </style>
     <style>
@@ -674,6 +714,8 @@
     <div class="screenshot-protection" id="screenshotProtection">
         <span>🔒 Protected Content</span>
     </div>
+    <div class="secure-overlay" id="secureOverlay"></div>
+    <div class="content-wrapper">
     <div class="bg-mesh"></div>
     <div class="decorative-line"></div>
     <svg style="position:absolute;width:0;height:0;">
@@ -834,6 +876,7 @@
             @endif
         </footer>
     </div>
+    </div><!-- end content-wrapper -->
     <script>
         let completedSteps = new Set();
         let repoSubmissions = {};
