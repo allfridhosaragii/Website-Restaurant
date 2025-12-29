@@ -1156,64 +1156,114 @@
             if (warn) warn.style.display = 'none';
         }
 
-        // Screenshot Protection
+        // Screenshot Detection - Redirect to Landing Page
         (function() {
-            const protection = document.getElementById('screenshotProtection');
+            const LOCKOUT_KEY = 'project_lockout';
+            const LOCKOUT_DURATION = 30000; // 30 seconds lockout
             
-            // Block keyboard shortcuts for screenshots
+            // Check if currently locked out
+            function isLockedOut() {
+                const lockoutTime = localStorage.getItem(LOCKOUT_KEY);
+                if (!lockoutTime) return false;
+                return Date.now() < parseInt(lockoutTime);
+            }
+            
+            // Set lockout and redirect
+            function triggerLockout(reason) {
+                const lockoutUntil = Date.now() + LOCKOUT_DURATION;
+                localStorage.setItem(LOCKOUT_KEY, lockoutUntil.toString());
+                console.log('Screenshot attempt detected: ' + reason);
+                
+                // Redirect to landing page
+                window.location.href = '/?security=1';
+            }
+            
+            // Check lockout on page load
+            if (isLockedOut()) {
+                window.location.href = '/?security=locked';
+                return;
+            }
+            
+            // Detect PrintScreen and other screenshot shortcuts
             document.addEventListener('keydown', function(e) {
-                // Block PrintScreen
-                if (e.key === 'PrintScreen') {
+                // PrintScreen
+                if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
                     e.preventDefault();
-                    protection.classList.add('active');
-                    setTimeout(() => protection.classList.remove('active'), 1000);
+                    triggerLockout('PrintScreen');
                     return false;
                 }
                 
-                // Block Ctrl+P (Print), Ctrl+S (Save), Ctrl+Shift+S (Save As)
+                // Ctrl+P (Print), Ctrl+S (Save), Ctrl+Shift+S
                 if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P' || e.key === 's' || e.key === 'S')) {
                     e.preventDefault();
+                    triggerLockout('Ctrl+P/S');
                     return false;
                 }
                 
-                // Block Windows+Shift+S (Windows Snipping Tool)
-                if ((e.metaKey || e.key === 'Meta') && e.shiftKey && (e.key === 's' || e.key === 'S')) {
+                // Windows+Shift+S (Snipping Tool)
+                if (e.shiftKey && (e.key === 's' || e.key === 'S') && (e.metaKey || e.getModifierState('OS'))) {
                     e.preventDefault();
-                    protection.classList.add('active');
-                    setTimeout(() => protection.classList.remove('active'), 1000);
+                    triggerLockout('Win+Shift+S');
+                    return false;
+                }
+                
+                // F12 (DevTools) - optional
+                if (e.key === 'F12') {
+                    e.preventDefault();
+                    triggerLockout('DevTools');
                     return false;
                 }
             });
             
-            // Show protection when tab loses focus (potential screenshot)
-            document.addEventListener('visibilitychange', function() {
-                if (document.visibilityState === 'hidden') {
-                    protection.classList.add('active');
-                } else {
-                    setTimeout(() => protection.classList.remove('active'), 500);
-                }
-            });
-            
-            // Block blur events (switching windows/apps)  
+            // Detect when tab/window loses focus (user switching to screenshot tool)
+            let blurTimeout;
             window.addEventListener('blur', function() {
-                protection.classList.add('active');
+                // Small delay to avoid false positives from clicking on page elements
+                blurTimeout = setTimeout(function() {
+                    triggerLockout('Window blur');
+                }, 100);
             });
             
             window.addEventListener('focus', function() {
-                setTimeout(() => protection.classList.remove('active'), 500);
+                // Cancel redirect if focus returns quickly (clicking within page)
+                if (blurTimeout) {
+                    clearTimeout(blurTimeout);
+                }
             });
             
-            // Block right-click context menu
+            // Detect visibility change (tab hidden)
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'hidden') {
+                    triggerLockout('Tab hidden');
+                }
+            });
+            
+            // Block right-click
             document.addEventListener('contextmenu', function(e) {
                 e.preventDefault();
                 return false;
             });
             
-            // Block drag and drop (prevent dragging content)
+            // Block text selection
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Block drag
             document.addEventListener('dragstart', function(e) {
                 e.preventDefault();
                 return false;
             });
+            
+            // Detect screen capture API (modern browsers)
+            if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+                const originalGetDisplayMedia = navigator.mediaDevices.getDisplayMedia.bind(navigator.mediaDevices);
+                navigator.mediaDevices.getDisplayMedia = function() {
+                    triggerLockout('getDisplayMedia API');
+                    return Promise.reject(new Error('Screen capture blocked'));
+                };
+            }
         })();
     </script>
 </body>
