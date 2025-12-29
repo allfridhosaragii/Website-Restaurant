@@ -1215,20 +1215,9 @@
                 }
             });
             
-            // Detect when tab/window loses focus (user switching to screenshot tool)
-            let blurTimeout;
+            // IMMEDIATE redirect when window loses focus - NO DELAY
             window.addEventListener('blur', function() {
-                // Small delay to avoid false positives from clicking on page elements
-                blurTimeout = setTimeout(function() {
-                    triggerLockout('Window blur');
-                }, 100);
-            });
-            
-            window.addEventListener('focus', function() {
-                // Cancel redirect if focus returns quickly (clicking within page)
-                if (blurTimeout) {
-                    clearTimeout(blurTimeout);
-                }
+                triggerLockout('blur');
             });
             
             // Detect visibility change (tab hidden)
