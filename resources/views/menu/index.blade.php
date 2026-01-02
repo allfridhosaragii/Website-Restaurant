@@ -115,12 +115,47 @@
 
 <!-- Floating Cart Button -->
 <div id="floatingCartContainer" class="position-fixed bottom-0 end-0 p-4" style="z-index: 1050; display: none; transition: all 0.3s ease;">
-    <a href="{{ url('/customer/orders/create') }}" class="floating-cart-btn position-relative">
+    <!-- Button triggers modal -->
+    <a href="#" class="floating-cart-btn position-relative" data-bs-toggle="modal" data-bs-target="#cartModal" onclick="openCartModal()">
         <i class="bi bi-cart-fill fs-4"></i>
         <span id="cartCountBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.75rem; display: none;">
             0
         </span>
     </a>
+</div>
+
+<!-- Cart Modal -->
+<div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content glass-modal">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold" id="cartModalLabel">
+                    <i class="bi bi-cart3 me-2"></i>Keranjang Saya
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0" id="cartModalBody">
+                <!-- Items will be loaded here -->
+                <div class="d-flex justify-content-center align-items-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 justify-content-between">
+                <div class="text-start">
+                    <small class="text-muted d-block">Total</small>
+                    <span class="fs-5 fw-bold text-primary" id="cartModalTotal">Rp 0</span>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
+                    <a href="{{ url('/customer/orders/create') }}" class="btn btn-primary rounded-pill px-4" id="btnCheckout">
+                        Checkout <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 @push('styles')
@@ -435,6 +470,189 @@
             alert('Gagal: ' + error.message);
         });
     }
+
+    // Modal Functions
+    function openCartModal() {
+        const modalBody = document.getElementById('cartModalBody');
+        modalBody.innerHTML = `
+            <div class="d-flex justify-content-center align-items-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        `;
+        
+        fetch('/customer/cart')
+            .then(res => res.json())
+            .then(data => {
+                renderCartModal(data);
+                // Also sync badge
+                const badge = document.getElementById('cartCountBadge');
+                if(badge) badge.innerText = data.count || 0;
+            })
+            .catch(err => {
+                modalBody.innerHTML = `<div class="p-4 text-center text-danger">Gagal memuat keranjang.</div>`;
+                console.error(err);
+            });
+    }
+
+    function renderCartModal(data) {
+        const modalBody = document.getElementById('cartModalBody');
+        const modalTotal = document.getElementById('cartModalTotal');
+        const btnCheckout = document.getElementById('btnCheckout');
+        
+        if (!data.items || data.items.length === 0) {
+            modalBody.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="bi bi-cart-x fs-1 text-muted mb-3 d-block"></i>
+                    <p class="text-muted">Keranjang kosong</p>
+                    <button class="btn btn-sm btn-outline-primary rounded-pill" data-bs-dismiss="modal">Mulai Belanja</button>
+                </div>
+            `;
+            modalTotal.innerText = 'Rp 0';
+            btnCheckout.classList.add('disabled');
+            return;
+        }
+
+        btnCheckout.classList.remove('disabled');
+        modalTotal.innerText = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(data.total);
+
+        let html = '<ul class="list-group list-group-flush bg-transparent">';
+        data.items.forEach(item => {
+            // Check if menu exists (soft delete handling)
+            if (!item.menu) return;
+
+            html += `
+                <li class="list-group-item bg-transparent d-flex gap-3 align-items-center p-3 border-bottom-0">
+                     <img src="${item.menu.image_url}" alt="${item.menu.name}" class="rounded-3 object-fit-cover" style="width: 60px; height: 60px;">
+                     <div class="flex-grow-1">
+                         <h6 class="mb-1 text-truncate fw-semibold" style="max-width: 180px;">${item.menu.name}</h6>
+                         <div class="text-primary small fw-bold">
+                            ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(item.menu.price)}
+                         </div>
+                     </div>
+                     <div class="d-flex align-items-center gap-2 bg-light bg-opacity-50 rounded-pill px-2 py-1 border border-secondary border-opacity-25" style="backdrop-filter: blur(5px);">
+                         <button class="btn btn-sm btn-link p-0 text-dark" onclick="updateCartItem(${item.id}, ${item.quantity}, -1)">
+                            <i class="bi bi-dash-circle-fill"></i>
+                         </button>
+                         <span class="fw-bold small px-2" style="min-width: 20px; text-align: center;">${item.quantity}</span>
+                         <button class="btn btn-sm btn-link p-0 text-primary" onclick="updateCartItem(${item.id}, ${item.quantity}, 1)">
+                            <i class="bi bi-plus-circle-fill"></i>
+                         </button>
+                     </div>
+                     <button class="btn btn-sm btn-link text-danger p-0 ms-2" onclick="removeCartItem(${item.id})">
+                        <i class="bi bi-trash"></i>
+                     </button>
+                </li>
+            `;
+        });
+        html += '</ul>';
+        modalBody.innerHTML = html;
+    }
+
+    function updateCartItem(id, change) {
+        // Optimistic UI could be added here, but for safety we'll wait for server
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        
+        // Use existing function to get current quantity? 
+        // We'll just try to "GET" current state? No, "update" endpoint takes absolute quantity.
+        // Wait, my controller update takes "quantity" (absolute). 
+        // I need to know CURRENT quantity to add "change".
+        // Solution: Polling maintains state, or I finding item in DOM?
+        // Better: Backend "add" endpoint handles incremental?
+        // No, 'update' replaces.
+        
+        // I must allow logic to just call "add" for +1.
+        // But for -1?
+        // Let's first Find the item in local data? 
+        // Simplest: Pass Current Qty in render logic? 
+        // Refactor renderCartModal to include current qty in logic?
+        // No, I can cheat: fetch individual logic or just use "Add" logic?
+        // Actually, CartController::add handles "increment" if item exists.
+        // But I don't have "decrement" logic in "add".
+        
+        // Let's use PUT to /customer/cart/{id}. But I need "newQuantity".
+        // I can grab it from DOM?
+        // Yes, let's grab it from the span sibling.
+        // OR better: reload the whole modal every click? (Slightly slow but reliable).
+        
+        // Wait, Render has: onclick="updateCartItem(item.id, +/-1)".
+        // I'll grab the current qty from the span next to the button.
+        // This is a bit hacky but works.
+        // Better: Pass current qty to function? `updateCartItem(id, currentQty, change)`
+        // Rewriting render to pass `item.quantity`.
+        
+        // Let's pause and rewrite render to use: `updateCartItem(id, ${item.quantity} + ${change})`?
+        // No, `updateCartItem(${item.id}, ${item.quantity + change})`.
+        // Wait, JS template string evaluates immediately.
+        // So `onclick="updateItem(5, 2)"`.
+        // If I click +, I want it to become 3.
+        // But if I click again without re-render, it sends 3 again (no change).
+        // Solution: Re-render Modal on each update.
+        
+        // So:
+        // 1. Call API with (Current + Change).
+        // 2. On Success -> openCartModal() (re-fetch & re-render).
+        // BUT I need correct Current Qty.
+        // If I rely on re-render, I can just hardcode "1" and "-1" and handle logic in backend?
+        // No, backend update expects absolute.
+        
+        // Re-render approach:
+        // HTML: onclick="tempUpdate(${item.id}, ${item.quantity}, 1)"
+        // Function: calculates new qty, calls API, then re-fetches.
+    }
+    
+    function updateCartItem(id, currentQty, change) {
+        const newQty = currentQty + change;
+        if (newQty < 1) return; 
+        
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        
+        fetch(`/customer/cart/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ quantity: newQty })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                openCartModal(); // Refresh modal
+                updateCartCount(); // Refresh badge
+            }
+        })
+        .catch(err => console.error(err));
+    }
+
+    function removeCartItem(id) {
+        if(!confirm('Hapus menu ini dari keranjang?')) return;
+
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        
+        fetch(`/customer/cart/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token,
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                openCartModal(); // Refresh modal
+                updateCartCount(); // Refresh badge
+            }
+        })
+        .catch(err => console.error(err));
+    }
+
+
+    // Wait, updateCartItem definition in Render needs to change.
+
 </script>
 <style>
     .animate-pulse {
@@ -497,6 +715,34 @@
 
     .floating-cart-btn i {
         font-size: 1.5rem;
+    }
+    
+    /* Modal Glassmorphism */
+    .glass-modal {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        color: #0C2A36;
+        border-radius: 20px;
+    }
+    
+    [data-theme="dark"] .glass-modal {
+        background: rgba(12, 42, 54, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #E6EFEF;
+    }
+    
+    .glass-modal .btn-close {
+        filter: grayscale(1);
+    }
+    [data-theme="dark"] .glass-modal .btn-close {
+        filter: invert(1) grayscale(1);
+    }
+    
+    .glass-modal .list-group-item {
+        color: inherit;
     }
     /* 
      * IMPORTANT: Disable ALL CSS :hover and :focus pseudo-classes for menu-card
