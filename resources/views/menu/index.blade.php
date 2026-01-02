@@ -144,9 +144,9 @@
             flex-wrap: wrap !important;
         }
         #menuGrid .menu-item {
-            flex: 0 0 50% !important;
-            max-width: 50% !important;
-            width: 50% !important;
+            flex: 0 0 calc(50% - 0.25rem) !important;
+            max-width: calc(50% - 0.25rem) !important;
+            width: calc(50% - 0.25rem) !important;
             padding: 0.25rem !important;
         }
         .menu-card {
