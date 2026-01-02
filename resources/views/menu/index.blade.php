@@ -328,7 +328,6 @@
             alert('Failed to update favorite. Please try again.');
         });
     }
-    }
 
     // Cart Functions
     document.addEventListener('DOMContentLoaded', function() {

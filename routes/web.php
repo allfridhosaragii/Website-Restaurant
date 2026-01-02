@@ -524,15 +524,6 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
         Route::post('/access/{id}/toggle-online', [\App\Http\Controllers\Admin\AdminAccessController::class, 'toggleOnlineStatus'])->name('admin.access.toggle-online');
     });
 });
-
-// Temporary route to fix DB migration on production
-Route::get('/fix-db', function() {
-    try {
-        \Artisan::call('migrate', ['--force' => true]);
-        return 'Migration run successfully! Table cart_items should exist.';
-    } catch (\Exception $e) {
-        return 'Error running migration: ' . $e->getMessage();
-    }
 });
 Route::get('lang/{locale}', function ($locale) { 
     if (in_array($locale, ['en', 'id'])) { 
