@@ -70,7 +70,7 @@
                             <small class="text-muted ms-2">({{ rand(50, 300) }})</small>
                         </div>
                         <p class="text-muted small mb-3 flex-grow-1">{{ Str::limit($menu->description, 60) }}</p>
-                        <button class="btn btn-primary btn-sm w-100 mt-auto" style="isolation: isolate; position: relative; z-index: 2;">
+                        <button class="btn btn-primary btn-sm w-100 mt-auto" style="isolation: isolate; position: relative; z-index: 2;" onclick="addToCart(this, {{ $menu->id }})">
                             <i class="bi bi-cart-plus me-1"></i> <span data-i18n="add">{{ __('messages.add') }}</span>
                         </button>
                     </div>
@@ -110,7 +110,18 @@
             </div>
         </div>
     </div>
+    </div>
 </section>
+
+<!-- Floating Cart Button -->
+<div id="floatingCartContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050; display: none; transition: all 0.3s ease;">
+    <a href="{{ url('/customer/orders/create') }}" class="btn btn-warning shadow-lg d-flex align-items-center gap-2 px-4 py-2" style="border-radius: 50px; border: 2px solid rgba(255,255,255,0.5);">
+        <div class="position-relative">
+            <i class="bi bi-cart-fill fs-5"></i>
+        </div>
+        <span class="fw-bold">Tambah</span> <!-- Text changed to Tambah as per image -->
+    </a>
+</div>
 @endsection
 @push('styles')
 <style>
@@ -315,6 +326,99 @@
                 icon.style.color = '';
             }
             alert('Failed to update favorite. Please try again.');
+        });
+    }
+    }
+
+    // Cart Functions
+    document.addEventListener('DOMContentLoaded', function() {
+        updateCartCount();
+    });
+
+    function updateCartCount() {
+        fetch('/cart/count')
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById('floatingCartContainer');
+                const badge = container.querySelector('#cartCountBadge'); // If we add a badge later, or just show button
+                // The current HTML doesn't have a badge in the code I inserted?
+                // Wait, let's check the HTML I verified.
+                // Lines 117-124:
+                // <div id="floatingCartContainer" ...>
+                //    <a ...>
+                //        <i ...></i>
+                //        <span class="fw-bold">Tambah</span>
+                //    </a>
+                // </div>
+                // The image had a count? No, the image showed "Cart Icon + Tambah". Use implies "keranjang ga muncul kalau belum ada menu".
+                // I'll stick to showing/hiding the container.
+                
+                if (data.count > 0) {
+                    container.style.display = 'block';
+                    // Animation entrance
+                    container.classList.add('animate__animated', 'animate__fadeInUp');
+                } else {
+                    container.style.display = 'none';
+                }
+            })
+            .catch(err => console.error(err));
+    }
+
+    function addToCart(btn, menuId) {
+        // Auth Check
+        @guest
+            window.location.href = "{{ route('login') }}";
+            return;
+        @endguest
+
+        // Button Loading State
+        const originalContent = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+        btn.disabled = true;
+
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        fetch('/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                menu_id: menuId,
+                quantity: 1
+            })
+        })
+        .then(response => {
+            if (response.status === 401 || response.status === 419) {
+                window.location.href = "{{ route('login') }}";
+                return;
+            }
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            // Update UI
+            updateCartCount();
+            
+            // Show feedback
+            const originalClass = btn.className;
+            btn.innerHTML = '<i class="bi bi-check-lg"></i>';
+            btn.classList.add('btn-success');
+            btn.classList.remove('btn-primary');
+            
+            setTimeout(() => {
+                btn.innerHTML = originalContent;
+                btn.className = originalClass;
+                btn.disabled = false;
+            }, 1000);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            btn.innerHTML = originalContent;
+            btn.disabled = false;
+            alert('Gagal menambahkan ke keranjang. Silakan coba lagi.');
         });
     }
 </script>

@@ -441,6 +441,14 @@ Route::prefix('customer')->middleware('auth')->group(function () {
 
         return redirect()->back()->with('success', $message);
     });
+    
+    // Cart Routes
+    Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index']);
+    Route::post('/cart/add', [\App\Http\Controllers\CartController::class, 'add']);
+    Route::delete('/cart/{id}', [\App\Http\Controllers\CartController::class, 'remove']);
+    Route::put('/cart/{id}', [\App\Http\Controllers\CartController::class, 'update']);
+    Route::get('/cart/count', [\App\Http\Controllers\CartController::class, 'count']);
+    Route::delete('/cart', [\App\Http\Controllers\CartController::class, 'clear']);
 });
 Route::get('/dashboard', function () {
     if (auth()->check()) {
