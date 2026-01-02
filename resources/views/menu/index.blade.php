@@ -269,5 +269,36 @@
         transform: scale(1.1);
         background: white;
     }
+    /* Prevent menu card from keeping focus styling after click */
+    .menu-card,
+    .menu-card:focus,
+    .menu-card:focus-within {
+        border-color: var(--cream) !important;
+        box-shadow: var(--shadow-md) !important;
+    }
+    .menu-card:hover {
+        border-color: var(--secondary) !important;
+        box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3) !important;
+    }
 </style>
+<script>
+    // Blur all menu card buttons after mouseup to prevent persistent focus
+    document.addEventListener('mouseup', function(e) {
+        // Small delay to allow click to complete
+        setTimeout(function() {
+            document.querySelectorAll('.menu-card button, .menu-card .btn').forEach(function(btn) {
+                btn.blur();
+            });
+        }, 10);
+    });
+    
+    // Also blur on touchend for mobile
+    document.addEventListener('touchend', function(e) {
+        setTimeout(function() {
+            document.querySelectorAll('.menu-card button, .menu-card .btn').forEach(function(btn) {
+                btn.blur();
+            });
+        }, 10);
+    });
+</script>
 @endpush
