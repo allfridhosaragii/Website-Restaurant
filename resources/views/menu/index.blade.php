@@ -27,11 +27,11 @@
             </div>
             <div class="col-lg-6">
                 <div class="d-flex gap-2 flex-wrap justify-content-lg-end">
-                    <button class="btn btn-primary active" data-category="all" data-i18n="cat_all">{{ __('messages.cat_all') }}</button>
-                    <button class="btn btn-outline-primary" data-category="nasi & mie" data-i18n="cat_rice_noodle">{{ __('messages.cat_rice_noodle') }}</button>
-                    <button class="btn btn-outline-primary" data-category="lauk pauk" data-i18n="cat_dishes">{{ __('messages.cat_dishes') }}</button>
-                    <button class="btn btn-outline-primary" data-category="minuman" data-i18n="cat_drinks">{{ __('messages.cat_drinks') }}</button>
-                    <button class="btn btn-outline-primary" data-category="dessert" data-i18n="cat_dessert">{{ __('messages.cat_dessert') }}</button>
+                    <button class="btn btn-primary active filter-btn" data-category="all" data-i18n="cat_all">{{ __('messages.cat_all') }}</button>
+                    <button class="btn btn-outline-primary filter-btn" data-category="nasi & mie" data-i18n="cat_rice_noodle">{{ __('messages.cat_rice_noodle') }}</button>
+                    <button class="btn btn-outline-primary filter-btn" data-category="lauk pauk" data-i18n="cat_dishes">{{ __('messages.cat_dishes') }}</button>
+                    <button class="btn btn-outline-primary filter-btn" data-category="minuman" data-i18n="cat_drinks">{{ __('messages.cat_drinks') }}</button>
+                    <button class="btn btn-outline-primary filter-btn" data-category="dessert" data-i18n="cat_dessert">{{ __('messages.cat_dessert') }}</button>
                 </div>
             </div>
         </div>
@@ -158,11 +158,12 @@
 @endpush
 @push('scripts')
 <script>
-    document.querySelectorAll('[data-category]').forEach(btn => {
+    // Use .filter-btn selector to target only filter buttons, not menu-item containers
+    document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const category = this.dataset.category;
-            document.querySelectorAll('[data-category]').forEach(b => b.classList.remove('active', 'btn-primary'));
-            document.querySelectorAll('[data-category]').forEach(b => b.classList.add('btn-outline-primary'));
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'btn-primary'));
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.add('btn-outline-primary'));
             this.classList.remove('btn-outline-primary');
             this.classList.add('active', 'btn-primary');
             document.querySelectorAll('.menu-item').forEach(item => {
