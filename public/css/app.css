@@ -422,11 +422,13 @@ a:hover {
     outline: none !important;
 }
 
+/* DISABLED - hover now managed by JavaScript via .is-hovered class
 .menu-card:hover {
     border-color: var(--accent);
     box-shadow: 0 8px 25px rgba(200, 155, 58, 0.25);
     transform: translateY(-4px);
 }
+*/
 
 .menu-card .price-tag {
     position: absolute;
@@ -1103,8 +1105,17 @@ a:hover {
     }
 }
 
-/* Menu card default state - no golden border */
-.menu-card {
+/* 
+ * MENU CARD STYLING - JavaScript-managed hover state
+ * All :hover and :focus pseudo-classes are disabled
+ * Golden border only shows via .is-hovered class added by JS
+ */
+.menu-card,
+.menu-card:hover,
+.menu-card:focus,
+.menu-card:active,
+.menu-card:focus-within,
+.menu-card:visited {
     background-color: var(--cream) !important;
     background: var(--cream) !important;
     border-color: var(--cream) !important;
@@ -1112,25 +1123,11 @@ a:hover {
     box-shadow: var(--shadow-md) !important;
 }
 
-/* Menu card hover state - show golden border ONLY when hovered */
-.menu-card:hover {
+/* Only show golden border when .is-hovered class is present (managed by JavaScript) */
+.menu-card.is-hovered {
     border-color: var(--secondary) !important;
     box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3) !important;
-}
-
-/* When card has focus but NOT being hovered, reset to default */
-.menu-card:focus-within:not(:hover) {
-    border-color: var(--cream) !important;
-    box-shadow: var(--shadow-md) !important;
-}
-
-/* Remove focus/active ring from cards - reset to default */
-.menu-card:focus,
-.menu-card:active {
-    background-color: var(--cream) !important;
-    border-color: var(--cream) !important;
-    box-shadow: var(--shadow-md) !important;
-    outline: none !important;
+    transform: translateY(-4px);
 }
 
 .menu-card button:focus,

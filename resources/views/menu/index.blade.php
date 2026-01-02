@@ -269,36 +269,68 @@
         transform: scale(1.1);
         background: white;
     }
-    /* Prevent menu card from keeping focus styling after click */
+    /* 
+     * IMPORTANT: Disable ALL CSS :hover and :focus pseudo-classes for menu-card
+     * We use JavaScript to manage hover state via .is-hovered class
+     */
     .menu-card,
+    .menu-card:hover,
     .menu-card:focus,
-    .menu-card:focus-within {
+    .menu-card:active,
+    .menu-card:focus-within,
+    .menu-card:visited {
         border-color: var(--cream) !important;
         box-shadow: var(--shadow-md) !important;
+        outline: none !important;
     }
-    .menu-card:hover {
+    /* Only show golden border when .is-hovered class is present (managed by JS) */
+    .menu-card.is-hovered {
         border-color: var(--secondary) !important;
         box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3) !important;
+        transform: translateY(-4px);
     }
 </style>
 <script>
-    // Blur all menu card buttons after mouseup to prevent persistent focus
-    document.addEventListener('mouseup', function(e) {
-        // Small delay to allow click to complete
-        setTimeout(function() {
+    // JavaScript-managed hover state - completely replaces CSS :hover
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuCards = document.querySelectorAll('.menu-card');
+        
+        menuCards.forEach(function(card) {
+            // Add .is-hovered on mouse enter
+            card.addEventListener('mouseenter', function() {
+                this.classList.add('is-hovered');
+            });
+            
+            // Remove .is-hovered on mouse leave
+            card.addEventListener('mouseleave', function() {
+                this.classList.remove('is-hovered');
+            });
+            
+            // Also handle touch devices
+            card.addEventListener('touchstart', function() {
+                // Remove from all other cards first
+                menuCards.forEach(function(c) {
+                    c.classList.remove('is-hovered');
+                });
+                this.classList.add('is-hovered');
+            }, { passive: true });
+        });
+        
+        // Remove hover from all cards when clicking outside menu area
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.menu-card')) {
+                menuCards.forEach(function(card) {
+                    card.classList.remove('is-hovered');
+                });
+            }
+        });
+        
+        // Blur all buttons inside menu cards after any click to prevent focus persistence
+        document.addEventListener('mouseup', function() {
             document.querySelectorAll('.menu-card button, .menu-card .btn').forEach(function(btn) {
                 btn.blur();
             });
-        }, 10);
-    });
-    
-    // Also blur on touchend for mobile
-    document.addEventListener('touchend', function(e) {
-        setTimeout(function() {
-            document.querySelectorAll('.menu-card button, .menu-card .btn').forEach(function(btn) {
-                btn.blur();
-            });
-        }, 10);
+        });
     });
 </script>
 @endpush
