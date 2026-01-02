@@ -335,7 +335,7 @@
     });
 
     function updateCartCount() {
-        fetch('/cart/count')
+        fetch('/customer/cart/count')
             .then(res => res.json())
             .then(data => {
                 const container = document.getElementById('floatingCartContainer');
@@ -377,7 +377,7 @@
 
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        fetch('/cart/add', {
+        fetch('/customer/cart/add', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
