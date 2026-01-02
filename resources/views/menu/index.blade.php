@@ -140,8 +140,13 @@
     @media (max-width: 576px) {
         #menuGrid {
             gap: 0.5rem !important;
+            display: flex !important;
+            flex-wrap: wrap !important;
         }
         #menuGrid .menu-item {
+            flex: 0 0 50% !important;
+            max-width: 50% !important;
+            width: 50% !important;
             padding: 0.25rem !important;
         }
         .menu-card {
