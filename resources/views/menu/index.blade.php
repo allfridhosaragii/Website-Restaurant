@@ -397,6 +397,11 @@
             
             const data = await response.json().catch(() => null);
             
+            // Check for valid JSON response
+            if (!data) {
+                throw new Error('Invalid Server Response (Not JSON). Check Console for details.');
+            }
+
             if (!response.ok) {
                 throw new Error(data && data.message ? data.message : 'Server Error (' + response.status + ')');
             }
