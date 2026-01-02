@@ -1005,11 +1005,13 @@ a:hover {
     box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3) !important;
 }
 
-/* Remove focus/active ring from cards */
+/* Remove focus/active ring from cards - reset to default */
 .menu-card:focus,
 .menu-card:active,
 .menu-card:focus-within {
     background-color: var(--cream) !important;
+    border-color: var(--cream) !important;
+    box-shadow: var(--shadow-md) !important;
     outline: none !important;
 }
 
