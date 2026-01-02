@@ -332,6 +332,9 @@
     // Cart Functions
     document.addEventListener('DOMContentLoaded', function() {
         updateCartCount();
+        
+        // Polling for real-time updates (every 3 seconds)
+        setInterval(updateCartCount, 3000);
     });
 
     function updateCartCount() {
