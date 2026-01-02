@@ -524,7 +524,6 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
         Route::post('/access/{id}/toggle-online', [\App\Http\Controllers\Admin\AdminAccessController::class, 'toggleOnlineStatus'])->name('admin.access.toggle-online');
     });
 });
-});
 Route::get('lang/{locale}', function ($locale) { 
     if (in_array($locale, ['en', 'id'])) { 
         session(['locale' => $locale]); 
