@@ -990,18 +990,27 @@ a:hover {
     }
 }
 
-.menu-card,
-.menu-card:hover,
-.menu-card:focus,
-.menu-card:active,
-.menu-card:focus-within,
-.menu-card.active,
-.menu-card:visited {
+/* Menu card default state - no golden border */
+.menu-card {
     background-color: var(--cream) !important;
     background: var(--cream) !important;
-    border-color: var(--secondary) !important;
+    border-color: var(--cream) !important;
     outline: none !important;
+    box-shadow: var(--shadow-md) !important;
+}
+
+/* Menu card hover state - show golden border */
+.menu-card:hover {
+    border-color: var(--secondary) !important;
     box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3) !important;
+}
+
+/* Remove focus/active ring from cards */
+.menu-card:focus,
+.menu-card:active,
+.menu-card:focus-within {
+    background-color: var(--cream) !important;
+    outline: none !important;
 }
 
 .menu-card button:focus,
