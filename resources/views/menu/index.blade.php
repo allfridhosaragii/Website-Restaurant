@@ -62,7 +62,7 @@
                             <i class="bi {{ in_array($menu->id, $favorites ?? []) ? 'bi-heart-fill text-danger' : 'bi-heart' }}" style="font-size: 1.1rem; color: #dc3545;"></i>
                         </button>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body d-flex flex-column">
                         <span class="badge bg-light text-muted mb-2">{{ $menu->category }}</span>
                         <h6 class="card-title">{{ $menu->name }}</h6>
                         <div class="d-flex align-items-center mb-2">
@@ -75,10 +75,10 @@
                             </div>
                             <small class="text-muted ms-2">({{ rand(50, 300) }})</small>
                         </div>
-                        <p class="text-muted small mb-3">{{ Str::limit($menu->description, 60) }}</p>
-                        <button class="btn btn-primary btn-sm w-100" style="isolation: isolate; position: relative; z-index: 2;">
-    <i class="bi bi-cart-plus me-1"></i> <span data-i18n="add">{{ __('messages.add') }}</span>
-</button>
+                        <p class="text-muted small mb-3 flex-grow-1">{{ Str::limit($menu->description, 60) }}</p>
+                        <button class="btn btn-primary btn-sm w-100 mt-auto" style="isolation: isolate; position: relative; z-index: 2;">
+                            <i class="bi bi-cart-plus me-1"></i> <span data-i18n="add">{{ __('messages.add') }}</span>
+                        </button>
                     </div>
                 </div>
             </div>
