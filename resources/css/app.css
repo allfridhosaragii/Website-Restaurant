@@ -999,16 +999,21 @@ a:hover {
     box-shadow: var(--shadow-md) !important;
 }
 
-/* Menu card hover state - show golden border */
+/* Menu card hover state - show golden border ONLY when hovered */
 .menu-card:hover {
     border-color: var(--secondary) !important;
     box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3) !important;
 }
 
+/* When card has focus but NOT being hovered, reset to default */
+.menu-card:focus-within:not(:hover) {
+    border-color: var(--cream) !important;
+    box-shadow: var(--shadow-md) !important;
+}
+
 /* Remove focus/active ring from cards - reset to default */
 .menu-card:focus,
-.menu-card:active,
-.menu-card:focus-within {
+.menu-card:active {
     background-color: var(--cream) !important;
     border-color: var(--cream) !important;
     box-shadow: var(--shadow-md) !important;
