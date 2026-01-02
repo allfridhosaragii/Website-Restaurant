@@ -56,14 +56,8 @@
                         </span>
                         @endif
                         <span class="price-tag">Rp {{ number_format($menu->price, 0, ',', '.') }}</span>
-                        <button class="btn btn-light rounded-circle position-absolute bottom-0 end-0 m-2 shadow-sm btn-favorite" 
-                                style="width: 35px; height: 35px; padding: 0; display: flex; align-items: center; justify-content: center;"
-                                onclick="toggleFavorite(this, {{ $menu->id }})">
-                            <i class="bi {{ in_array($menu->id, $favorites ?? []) ? 'bi-heart-fill text-danger' : 'bi-heart' }}" style="font-size: 1.1rem; color: #dc3545;"></i>
-                        </button>
                     </div>
                     <div class="card-body d-flex flex-column">
-                        <span class="badge bg-light text-muted mb-2">{{ $menu->category }}</span>
                         <h6 class="card-title">{{ $menu->name }}</h6>
                         <div class="d-flex align-items-center mb-2">
                             <div class="rating-stars small">
