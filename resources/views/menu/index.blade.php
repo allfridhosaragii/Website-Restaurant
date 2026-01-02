@@ -114,12 +114,12 @@
 </section>
 
 <!-- Floating Cart Button -->
-<div id="floatingCartContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050; display: none; transition: all 0.3s ease;">
-    <a href="{{ url('/customer/orders/create') }}" class="btn btn-warning shadow-lg d-flex align-items-center gap-2 px-4 py-2" style="border-radius: 50px; border: 2px solid rgba(255,255,255,0.5);">
-        <div class="position-relative">
-            <i class="bi bi-cart-fill fs-5"></i>
-        </div>
-        <span class="fw-bold">Tambah</span> <!-- Text changed to Tambah as per image -->
+<div id="floatingCartContainer" class="position-fixed bottom-0 end-0 p-4" style="z-index: 1050; display: none; transition: all 0.3s ease;">
+    <a href="{{ url('/customer/orders/create') }}" class="floating-cart-btn position-relative">
+        <i class="bi bi-cart-fill fs-4"></i>
+        <span id="cartCountBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.75rem; display: none;">
+            0
+        </span>
     </a>
 </div>
 @endsection
@@ -339,23 +339,15 @@
             .then(res => res.json())
             .then(data => {
                 const container = document.getElementById('floatingCartContainer');
-                const badge = container.querySelector('#cartCountBadge'); // If we add a badge later, or just show button
-                // The current HTML doesn't have a badge in the code I inserted?
-                // Wait, let's check the HTML I verified.
-                // Lines 117-124:
-                // <div id="floatingCartContainer" ...>
-                //    <a ...>
-                //        <i ...></i>
-                //        <span class="fw-bold">Tambah</span>
-                //    </a>
-                // </div>
-                // The image had a count? No, the image showed "Cart Icon + Tambah". Use implies "keranjang ga muncul kalau belum ada menu".
-                // I'll stick to showing/hiding the container.
+                const badge = container.querySelector('#cartCountBadge');
                 
                 if (data.count > 0) {
                     container.style.display = 'block';
-                    // Animation entrance
                     container.classList.add('animate__animated', 'animate__fadeInUp');
+                    if (badge) {
+                        badge.innerText = data.count;
+                        badge.style.display = 'block';
+                    }
                 } else {
                     container.style.display = 'none';
                 }
@@ -451,6 +443,50 @@
     .btn-favorite:hover {
         transform: scale(1.1);
         background: white;
+    }
+
+    /* Floating Cart Button - Glassmorphism */
+    .floating-cart-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 65px;
+        height: 65px;
+        border-radius: 50%;
+        text-decoration: none;
+        
+        /* Glassmorphism Light Mode */
+        background: rgba(255, 255, 255, 0.30);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #0C2A36;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .floating-cart-btn:hover {
+        transform: translateY(-5px) scale(1.05);
+        background: rgba(255, 255, 255, 0.45);
+        color: #C89B3A;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Dark Mode Adaptation */
+    [data-theme="dark"] .floating-cart-btn {
+        background: rgba(12, 42, 54, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #C89B3A;
+    }
+
+    [data-theme="dark"] .floating-cart-btn:hover {
+        background: rgba(12, 42, 54, 0.8);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        color: #D4AF37;
+    }
+
+    .floating-cart-btn i {
+        font-size: 1.5rem;
     }
     /* 
      * IMPORTANT: Disable ALL CSS :hover and :focus pseudo-classes for menu-card
