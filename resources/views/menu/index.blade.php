@@ -37,7 +37,7 @@
         </div>
         <div class="row g-4" id="menuGrid">
             @forelse($menus as $index => $menu)
-            <div class="col-lg-3 col-md-4 col-sm-6 menu-item" data-category="{{ strtolower($menu->category) }}">
+            <div class="col-6 col-md-4 col-lg-3 menu-item" data-category="{{ strtolower($menu->category) }}">
                 <div class="card menu-card h-100">
                     <div class="position-relative">
                         @if($menu->image_url)
@@ -134,6 +134,73 @@
     .pagination .page-item.active .page-link {
         background: var(--primary);
         color: var(--white);
+    }
+    
+    /* Mobile Responsive - Compact E-commerce Style */
+    @media (max-width: 576px) {
+        #menuGrid {
+            gap: 0.5rem !important;
+        }
+        #menuGrid .menu-item {
+            padding: 0.25rem !important;
+        }
+        .menu-card {
+            border-radius: 8px !important;
+            border-width: 1px !important;
+        }
+        .menu-card .card-img-top {
+            height: 120px !important;
+            border-radius: 8px 8px 0 0 !important;
+        }
+        .menu-card .card-body {
+            padding: 0.5rem !important;
+        }
+        .menu-card .card-title {
+            font-size: 0.85rem !important;
+            margin-bottom: 0.25rem !important;
+            line-height: 1.2 !important;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .menu-card .rating-stars {
+            font-size: 0.65rem !important;
+        }
+        .menu-card .rating-stars + small {
+            font-size: 0.65rem !important;
+        }
+        .menu-card .text-muted.small {
+            font-size: 0.7rem !important;
+            margin-bottom: 0.5rem !important;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .menu-card .price-tag {
+            font-size: 0.7rem !important;
+            padding: 0.15rem 0.35rem !important;
+        }
+        .menu-card .trending-badge {
+            font-size: 0.6rem !important;
+            padding: 0.15rem 0.35rem !important;
+        }
+        .menu-card .btn-sm {
+            font-size: 0.75rem !important;
+            padding: 0.35rem 0.5rem !important;
+        }
+        .menu-card .badge.bg-light {
+            font-size: 0.6rem !important;
+            padding: 0.2rem 0.4rem !important;
+        }
+        .menu-card .btn-favorite {
+            width: 28px !important;
+            height: 28px !important;
+        }
+        .menu-card .btn-favorite i {
+            font-size: 0.85rem !important;
+        }
     }
 </style>
 @endpush
