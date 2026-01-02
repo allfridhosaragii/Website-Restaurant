@@ -333,8 +333,15 @@
     document.addEventListener('DOMContentLoaded', function() {
         updateCartCount();
         
-        // Polling for real-time updates (every 3 seconds)
-        setInterval(updateCartCount, 3000);
+        // Polling for real-time updates (every 1 second)
+        setInterval(updateCartCount, 1000);
+        
+        // Immediate update when tab becomes visible
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                updateCartCount();
+            }
+        });
     });
 
     function updateCartCount() {
