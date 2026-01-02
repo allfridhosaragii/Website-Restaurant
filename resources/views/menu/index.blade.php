@@ -389,23 +389,31 @@
                 quantity: 1
             })
         })
-        .then(response => {
+        .then(async response => {
             if (response.status === 401 || response.status === 419) {
                 window.location.href = "{{ route('login') }}";
                 return;
             }
-            if (!response.ok) throw new Error('Network response was not ok');
-            return response.json();
+            
+            const data = await response.json().catch(() => null);
+            
+            if (!response.ok) {
+                throw new Error(data && data.message ? data.message : 'Server Error (' + response.status + ')');
+            }
+            
+            return data;
         })
         .then(data => {
+            if (!data) return; 
+
             // Update UI
             updateCartCount();
             
             // Show feedback
             const originalClass = btn.className;
-            btn.innerHTML = '<i class="bi bi-check-lg"></i>';
-            btn.classList.add('btn-success');
+            btn.innerHTML = '<i class="bi bi-check-lg"></i> Added';
             btn.classList.remove('btn-primary');
+            btn.classList.add('btn-success');
             
             setTimeout(() => {
                 btn.innerHTML = originalContent;
@@ -417,7 +425,7 @@
             console.error('Error:', error);
             btn.innerHTML = originalContent;
             btn.disabled = false;
-            alert('Gagal menambahkan ke keranjang. Silakan coba lagi.');
+            alert('Gagal: ' + error.message);
         });
     }
 </script>

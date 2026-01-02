@@ -35,41 +35,48 @@ class CartController extends Controller
      */
     public function add(Request $request)
     {
-        $request->validate([
-            'menu_id' => 'required|exists:menus,id',
-            'quantity' => 'integer|min:1'
-        ]);
-
-        $menuId = $request->menu_id;
-        $quantity = $request->quantity ?? 1;
-
-        // Check if item already exists in cart
-        $cartItem = CartItem::where('user_id', Auth::id())
-            ->where('menu_id', $menuId)
-            ->first();
-
-        if ($cartItem) {
-            // Update quantity
-            $cartItem->quantity += $quantity;
-            $cartItem->save();
-        } else {
-            // Create new cart item
-            $cartItem = CartItem::create([
-                'user_id' => Auth::id(),
-                'menu_id' => $menuId,
-                'quantity' => $quantity
+        try {
+            $request->validate([
+                'menu_id' => 'required|exists:menus,id',
+                'quantity' => 'integer|min:1'
             ]);
+
+            $menuId = $request->menu_id;
+            $quantity = $request->quantity ?? 1;
+
+            // Check if item already exists in cart
+            $cartItem = CartItem::where('user_id', Auth::id())
+                ->where('menu_id', $menuId)
+                ->first();
+
+            if ($cartItem) {
+                // Update quantity
+                $cartItem->quantity += $quantity;
+                $cartItem->save();
+            } else {
+                // Create new cart item
+                $cartItem = CartItem::create([
+                    'user_id' => Auth::id(),
+                    'menu_id' => $menuId,
+                    'quantity' => $quantity
+                ]);
+            }
+
+            // Get updated count
+            $count = CartItem::where('user_id', Auth::id())->sum('quantity');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Item added to cart',
+                'item' => $cartItem->load('menu'),
+                'count' => $count
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
         }
-
-        // Get updated count
-        $count = CartItem::where('user_id', Auth::id())->sum('quantity');
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Item added to cart',
-            'item' => $cartItem->load('menu'),
-            'count' => $count
-        ]);
     }
 
     /**
