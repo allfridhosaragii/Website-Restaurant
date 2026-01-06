@@ -1315,7 +1315,7 @@
     }
     
     [data-theme="light"] .lux-cart-head {
-        border-color: rgba(0, 0, 0, 0.06);
+        border-color: rgba(0, 0, 0, 0.08);
     }
     
     [data-theme="light"] .lux-cart-label,
@@ -1326,37 +1326,74 @@
         color: #0f1923;
     }
     
+    [data-theme="light"] .lux-cart-count-text,
+    [data-theme="light"] .lux-item-unit,
+    [data-theme="light"] .lux-total-label {
+        color: rgba(0, 0, 0, 0.5);
+    }
+    
     [data-theme="light"] .lux-cart-icon {
-        background: rgba(200, 155, 58, 0.1);
+        background: rgba(200, 155, 58, 0.12);
+        border-color: rgba(200, 155, 58, 0.25);
     }
     
     [data-theme="light"] .lux-close-btn {
-        background: rgba(0, 0, 0, 0.04);
-        color: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0.05);
+        color: rgba(0, 0, 0, 0.6);
+    }
+    
+    [data-theme="light"] .lux-close-btn:hover {
+        background: rgba(0, 0, 0, 0.1);
+        color: #0f1923;
     }
     
     [data-theme="light"] .lux-item {
-        background: rgba(0, 0, 0, 0.02);
-        border-color: rgba(0, 0, 0, 0.04);
+        background: #fff;
+        border-color: rgba(0, 0, 0, 0.08);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
     
     [data-theme="light"] .lux-qty {
-        background: rgba(0, 0, 0, 0.03);
-        border-color: rgba(0, 0, 0, 0.06);
+        background: rgba(0, 0, 0, 0.04);
+        border-color: rgba(0, 0, 0, 0.08);
     }
     
     [data-theme="light"] .lux-qty-btn {
-        color: rgba(0, 0, 0, 0.5);
+        color: rgba(0, 0, 0, 0.6);
+    }
+    
+    [data-theme="light"] .lux-qty-btn:hover:not(:disabled) {
+        background: rgba(0, 0, 0, 0.08);
+        color: #0f1923;
+    }
+    
+    [data-theme="light"] .lux-item-remove {
+        color: rgba(0, 0, 0, 0.3);
     }
     
     [data-theme="light"] .lux-cart-foot {
         background: #fff;
-        border-color: rgba(0, 0, 0, 0.06);
+        border-color: rgba(0, 0, 0, 0.08);
     }
     
     [data-theme="light"] .lux-continue-btn {
-        border-color: rgba(0, 0, 0, 0.1);
-        color: rgba(0, 0, 0, 0.6);
+        border-color: rgba(0, 0, 0, 0.12);
+        color: rgba(0, 0, 0, 0.7);
+    }
+    
+    [data-theme="light"] .lux-continue-btn:hover {
+        background: rgba(0, 0, 0, 0.04);
+        color: #0f1923;
+    }
+    
+    [data-theme="light"] .lux-empty-icon {
+        background: rgba(0, 0, 0, 0.03);
+        border-color: rgba(0, 0, 0, 0.06);
+        color: rgba(0, 0, 0, 0.2);
+    }
+    
+    [data-theme="light"] .lux-empty-text {
+        color: rgba(0, 0, 0, 0.5);
     }
 
     /* Mobile - Compact View */
