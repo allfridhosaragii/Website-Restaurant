@@ -230,6 +230,37 @@
     function formatRupiah(amount) {
         return 'Rp ' + amount.toLocaleString('id-ID');
     }
+    
+    // Load cart from server (sync with menu page cart)
+    function loadCartFromServer() {
+        fetch('/customer/cart', {
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.items && data.items.length > 0) {
+                data.items.forEach(item => {
+                    if (item.menu) {
+                        const id = item.menu.id;
+                        cart[id] = {
+                            id: id,
+                            name: item.menu.name,
+                            price: item.menu.price,
+                            qty: item.quantity
+                        };
+                        // Update qty display on menu item
+                        const menuItem = document.querySelector(`.menu-item[data-id="${id}"]`);
+                        if (menuItem) {
+                            menuItem.querySelector('.qty-value').textContent = item.quantity;
+                        }
+                    }
+                });
+                updateCart();
+            }
+        })
+        .catch(err => console.error('Failed to load cart:', err));
+    }
+    
     // Update cart display
     function updateCart() {
         const container = document.getElementById('cartItemsContainer');
@@ -296,6 +327,16 @@
                 menuItem.querySelector('.qty-value').textContent = '0';
             }
             updateCart();
+            
+            // Also remove from server cart
+            fetch(`/customer/cart/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            }).catch(err => console.error(err));
         }
     };
     // Order type selection
@@ -343,8 +384,45 @@
                 delete cart[id];
             }
             updateCart();
+            
+            // Sync with server cart
+            syncCartItem(id, qty);
         });
     });
+    
+    // Sync cart item with server
+    function syncCartItem(menuId, qty) {
+        const token = document.querySelector('meta[name="csrf-token"]').content;
+        if (qty > 0) {
+            // Check if item exists in server cart, if so update, otherwise add
+            fetch('/customer/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ menu_id: menuId, quantity: qty, replace: true })
+            }).catch(err => console.error(err));
+        } else {
+            // Remove from server cart - find cart item id first
+            fetch('/customer/cart')
+                .then(res => res.json())
+                .then(data => {
+                    const cartItem = data.items?.find(i => i.menu?.id == menuId);
+                    if (cartItem) {
+                        fetch(`/customer/cart/${cartItem.id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': token,
+                                'Accept': 'application/json'
+                            }
+                        });
+                    }
+                });
+        }
+    }
+    
     // Category filter
     document.querySelectorAll('.nav-pills .nav-link').forEach(tab => {
         tab.addEventListener('click', function() {
@@ -423,8 +501,8 @@
             btn.innerHTML = '<i class="bi bi-credit-card me-2"></i>Bayar Sekarang';
         });
     });
-    // Initialize
-    updateCart();
+    // Initialize - load cart from server first
+    loadCartFromServer();
 })();
 </script>
 @endpush
