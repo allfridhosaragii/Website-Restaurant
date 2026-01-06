@@ -6,10 +6,15 @@
 
 @section('title', 'The Legacy • Culinaire')
 
+@extends('layouts.guest')
+
+@section('title', 'The Legacy • Culinaire')
+
 @section('content')
-<div class="about-luxury-wrapper smooth-wrapper">
+<!-- WRAPPER: Forced Dark Theme & CSS Isolation -->
+<div class="about-luxury-wrapper smooth-wrapper" id="aboutPageRoot">
     
-    <!-- HERO SECTION: THE LEGACY -->
+    <!-- HERO SECTION -->
     <section class="about-hero-section" id="hero">
         <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=1920&auto=format&fit=crop');"></div>
         <div class="hero-overlay"></div>
@@ -24,7 +29,7 @@
         </div>
     </section>
 
-    <!-- ERA 1: THE FOUNDATIONS (Clean Central Layout) -->
+    <!-- CHAPTER I: THE FOUNDATIONS (Central Timeline) -->
     <section class="era-section vertical-era" id="era-1">
         <div class="container-fluid px-0">
             <div class="era-header text-center mb-5" data-aos="fade-up">
@@ -44,7 +49,7 @@
                         </div>
                         <div class="node-text">
                             <h4 class="text-white font-display">The Spark</h4>
-                            <p class="text-muted font-serif">In a small rustic corner, the first flame involved. A wood-fired oven and a dream to bring authentic flavors back to life.</p>
+                            <p class="text-gray-300 font-serif">In a small rustic corner, the first flame involved. A wood-fired oven and a dream to bring authentic flavors back to life.</p>
                         </div>
                     </div>
                 </div>
@@ -58,7 +63,7 @@
                         </div>
                         <div class="node-text">
                             <h4 class="text-white font-display">First Family</h4>
-                            <p class="text-muted font-serif">We grew from 3 to 15. The kitchen became a symphony of passion, recruiting the finest local talent.</p>
+                            <p class="text-gray-300 font-serif">We grew from 3 to 15. The kitchen became a symphony of passion, recruiting the finest local talent.</p>
                         </div>
                     </div>
                 </div>
@@ -72,7 +77,7 @@
                         </div>
                         <div class="node-text">
                             <h4 class="text-white font-display">Local Recognition</h4>
-                            <p class="text-muted font-serif">Named "Best Newcomer" by City Eats. Lines started forming around the block.</p>
+                            <p class="text-gray-300 font-serif">Named "Best Newcomer" by City Eats. Lines started forming around the block.</p>
                         </div>
                     </div>
                 </div>
@@ -86,7 +91,7 @@
                         </div>
                         <div class="node-text">
                             <h4 class="text-white font-display">The Renovation</h4>
-                            <p class="text-muted font-serif">We broke down walls. Expanding our dining hall to welcome the growing community of food lovers.</p>
+                            <p class="text-gray-300 font-serif">We broke down walls. Expanding our dining hall to welcome the growing community of food lovers.</p>
                         </div>
                     </div>
                 </div>
@@ -94,64 +99,64 @@
         </div>
     </section>
 
-    <!-- ERA 2: THE GOLDEN ERA (Glassmorphism Horizontal) -->
+    <!-- CHAPTER II: THE GOLDEN ERA (Horizontal Scroll - Simplified) -->
     <section class="horizontal-wrapper">
-        <div class="horizontal-sticky">
-            <div class="horizontal-intro">
-                <span class="era-label font-mono text-gold tracking-widest text-xs d-block mb-3">CHAPTER II</span>
-                <h2 class="display-3 text-white">THE GOLDEN ERA</h2>
-                <div class="h-line my-4"></div>
-                <p class="text-white-50 font-serif lead">Expansion & Excellence</p>
-            </div>
+        <div class="horizontal-header text-center mb-5">
+            <span class="era-label font-mono text-gold tracking-widest text-xs">CHAPTER II</span>
+            <h2 class="display-3 text-white mt-3">THE GOLDEN ERA</h2>
+            <p class="text-white-50 font-serif lead">Expansion & Excellence (Swipe to Explore)</p>
+        </div>
+        
+        <div class="horizontal-scroll-container">
             <div class="horizontal-track">
                 <!-- 2013 -->
                 <div class="h-card glass-card">
-                    <span class="h-year">2013</span>
+                    <span class="h-year text-gold">2013</span>
                     <div class="h-content">
-                        <h3>A Star is Born</h3>
-                        <p>Our first major culinary award. The Gold Spoon.</p>
+                        <h3 class="text-white">A Star is Born</h3>
+                        <p class="text-gray-300">Our first major culinary award. The Gold Spoon.</p>
                     </div>
                 </div>
                 <!-- 2014 -->
                 <div class="h-card glass-card">
-                    <span class="h-year">2014</span>
+                    <span class="h-year text-gold">2014</span>
                     <div class="h-content">
-                        <h3>Second Location</h3>
-                        <p>Opening our doors in the heart of the capital.</p>
+                        <h3 class="text-white">Second Location</h3>
+                        <p class="text-gray-300">Opening our doors in the heart of the capital.</p>
                     </div>
                 </div>
                  <!-- 2015 -->
                 <div class="h-card glass-card">
-                    <span class="h-year">2015</span>
+                    <span class="h-year text-gold">2015</span>
                      <div class="h-content">
-                        <h3>International Tour</h3>
-                        <p>Our chefs traveled to Europe to master new techniques.</p>
+                        <h3 class="text-white">International Tour</h3>
+                        <p class="text-gray-300">Our chefs traveled to Europe to master new techniques.</p>
                     </div>
                 </div>
                  <!-- 2016 -->
                 <div class="h-card glass-card">
-                    <span class="h-year">2016</span>
+                    <span class="h-year text-gold">2016</span>
                      <div class="h-content">
-                        <h3>The Wine Cellar</h3>
-                        <p>Introducing a collection of 500+ vintage wines.</p>
+                        <h3 class="text-white">The Wine Cellar</h3>
+                        <p class="text-gray-300">Introducing a collection of 500+ vintage wines.</p>
                     </div>
                 </div>
                  <!-- 2017 -->
                 <div class="h-card glass-card">
-                    <span class="h-year">2017</span>
+                    <span class="h-year text-gold">2017</span>
                      <div class="h-content">
-                        <h3>Chef's Table</h3>
-                        <p>Launching the exclusive private dining experience.</p>
+                        <h3 class="text-white">Chef's Table</h3>
+                        <p class="text-gray-300">Launching the exclusive private dining experience.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ERA 3: RESILIENCE (High Contrast Spotlight) -->
+    <!-- CHAPTER III: RESILIENCE (Spotlight) -->
     <section class="spotlight-section">
         <div class="container small-container">
-            <div class="text-center mb-5 fade-in">
+            <div class="text-center mb-5">
                 <span class="era-label font-mono text-gold tracking-widest text-xs">CHAPTER III</span>
                 <h2 class="display-3 text-white mt-3">RESILIENCE</h2>
             </div>
@@ -159,58 +164,58 @@
             <div class="spotlight-list">
                 <!-- 2018 -->
                 <div class="spotlight-item" data-year="2018">
-                    <div class="sl-year">2018</div>
+                    <div class="sl-year text-gold">2018</div>
                     <div class="sl-content">
-                        <h3>Sustainable Shift</h3>
-                        <p>We completely overhauled our supply chain to support local farmers and 100% organic produce.</p>
+                        <h3 class="text-white">Sustainable Shift</h3>
+                        <p class="text-gray-400">We completely overhauled our supply chain to support local farmers and 100% organic produce.</p>
                     </div>
                 </div>
 
                 <!-- 2019 -->
                 <div class="spotlight-item" data-year="2019">
-                    <div class="sl-year">2019</div>
+                    <div class="sl-year text-gold">2019</div>
                     <div class="sl-content">
-                        <h3>The Decade Mark</h3>
-                        <p>Celebrating 10 years of culinary excellence with a gala that gathered chefs from around the world.</p>
+                        <h3 class="text-white">The Decade Mark</h3>
+                        <p class="text-gray-400">Celebrating 10 years of culinary excellence with a gala that gathered chefs from around the world.</p>
                     </div>
                 </div>
 
                 <!-- 2020 -->
                 <div class="spotlight-item" data-year="2020">
-                    <div class="sl-year">2020</div>
+                    <div class="sl-year text-gold">2020</div>
                     <div class="sl-content">
-                        <h3>Standing Strong</h3>
-                        <p>When the world stopped, our ovens kept burning. We served 50,000 meals to frontline heroes.</p>
+                        <h3 class="text-white">Standing Strong</h3>
+                        <p class="text-gray-400">When the world stopped, our ovens kept burning. We served 50,000 meals to frontline heroes.</p>
                     </div>
                 </div>
 
                 <!-- 2021 -->
                 <div class="spotlight-item" data-year="2021">
-                    <div class="sl-year">2021</div>
+                    <div class="sl-year text-gold">2021</div>
                     <div class="sl-content">
-                        <h3>Digital Rebirth</h3>
-                        <p>Launching Culinaire Home, bringing our signature dining experience to your dining table.</p>
+                        <h3 class="text-white">Digital Rebirth</h3>
+                        <p class="text-gray-400">Launching Culinaire Home, bringing our signature dining experience to your dining table.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ERA 4: THE VISION (Massive Cards) -->
+    <!-- CHAPTER IV: THE VISION (Stacking Cards) -->
     <section class="stacking-section">
-        <div class="sticky-stack-wrapper">
-             <div class="stack-header text-center mb-5">
+        <div class="container pb-5">
+             <div class="text-center mb-5">
                 <span class="era-label font-mono text-gold tracking-widest text-xs">CHAPTER IV</span>
                 <h2 class="display-3 text-white mt-3">THE VISION</h2>
             </div>
             
-            <div class="cards-container">
+            <div class="cards-stack-wrapper">
                 <!-- 2022 -->
-                <div class="stack-card" style="--index: 1;">
+                <div class="stack-card" style="top: 100px;">
                     <div class="sc-content">
                         <span class="sc-year text-gold">2022</span>
-                        <h2>Technological Harmony</h2>
-                        <p>Integrating AI precision with human artistry in our kitchens.</p>
+                        <h2 class="text-white">Technological Harmony</h2>
+                        <p class="text-gray-300">Integrating AI precision with human artistry in our kitchens.</p>
                     </div>
                     <div class="sc-image">
                         <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80" alt="2022">
@@ -218,11 +223,11 @@
                 </div>
                 
                 <!-- 2023 -->
-                <div class="stack-card" style="--index: 2;">
+                <div class="stack-card" style="top: 140px;">
                      <div class="sc-content">
-                        <span class="sc-year text-white">2023</span>
-                        <h2>Global Franchise</h2>
-                        <p>Our vision expanded to Tokyo, London, and New York.</p>
+                        <span class="sc-year text-gold">2023</span>
+                        <h2 class="text-white">Global Franchise</h2>
+                        <p class="text-gray-300">Our vision expanded to Tokyo, London, and New York.</p>
                     </div>
                     <div class="sc-image">
                         <img src="https://images.unsplash.com/photo-1592861956120-e524fc739696?w=800&q=80" alt="2023">
@@ -230,11 +235,11 @@
                 </div>
 
                 <!-- 2024 -->
-                <div class="stack-card" style="--index: 3;">
+                <div class="stack-card" style="top: 180px;">
                      <div class="sc-content">
                         <span class="sc-year text-gold">2024</span>
-                        <h2>Zero Waste</h2>
-                        <p>Achieving our goal of becoming the first Zero Waste fine dining establishment.</p>
+                        <h2 class="text-white">Zero Waste</h2>
+                        <p class="text-gray-300">Achieving our goal of becoming the first Zero Waste fine dining establishment.</p>
                     </div>
                     <div class="sc-image">
                         <img src="https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?w=800&q=80" alt="2024">
@@ -242,11 +247,11 @@
                 </div>
 
                 <!-- 2025 -->
-                <div class="stack-card last-card" style="--index: 4;">
+                <div class="stack-card" style="top: 220px;">
                      <div class="sc-content">
-                        <span class="sc-year text-dark">2025</span>
-                        <h2 class="text-dark">The Next Chapter</h2>
-                        <p class="text-dark">We are just getting started. The legacy continues with you.</p>
+                        <span class="sc-year text-gold">2025</span>
+                        <h2 class="text-white">The Next Chapter</h2>
+                        <p class="text-gray-300">We are just getting started. The legacy continues with you.</p>
                     </div>
                     <div class="sc-image">
                         <img src="https://images.unsplash.com/photo-1550966871-3ed3c47e2ce2?w=800&q=80" alt="2025">
@@ -256,47 +261,251 @@
         </div>
     </section>
 
-    <footer class="py-5 text-center mt-5">
-        <p class="font-mono text-white-50 text-xs tracking-widest">EST. 2009 • CULINAIRE</p>
+    <footer class="py-5 text-center mt-5 border-top border-secondary">
+        <p class="font-mono text-white-50 text-xs tracking-widest mb-0">EST. 2009 • CULINAIRE</p>
     </footer>
 
 </div>
 
 <style>
-/* CORE LUXURY SETTINGS - SCOPED */
+/* --- SCOPED LUXURY THEME --- */
 .about-luxury-wrapper {
-    --bg-primary: #050608;
-    --bg-secondary: #0A0C10;
-    --gold: #D4AF37;
-    --text-white: #ffffff;
-    --text-muted: rgba(255,255,255,0.5);
-    --font-display: 'Playfair Display', serif;
-    --font-serif: 'Lora', serif;
-    --font-mono: 'Space Mono', monospace;
-
-    /* Force Dark Theme */
-    background-color: var(--bg-primary); 
-    color: var(--text-white); 
-    font-family: var(--font-serif);
-    overflow-x: hidden; 
+    background-color: #050608 !important;
+    color: #ffffff !important;
+    font-family: 'Lora', serif;
     width: 100%;
     min-height: 100vh;
     position: relative;
-    z-index: 10;
+    z-index: 50; /* Above everything else */
+    overflow-x: hidden;
+    padding-bottom: 0;
 }
 
-/* Force text colors to be visible regardless of global theme */
-.about-luxury-wrapper h1,
-.about-luxury-wrapper h2,
-.about-luxury-wrapper h3,
-.about-luxury-wrapper h4,
-.about-luxury-wrapper h5,
-.about-luxury-wrapper h6,
-.about-luxury-wrapper p,
-.about-luxury-wrapper span,
-.about-luxury-wrapper div {
-    color: inherit;
+/* Force Text Colors */
+.about-luxury-wrapper h1, 
+.about-luxury-wrapper h2, 
+.about-luxury-wrapper h3, 
+.about-luxury-wrapper h4 {
+    color: #ffffff !important;
+    font-family: 'Playfair Display', serif;
 }
+.about-luxury-wrapper p,
+.about-luxury-wrapper li,
+.about-luxury-wrapper span {
+    color: #cccccc;
+}
+.about-luxury-wrapper .text-gold { color: #D4AF37 !important; }
+.about-luxury-wrapper .text-white { color: #ffffff !important; }
+.about-luxury-wrapper .text-white-50 { color: rgba(255,255,255,0.5) !important; }
+
+/* Navbar Fixes for this Page */
+.about-luxury-wrapper ~ nav, 
+body:has(.about-luxury-wrapper) nav {
+    /* Ensure navbar is visible on dark bg */
+}
+/* Disable strikethrough if present globally */
+.nav-link { text-decoration: none !important; }
+
+/* Hero */
+.about-hero-section {
+    height: 100vh;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+}
+.hero-bg {
+    position: absolute;
+    top:0; left:0; width:100%; height:100%;
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.4);
+    z-index: 1;
+}
+.hero-content {
+    position: relative;
+    z-index: 3;
+}
+.display-super {
+    font-size: 8rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -2px;
+}
+
+/* Central Timeline */
+.vertical-era { padding: 100px 0; background: #050608; }
+.central-timeline {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+.central-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: rgba(212, 175, 55, 0.3);
+    transform: translateX(-50%);
+}
+.timeline-node {
+    display: flex;
+    align-items: center;
+    margin-bottom: 150px;
+    position: relative;
+    opacity: 0; /* Animated in by JS */
+    transform: translateY(50px);
+    transition: all 0.8s ease-out;
+}
+.timeline-node.visible { opacity: 1; transform: translateY(0); }
+.timeline-node:nth-child(odd) { flex-direction: row-reverse; }
+.timeline-node:nth-child(odd) .node-text { text-align: right; }
+.timeline-node:nth-child(even) .node-text { text-align: left; }
+.node-year {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 4rem;
+    font-weight: 700;
+    color: #D4AF37;
+    background: #050608;
+    padding: 10px 0;
+    z-index: 2;
+}
+.node-content {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 50px;
+}
+.node-img { width: 40%; height: 300px; overflow: hidden; border-radius: 4px; }
+.node-img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); transition: 0.5s; }
+.timeline-node:hover .node-img img { filter: grayscale(0); transform: scale(1.05); }
+.node-text { width: 45%; }
+
+
+/* Horizontal Scroll (Simplified) */
+.horizontal-wrapper {
+    background: #0A0C10;
+    padding: 100px 0;
+    overflow: hidden;
+}
+.horizontal-scroll-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    padding-bottom: 30px;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE */
+    cursor: grab;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+.horizontal-scroll-container::-webkit-scrollbar { display: none; }
+.horizontal-track { display: inline-flex; gap: 40px; }
+.h-card {
+    width: 350px;
+    height: 450px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    padding: 40px;
+    white-space: normal;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: 0.3s;
+}
+.h-card:hover { transform: translateY(-10px); background: rgba(255,255,255,0.05); border-color: #D4AF37; }
+.h-year { font-size: 3rem; font-weight: 700; display: block; margin-bottom: 20px; }
+
+
+/* Spotlight Section */
+.spotlight-section { padding: 100px 0; background: #050608; }
+.spotlight-item {
+    padding: 50px;
+    margin-bottom: 20px;
+    border-left: 2px solid rgba(255,255,255,0.1);
+    transition: 0.3s;
+    opacity: 0.3;
+}
+.spotlight-item:hover, .spotlight-item.active {
+    opacity: 1;
+    border-left-color: #D4AF37;
+    background: linear-gradient(90deg, rgba(212,175,55,0.05), transparent);
+}
+
+
+/* Stacking Cards */
+.stacking-section { padding: 100px 0; background: #0A0C10; }
+.cards-stack-wrapper {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    height: 1200px; /* Force height so valid sticky area */
+}
+.stack-card {
+    position: sticky;
+    top: 100px; /* Will be overridden inline */
+    height: 450px;
+    width: 100%;
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    margin-bottom: 50px;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+    transform-origin: top center;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+.sc-content { padding: 60px; width: 50%; display: flex; flex-direction: column; justify-content: center; }
+.sc-image { width: 50%; height: 100%; }
+.sc-image img { width: 100%; height: 100%; object-fit: cover; }
+.sc-year { font-size: 4rem; font-family: var(--font-display); font-weight: 700; line-height: 1; margin-bottom: 20px; display: block; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Simple Scroll Observer for Timeline
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if(entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll('.timeline-node').forEach(node => observer.observe(node));
+
+    // 2. Spotlight Active State
+    const spotlightObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if(entry.isIntersecting) {
+                document.querySelectorAll('.spotlight-item').forEach(i => i.classList.remove('active'));
+                entry.target.classList.add('active');
+            }
+        });
+    }, { threshold: 0.5 }); // Center of screen
+
+    document.querySelectorAll('.spotlight-item').forEach(item => spotlightObserver.observe(item));
+
+    // 3. Stacking Cards Parallax (Optional Enhancement)
+    window.addEventListener('scroll', () => {
+        const cards = document.querySelectorAll('.stack-card');
+        cards.forEach((card, index) => {
+            // Logic handled by CSS sticky mostly, but can add scale effect here if needed
+            // Currently keeping it simple/robust as per user request to fix bugs first
+        });
+    });
+});
+</script>
+@endsection
 
 
 /* TYPOGRAPHY */

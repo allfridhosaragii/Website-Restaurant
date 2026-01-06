@@ -108,7 +108,7 @@
                                         <i class="bi bi-image text-white"></i>
                                     </div>
                                     @endif
-                                    <div class="flex-grow-1">
+                                    <div class="grow">
                                         <h6 class="mb-1">{{ $menu->name }}</h6>
                                         <small class="text-muted d-block mb-2">{{ Str::limit($menu->description, 40) }}</small>
                                         <strong class="text-primary">Rp {{ number_format($menu->price, 0, ',', '.') }}</strong>
