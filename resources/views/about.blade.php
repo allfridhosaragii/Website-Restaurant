@@ -11,11 +11,11 @@
         <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=1920&auto=format&fit=crop');"></div>
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h1 class="display-super tracking-tighter" data-speed="0.2">LEGACY</h1>
+            <h1 class="display-super tracking-tighter" data-speed="0.2" data-i18n="about_hero_title">{{ __('messages.about_hero_title') }}</h1>
             <div class="separator-line"></div>
-            <p class="subtitle font-mono tracking-widest text-gold mt-4" data-speed="0.1">A JOURNEY OF TASTE • 2009 - 2025</p>
+            <p class="subtitle font-mono tracking-widest text-gold mt-4" data-speed="0.1" data-i18n="about_hero_subtitle">{{ __('messages.about_hero_subtitle') }}</p>
             <div class="scroll-indicator">
-                <span class="text-xs font-mono tracking-widest text-white-50">SCROLL TO EXPLORE</span>
+                <span class="text-xs font-mono tracking-widest text-white-50" data-i18n="about_scroll_text">{{ __('messages.about_scroll_text') }}</span>
                 <div class="line"></div>
             </div>
         </div>
@@ -25,8 +25,8 @@
     <section class="era-section vertical-era" id="era-1">
         <div class="container-fluid px-0">
             <div class="era-header text-center mb-5" data-aos="fade-up">
-                <span class="era-label font-mono text-gold tracking-widest text-xs">CHAPTER I</span>
-                <h2 class="display-3 text-white mt-3 mb-5">THE FOUNDATIONS</h2>
+                <span class="era-label font-mono text-gold tracking-widest text-xs" data-i18n="chapter_1_label">{{ __('messages.chapter_1_label') }}</span>
+                <h2 class="display-3 text-white mt-3 mb-5" data-i18n="chapter_1_title">{{ __('messages.chapter_1_title') }}</h2>
             </div>
             
             <div class="central-timeline">
@@ -40,8 +40,8 @@
                             <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80" alt="2009">
                         </div>
                         <div class="node-text">
-                            <h4 class="text-white font-display">The Spark</h4>
-                            <p class="text-gray-300 font-serif">In a small rustic corner, the first flame involved. A wood-fired oven and a dream to bring authentic flavors back to life.</p>
+                            <h4 class="text-white font-display" data-i18n="timeline_2009_title">{{ __('messages.timeline_2009_title') }}</h4>
+                            <p class="text-gray-300 font-serif" data-i18n="timeline_2009_desc">{{ __('messages.timeline_2009_desc') }}</p>
                         </div>
                     </div>
                 </div>
@@ -54,8 +54,8 @@
                             <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80" alt="2010">
                         </div>
                         <div class="node-text">
-                            <h4 class="text-white font-display">First Family</h4>
-                            <p class="text-gray-300 font-serif">We grew from 3 to 15. The kitchen became a symphony of passion, recruiting the finest local talent.</p>
+                            <h4 class="text-white font-display" data-i18n="timeline_2010_title">{{ __('messages.timeline_2010_title') }}</h4>
+                            <p class="text-gray-300 font-serif" data-i18n="timeline_2010_desc">{{ __('messages.timeline_2010_desc') }}</p>
                         </div>
                     </div>
                 </div>
@@ -68,8 +68,8 @@
                             <img src="https://images.unsplash.com/photo-1550966871-3ed3c47e2ce2?w=800&q=80" alt="2011">
                         </div>
                         <div class="node-text">
-                            <h4 class="text-white font-display">Local Recognition</h4>
-                            <p class="text-gray-300 font-serif">Named "Best Newcomer" by City Eats. Lines started forming around the block.</p>
+                            <h4 class="text-white font-display" data-i18n="timeline_2011_title">{{ __('messages.timeline_2011_title') }}</h4>
+                            <p class="text-gray-300 font-serif" data-i18n="timeline_2011_desc">{{ __('messages.timeline_2011_desc') }}</p>
                         </div>
                     </div>
                 </div>
@@ -82,8 +82,8 @@
                             <img src="https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?w=800&q=80" alt="2012">
                         </div>
                         <div class="node-text">
-                            <h4 class="text-white font-display">The Renovation</h4>
-                            <p class="text-gray-300 font-serif">We broke down walls. Expanding our dining hall to welcome the growing community of food lovers.</p>
+                            <h4 class="text-white font-display" data-i18n="timeline_2012_title">{{ __('messages.timeline_2012_title') }}</h4>
+                            <p class="text-gray-300 font-serif" data-i18n="timeline_2012_desc">{{ __('messages.timeline_2012_desc') }}</p>
                         </div>
                     </div>
                 </div>
@@ -94,9 +94,9 @@
     <!-- CHAPTER II: THE GOLDEN ERA (Horizontal Scroll - Simplified) -->
     <section class="horizontal-wrapper">
         <div class="horizontal-header text-center mb-5">
-            <span class="era-label font-mono text-gold tracking-widest text-xs">CHAPTER II</span>
-            <h2 class="display-3 text-white mt-3">THE GOLDEN ERA</h2>
-            <p class="text-white-50 font-serif lead">Expansion & Excellence (Swipe to Explore)</p>
+            <span class="era-label font-mono text-gold tracking-widest text-xs" data-i18n="chapter_2_label">{{ __('messages.chapter_2_label') }}</span>
+            <h2 class="display-3 text-white mt-3" data-i18n="chapter_2_title">{{ __('messages.chapter_2_title') }}</h2>
+            <p class="text-white-50 font-serif lead" data-i18n="chapter_2_subtitle">{{ __('messages.chapter_2_subtitle') }}</p>
         </div>
         
         <div class="horizontal-scroll-container">
@@ -105,40 +105,40 @@
                 <div class="h-card glass-card">
                     <span class="h-year text-gold">2013</span>
                     <div class="h-content">
-                        <h3 class="text-white">A Star is Born</h3>
-                        <p class="text-gray-300">Our first major culinary award. The Gold Spoon.</p>
+                        <h3 class="text-white" data-i18n="timeline_2013_title">{{ __('messages.timeline_2013_title') }}</h3>
+                        <p class="text-gray-300" data-i18n="timeline_2013_desc">{{ __('messages.timeline_2013_desc') }}</p>
                     </div>
                 </div>
                 <!-- 2014 -->
                 <div class="h-card glass-card">
                     <span class="h-year text-gold">2014</span>
                     <div class="h-content">
-                        <h3 class="text-white">Second Location</h3>
-                        <p class="text-gray-300">Opening our doors in the heart of the capital.</p>
+                        <h3 class="text-white" data-i18n="timeline_2014_title">{{ __('messages.timeline_2014_title') }}</h3>
+                        <p class="text-gray-300" data-i18n="timeline_2014_desc">{{ __('messages.timeline_2014_desc') }}</p>
                     </div>
                 </div>
                  <!-- 2015 -->
                 <div class="h-card glass-card">
                     <span class="h-year text-gold">2015</span>
                      <div class="h-content">
-                        <h3 class="text-white">International Tour</h3>
-                        <p class="text-gray-300">Our chefs traveled to Europe to master new techniques.</p>
+                        <h3 class="text-white" data-i18n="timeline_2015_title">{{ __('messages.timeline_2015_title') }}</h3>
+                        <p class="text-gray-300" data-i18n="timeline_2015_desc">{{ __('messages.timeline_2015_desc') }}</p>
                     </div>
                 </div>
                  <!-- 2016 -->
                 <div class="h-card glass-card">
                     <span class="h-year text-gold">2016</span>
                      <div class="h-content">
-                        <h3 class="text-white">The Wine Cellar</h3>
-                        <p class="text-gray-300">Introducing a collection of 500+ vintage wines.</p>
+                        <h3 class="text-white" data-i18n="timeline_2016_title">{{ __('messages.timeline_2016_title') }}</h3>
+                        <p class="text-gray-300" data-i18n="timeline_2016_desc">{{ __('messages.timeline_2016_desc') }}</p>
                     </div>
                 </div>
                  <!-- 2017 -->
                 <div class="h-card glass-card">
                     <span class="h-year text-gold">2017</span>
                      <div class="h-content">
-                        <h3 class="text-white">Chef's Table</h3>
-                        <p class="text-gray-300">Launching the exclusive private dining experience.</p>
+                        <h3 class="text-white" data-i18n="timeline_2017_title">{{ __('messages.timeline_2017_title') }}</h3>
+                        <p class="text-gray-300" data-i18n="timeline_2017_desc">{{ __('messages.timeline_2017_desc') }}</p>
                     </div>
                 </div>
             </div>
@@ -149,8 +149,8 @@
     <section class="spotlight-section">
         <div class="container small-container">
             <div class="text-center mb-5">
-                <span class="era-label font-mono text-gold tracking-widest text-xs">CHAPTER III</span>
-                <h2 class="display-3 text-white mt-3">RESILIENCE</h2>
+                <span class="era-label font-mono text-gold tracking-widest text-xs" data-i18n="chapter_3_label">{{ __('messages.chapter_3_label') }}</span>
+                <h2 class="display-3 text-white mt-3" data-i18n="chapter_3_title">{{ __('messages.chapter_3_title') }}</h2>
             </div>
 
             <div class="spotlight-list">
@@ -158,8 +158,8 @@
                 <div class="spotlight-item" data-year="2018">
                     <div class="sl-year text-gold">2018</div>
                     <div class="sl-content">
-                        <h3 class="text-white">Sustainable Shift</h3>
-                        <p class="text-gray-400">We completely overhauled our supply chain to support local farmers and 100% organic produce.</p>
+                        <h3 class="text-white" data-i18n="timeline_2018_title">{{ __('messages.timeline_2018_title') }}</h3>
+                        <p class="text-gray-400" data-i18n="timeline_2018_desc">{{ __('messages.timeline_2018_desc') }}</p>
                     </div>
                 </div>
 
@@ -167,8 +167,8 @@
                 <div class="spotlight-item" data-year="2019">
                     <div class="sl-year text-gold">2019</div>
                     <div class="sl-content">
-                        <h3 class="text-white">The Decade Mark</h3>
-                        <p class="text-gray-400">Celebrating 10 years of culinary excellence with a gala that gathered chefs from around the world.</p>
+                        <h3 class="text-white" data-i18n="timeline_2019_title">{{ __('messages.timeline_2019_title') }}</h3>
+                        <p class="text-gray-400" data-i18n="timeline_2019_desc">{{ __('messages.timeline_2019_desc') }}</p>
                     </div>
                 </div>
 
@@ -176,8 +176,8 @@
                 <div class="spotlight-item" data-year="2020">
                     <div class="sl-year text-gold">2020</div>
                     <div class="sl-content">
-                        <h3 class="text-white">Standing Strong</h3>
-                        <p class="text-gray-400">When the world stopped, our ovens kept burning. We served 50,000 meals to frontline heroes.</p>
+                        <h3 class="text-white" data-i18n="timeline_2020_title">{{ __('messages.timeline_2020_title') }}</h3>
+                        <p class="text-gray-400" data-i18n="timeline_2020_desc">{{ __('messages.timeline_2020_desc') }}</p>
                     </div>
                 </div>
 
@@ -185,8 +185,8 @@
                 <div class="spotlight-item" data-year="2021">
                     <div class="sl-year text-gold">2021</div>
                     <div class="sl-content">
-                        <h3 class="text-white">Digital Rebirth</h3>
-                        <p class="text-gray-400">Launching Culinaire Home, bringing our signature dining experience to your dining table.</p>
+                        <h3 class="text-white" data-i18n="timeline_2021_title">{{ __('messages.timeline_2021_title') }}</h3>
+                        <p class="text-gray-400" data-i18n="timeline_2021_desc">{{ __('messages.timeline_2021_desc') }}</p>
                     </div>
                 </div>
             </div>
@@ -197,8 +197,8 @@
     <section class="stacking-section">
         <div class="container pb-5">
              <div class="text-center mb-5">
-                <span class="era-label font-mono text-gold tracking-widest text-xs">CHAPTER IV</span>
-                <h2 class="display-3 text-white mt-3">THE VISION</h2>
+                <span class="era-label font-mono text-gold tracking-widest text-xs" data-i18n="chapter_4_label">{{ __('messages.chapter_4_label') }}</span>
+                <h2 class="display-3 text-white mt-3" data-i18n="chapter_4_title">{{ __('messages.chapter_4_title') }}</h2>
             </div>
             
             <div class="cards-stack-wrapper">
@@ -206,8 +206,8 @@
                 <div class="stack-card" style="top: 100px;">
                     <div class="sc-content">
                         <span class="sc-year text-gold">2022</span>
-                        <h2 class="text-white">Technological Harmony</h2>
-                        <p class="text-gray-300">Integrating AI precision with human artistry in our kitchens.</p>
+                        <h2 class="text-white" data-i18n="timeline_2022_title">{{ __('messages.timeline_2022_title') }}</h2>
+                        <p class="text-gray-300" data-i18n="timeline_2022_desc">{{ __('messages.timeline_2022_desc') }}</p>
                     </div>
                     <div class="sc-image">
                         <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80" alt="2022">
@@ -218,8 +218,8 @@
                 <div class="stack-card" style="top: 140px;">
                      <div class="sc-content">
                         <span class="sc-year text-gold">2023</span>
-                        <h2 class="text-white">Global Franchise</h2>
-                        <p class="text-gray-300">Our vision expanded to Tokyo, London, and New York.</p>
+                        <h2 class="text-white" data-i18n="timeline_2023_title">{{ __('messages.timeline_2023_title') }}</h2>
+                        <p class="text-gray-300" data-i18n="timeline_2023_desc">{{ __('messages.timeline_2023_desc') }}</p>
                     </div>
                     <div class="sc-image">
                         <img src="https://images.unsplash.com/photo-1592861956120-e524fc739696?w=800&q=80" alt="2023">
@@ -230,8 +230,8 @@
                 <div class="stack-card" style="top: 180px;">
                      <div class="sc-content">
                         <span class="sc-year text-gold">2024</span>
-                        <h2 class="text-white">Zero Waste</h2>
-                        <p class="text-gray-300">Achieving our goal of becoming the first Zero Waste fine dining establishment.</p>
+                        <h2 class="text-white" data-i18n="timeline_2024_title">{{ __('messages.timeline_2024_title') }}</h2>
+                        <p class="text-gray-300" data-i18n="timeline_2024_desc">{{ __('messages.timeline_2024_desc') }}</p>
                     </div>
                     <div class="sc-image">
                         <img src="https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?w=800&q=80" alt="2024">
@@ -242,11 +242,12 @@
                 <div class="stack-card" style="top: 220px;">
                      <div class="sc-content">
                         <span class="sc-year text-gold">2025</span>
-                        <h2 class="text-white">The Next Chapter</h2>
-                        <p class="text-gray-300">We are just getting started. The legacy continues with you.</p>
+                        <h2 class="text-white" data-i18n="timeline_2025_title">{{ __('messages.timeline_2025_title') }}</h2>
+                        <p class="text-gray-300" data-i18n="timeline_2025_desc">{{ __('messages.timeline_2025_desc') }}</p>
                     </div>
                     <div class="sc-image">
-                        <img src="https://images.unsplash.com/photo-1550966871-3ed3c47e2ce2?w=800&q=80" alt="2025">
+                        <!-- UPDATED: Replaced broken image with High Tech/Abstract image -->
+                        <img src="https://images.unsplash.com/photo-1519681393784-d8e5b5a4570bd?w=800&q=80" alt="2025">
                     </div>
                 </div>
             </div>
@@ -354,16 +355,20 @@
 .timeline-node:nth-child(odd) { flex-direction: row-reverse; }
 .timeline-node:nth-child(odd) .node-text { text-align: right; }
 .timeline-node:nth-child(even) .node-text { text-align: left; }
+
+/* UPDATED NODE YEAR CSS - Watermark Style to prevent overlap */
 .node-year {
     position: absolute;
     left: 50%;
-    transform: translateX(-50%);
-    font-size: 4rem;
+    top: 50%; /* Center vertically as well */
+    transform: translate(-50%, -50%); /* Center perfectly */
+    font-size: 8rem; /* Large watermark size */
     font-weight: 700;
-    color: #D4AF37;
-    background: #050608;
-    padding: 10px 0;
-    z-index: 2;
+    color: rgba(212, 175, 55, 0.05); /* Very faint gold - WATERMARK */
+    z-index: 0; /* Behind content */
+    pointer-events: none;
+    line-height: 1;
+    white-space: nowrap;
 }
 .node-content {
     width: 100%;
@@ -371,8 +376,10 @@
     justify-content: space-between;
     align-items: center;
     padding: 0 50px;
+    position: relative;
+    z-index: 2; /* Content above watermark */
 }
-.node-img { width: 40%; height: 300px; overflow: hidden; border-radius: 4px; }
+.node-img { width: 40%; height: 300px; overflow: hidden; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); }
 .node-img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); transition: 0.5s; }
 .timeline-node:hover .node-img img { filter: grayscale(0); transform: scale(1.05); }
 .node-text { width: 45%; }
@@ -450,7 +457,7 @@
     display: flex;
     overflow: hidden;
     box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-    transform-origin: top center;
+    background-image: linear-gradient(145deg, #111, #1a1a1a);
     transition: transform 0.5s ease, opacity 0.5s ease;
 }
 .sc-content { padding: 60px; width: 50%; display: flex; flex-direction: column; justify-content: center; }
@@ -464,7 +471,7 @@
     .node-content { flex-direction: column !important; gap: 30px; text-align: center; padding: 0 20px; }
     .node-img { width: 100%; height: 250px; }
     .node-text { width: 100%; text-align: center !important; }
-    .node-year { font-size: 2.5rem; }
+    .node-year { font-size: 5rem; top: 20px; transform: translateX(-50%); opacity: 0.1; } /* Adjusted for mobile */
     .central-line { display: none; }
     
     .stack-card { flex-direction: column; height: auto; position: relative; top: 0 !important; margin-bottom: 30px; }
