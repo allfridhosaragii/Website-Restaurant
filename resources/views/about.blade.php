@@ -6,7 +6,7 @@
 <div class="smooth-wrapper">
     
     <!-- HERO SECTION: THE LEGACY (Zoom Out Effect) -->
-    <section class="hero-section" id="hero">
+    <section class="about-hero-section" id="hero">
         <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=1920&auto=format&fit=crop');"></div>
         <div class="hero-overlay"></div>
         <div class="hero-content">
@@ -35,7 +35,7 @@
                     <p class="text-muted">In a small rustic corner, the first flame involved. A wood-fired oven and a dream to bring authentic flavors back to life.</p>
                 </div>
                 <div class="year-image right parallax-img">
-                    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80" alt="2009">
+                    <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600&q=80" alt="2009">
                 </div>
             </div>
 
@@ -47,7 +47,7 @@
                     <p class="text-muted">We grew from 3 to 15. The kitchen became a symphony of passion, recruiting the finest local talent.</p>
                 </div>
                 <div class="year-image left parallax-img">
-                    <img src="https://images.unsplash.com/photo-1560187839-29f6048d086a?w=600&q=80" alt="2010">
+                    <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&q=80" alt="2010">
                 </div>
             </div>
 
@@ -77,7 +77,7 @@
         </div>
     </section>
 
-    <!-- ERA 2: THE EXPANSION (2013-2017) - Horizontal Sticky Scroll -->
+    <!-- ERA 2: THE GOLDEN ERA (2013-2017) - Horizontal Sticky Scroll -->
     <section class="horizontal-wrapper">
         <div class="horizontal-sticky">
             <div class="horizontal-intro">
@@ -182,17 +182,17 @@
         </div>
     </section>
 
-    <!-- ERA 4: THE FUTURE (2022-2025) - Stacking Cards -->
+    <!-- ERA 4: THE VISION (2022-2025) - Stacking Cards -->
     <section class="stacking-section">
         <div class="sticky-stack-wrapper">
-            <div class="stack-header text-center">
+            <div class="stack-header text-center mb-5">
                 <span class="era-label font-mono text-gold">CHAPTER IV</span>
                 <h2 class="display-3 text-white">THE VISION</h2>
             </div>
             
             <div class="cards-container">
                 <!-- 2022 -->
-                <div class="stack-card bg-darker">
+                <div class="stack-card bg-darker" style="--index: 1;">
                     <div class="card-inner">
                         <div class="card-left">
                             <h2 class="text-gold">2022</h2>
@@ -206,7 +206,7 @@
                 </div>
                 
                 <!-- 2023 -->
-                <div class="stack-card bg-darker">
+                <div class="stack-card bg-darker" style="--index: 2;">
                     <div class="card-inner">
                         <div class="card-left">
                             <h2 class="text-white">2023</h2>
@@ -220,7 +220,7 @@
                 </div>
 
                 <!-- 2024 -->
-                <div class="stack-card bg-darker">
+                <div class="stack-card bg-darker" style="--index: 3;">
                     <div class="card-inner">
                         <div class="card-left">
                             <h2 class="text-gold">2024</h2>
@@ -234,7 +234,7 @@
                 </div>
 
                 <!-- 2025 -->
-                <div class="stack-card bg-gold text-dark last-card">
+                <div class="stack-card bg-gold text-dark last-card" style="--index: 4;">
                     <div class="card-inner">
                         <div class="card-left">
                             <h2 class="text-dark">2025</h2>
@@ -272,7 +272,7 @@ body { background: var(--bg-primary); color: var(--text-main); font-family: 'Int
 .smooth-wrapper { width: 100%; overflow: hidden; }
 
 /* 1. HERO */
-.hero-section {
+.about-hero-section {
     height: 100vh; width: 100%; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden;
 }
 .hero-bg {
@@ -330,31 +330,29 @@ body { background: var(--bg-primary); color: var(--text-main); font-family: 'Int
 .spotlight-item {
     padding: 50px 0; border-bottom: 1px solid rgba(255,255,255,0.1);
     display: flex; align-items: baseline; gap: 40px;
-    opacity: 0.3; transition: all 0.5s; filter: blur(2px);
+    opacity: 0.4; transition: all 0.5s; /* Increased base opacity */
 }
-.spotlight-item.active { opacity: 1; filter: blur(0); padding: 80px 0; }
-.spotlight-year { font-size: 4rem; font-family: 'Playfair Display'; color: transparent; -webkit-text-stroke: 1px #555; transition: all 0.5s; }
+.spotlight-item.active { opacity: 1; padding: 80px 0; transform: scale(1.05); }
+.spotlight-year { font-size: 4rem; font-family: 'Playfair Display'; color: transparent; -webkit-text-stroke: 1px #777; transition: all 0.5s; }
 .spotlight-item.active .spotlight-year { color: var(--gold); -webkit-text-stroke: 1px var(--gold); }
 .spotlight-content h3 { font-size: 2rem; margin-bottom: 10px; }
 
-/* 5. ERA 4: STACKING CARDS */
+/* 5. ERA 4: STACKING CARDS CSS-ONLY */
 .stacking-section { background: var(--bg-primary); padding-bottom: 15vh; }
 .sticky-stack-wrapper { position: relative; }
 .cards-container {
-    display: grid; grid-template-columns: 1fr;
-    max-width: 1000px; margin: 0 auto; padding-top: 100px;
+    max-width: 1000px; margin: 0 auto; padding-top: 50px; position: relative;
 }
 .stack-card {
-    position: sticky; top: 15vh;
-    height: 70vh; margin-bottom: 50px;
-    border-radius: 20px; box-shadow: 0 -20px 60px rgba(0,0,0,0.5);
-    display: flex; align-items: center; justify-content: center;
-    transform-origin: center top; transition: transform 0.5s, opacity 0.5s;
+    position: sticky; top: calc(15vh + var(--index) * 40px);
+    height: 60vh; margin-bottom: 50px;
+    border-radius: 20px; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
     background: #1a1f2b; border: 1px solid rgba(255,255,255,0.05);
+    display: flex; flex-direction: column; overflow: hidden;
 }
-.card-inner { display: flex; width: 100%; height: 100%; padding: 50px; gap: 50px; align-items: center; }
+.card-inner { display: flex; width: 100%; height: 100%; padding: 40px; gap: 40px; align-items: center; }
 .card-left { flex: 1; }
-.card-left h2 { font-size: 5rem; font-family: 'Playfair Display'; margin-bottom: 20px; line-height: 1; }
+.card-left h2 { font-size: 4rem; font-family: 'Playfair Display'; margin-bottom: 20px; line-height: 1; }
 .card-right { flex: 1; height: 100%; overflow: hidden; border-radius: 10px; }
 .card-right img { width: 100%; height: 100%; object-fit: cover; }
 .last-card { background: var(--gold); color: #000; box-shadow: 0 -30px 80px rgba(200, 155, 58, 0.3); }
@@ -370,7 +368,7 @@ body { background: var(--bg-primary); color: var(--text-main); font-family: 'Int
     .horizontal-track { position: relative; left: 0; top: 0; transform: none; padding: 20px 40px; }
     .spotlight-item { flex-direction: column; gap: 10px; text-align: center; }
     .card-inner { flex-direction: column; padding: 30px; text-align: center; }
-    .stack-card { height: auto; min-height: 60vh; }
+    .stack-card { position: relative; top: 0 !important; margin-bottom: 30px; height: auto; min-height: 60vh; }
 }
 </style>
 
@@ -423,7 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
             heroContent.style.transform = `translateY(${scrollY * 0.3}px)`;
         }
 
-        // Horizontal Logic
+        // Horizontal Logic - Corrected
         if(horizWrapper && window.innerWidth > 768) {
             const rect = horizWrapper.getBoundingClientRect();
             const top = rect.top;
@@ -431,7 +429,10 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if(top <= 0 && -top < dist) {
                 const percent = -top / dist;
-                const offset = percent * (horizTrack.scrollWidth - window.innerWidth + 200);
+                // Scroll width - viewport width + buffer
+                const scrollWidth = horizTrack.scrollWidth - window.innerWidth + 200;
+                const offset = percent * scrollWidth;
+                
                 horizTrack.style.transform = `translateY(-50%) translateX(-${offset}px)`;
                 
                 // Fade out intro
@@ -439,28 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Stacking Cards Logic
-        cards.forEach((card, i) => {
-            if(i === cards.length - 1) return; // Don't scale last card
-            const rect = card.getBoundingClientRect();
-            // If next card is overlapping
-            const nextCard = cards[i+1];
-            if(nextCard) {
-                const nextRect = nextCard.getBoundingClientRect();
-                if(nextRect.top < winH) {
-                    const progress = 1 - (nextRect.top / winH);
-                    if(progress > 0) {
-                        const scale = 1 - (progress * 0.05);
-                        const opacity = 1 - (progress * 0.5);
-                        card.style.transform = `scale(${scale})`;
-                        card.style.opacity = opacity;
-                    }
-                } else {
-                    card.style.transform = `scale(1)`;
-                    card.style.opacity = 1;
-                }
-            }
-        });
+        // Stacking Cards Logic (Removed JS for CSS-only stacking)
     });
 });
 </script>
