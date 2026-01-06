@@ -648,6 +648,30 @@
         const newQty = currentQty + change;
         if (newQty < 1) return; 
         
+        // Optimistic UI Update - update immediately
+        const item = document.querySelector(`.lux-item[data-id="${id}"]`) || 
+                     document.querySelector(`.lux-item:has([onclick*="updateCartItem(${id},"])`);
+        if (item) {
+            const qtyEl = item.querySelector('.lux-qty-num');
+            const priceEl = item.querySelector('.lux-item-total');
+            const unitEl = item.querySelector('.lux-item-unit');
+            if (qtyEl) qtyEl.textContent = newQty;
+            
+            // Update subtotal based on unit price
+            if (priceEl && unitEl) {
+                const unitPrice = parseInt(unitEl.textContent.replace(/[^\d]/g, ''));
+                const newTotal = unitPrice * newQty;
+                priceEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(newTotal);
+            }
+            
+            // Update button state
+            const minusBtn = item.querySelector('.lux-qty-btn:first-child');
+            if (minusBtn) minusBtn.disabled = (newQty <= 1);
+        }
+        
+        // Update total immediately (rough estimate)
+        updateTotalOptimistic(change);
+        
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         
         fetch(`/customer/cart/${id}`, {
@@ -662,15 +686,29 @@
         .then(res => res.json())
         .then(data => {
             if(data.success) {
-                refreshCartContent(); // Refresh content only, don't toggle panel
+                // Sync with server data
+                refreshCartContent();
                 updateCartCount();
             }
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+            console.error(err);
+            refreshCartContent(); // Revert on error
+        });
     }
 
     function removeCartItem(id) {
-        if(!confirm('Hapus menu ini dari keranjang?')) return;
+        // Find the item element first
+        const item = document.querySelector(`.lux-item[data-id="${id}"]`) || 
+                     document.querySelector(`.lux-item:has([onclick*="removeCartItem(${id})"])`);
+        
+        // Optimistic UI - remove immediately with animation
+        if (item) {
+            item.style.transition = 'all 0.3s ease';
+            item.style.opacity = '0';
+            item.style.transform = 'translateX(30px)';
+            setTimeout(() => item.remove(), 300);
+        }
 
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         
@@ -685,11 +723,24 @@
         .then(res => res.json())
         .then(data => {
             if(data.success) {
-                refreshCartContent(); // Refresh content only, don't toggle panel
+                refreshCartContent();
                 updateCartCount();
             }
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+            console.error(err);
+            refreshCartContent(); // Revert on error
+        });
+    }
+
+    // Update total price optimistically
+    function updateTotalOptimistic(change) {
+        const totalEl = document.getElementById('cartModalTotal');
+        if (totalEl) {
+            // This is a rough estimate, will be corrected by refreshCartContent
+            const currentTotal = parseInt(totalEl.textContent.replace(/[^\d]/g, '')) || 0;
+            // We don't know exact item price here, so just leave it for server sync
+        }
     }
 
     // Refresh cart content without closing/reopening panel
