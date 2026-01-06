@@ -1290,20 +1290,202 @@
         color: rgba(0, 0, 0, 0.6);
     }
 
-    /* Mobile */
+    /* Mobile - Compact View */
     @media (max-width: 480px) {
         .lux-cart-panel {
             max-width: 100%;
         }
         
         .lux-cart-float {
-            bottom: 20px;
-            right: 20px;
+            bottom: 16px;
+            right: 16px;
         }
         
         .lux-cart-btn {
-            width: 54px;
-            height: 54px;
+            width: 50px;
+            height: 50px;
+        }
+        
+        .lux-cart-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .lux-cart-count {
+            min-width: 20px;
+            height: 20px;
+            font-size: 0.65rem;
+        }
+        
+        /* Compact Header */
+        .lux-cart-head {
+            padding: 0 16px;
+        }
+        
+        .lux-cart-head-inner {
+            padding: 16px 0;
+        }
+        
+        .lux-cart-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+        }
+        
+        .lux-cart-icon svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .lux-cart-brand {
+            gap: 10px;
+        }
+        
+        .lux-cart-label {
+            font-size: 1rem;
+        }
+        
+        .lux-cart-count-text {
+            font-size: 0.7rem;
+        }
+        
+        .lux-close-btn {
+            width: 34px;
+            height: 34px;
+        }
+        
+        /* Compact Content */
+        .lux-cart-content {
+            padding: 12px 16px;
+        }
+        
+        .lux-items {
+            gap: 10px;
+        }
+        
+        .lux-item {
+            padding: 10px;
+            gap: 10px;
+            border-radius: 12px;
+        }
+        
+        .lux-item-img-wrap {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+        }
+        
+        .lux-item-name {
+            font-size: 0.85rem;
+        }
+        
+        .lux-item-unit {
+            font-size: 0.7rem;
+        }
+        
+        .lux-item-bottom {
+            padding-top: 8px;
+        }
+        
+        .lux-qty {
+            border-radius: 8px;
+        }
+        
+        .lux-qty-btn {
+            width: 28px;
+            height: 28px;
+        }
+        
+        .lux-qty-num {
+            min-width: 24px;
+            font-size: 0.8rem;
+        }
+        
+        .lux-item-total {
+            font-size: 0.85rem;
+        }
+        
+        .lux-item-remove {
+            width: 22px;
+            height: 22px;
+        }
+        
+        /* Compact Footer */
+        .lux-cart-foot {
+            padding: 14px 16px 20px;
+        }
+        
+        .lux-shipping-notice {
+            padding: 10px 12px;
+            font-size: 0.7rem;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            gap: 8px;
+        }
+        
+        .lux-shipping-notice svg {
+            width: 14px;
+            height: 14px;
+        }
+        
+        .lux-total-row {
+            margin-bottom: 12px;
+        }
+        
+        .lux-total-label {
+            font-size: 0.8rem;
+        }
+        
+        .lux-total-price {
+            font-size: 1.15rem;
+        }
+        
+        .lux-checkout-btn {
+            padding: 12px;
+            font-size: 0.9rem;
+            border-radius: 10px;
+        }
+        
+        .lux-checkout-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .lux-continue-btn {
+            padding: 10px;
+            font-size: 0.8rem;
+            margin-top: 8px;
+            border-radius: 10px;
+        }
+        
+        /* Compact Empty State */
+        .lux-empty {
+            padding: 40px 16px;
+        }
+        
+        .lux-empty-icon {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+        }
+        
+        .lux-empty-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+        
+        .lux-empty-title {
+            font-size: 1rem;
+        }
+        
+        .lux-empty-text {
+            font-size: 0.8rem;
+            margin-bottom: 16px;
+        }
+        
+        .lux-empty-btn {
+            padding: 10px 20px;
+            font-size: 0.8rem;
         }
     }
     /* 
