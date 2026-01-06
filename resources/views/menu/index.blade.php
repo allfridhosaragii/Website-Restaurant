@@ -124,35 +124,39 @@
     </a>
 </div>
 
-<!-- Cart Modal -->
+<!-- Cart Modal - Redesigned Elegant Version -->
 <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content glass-modal">
-            <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold" id="cartModalLabel">
-                    <i class="bi bi-cart3 me-2"></i>Keranjang Saya
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm-custom">
+        <div class="modal-content cart-modal-elegant">
+            <!-- Elegant Header -->
+            <div class="cart-modal-header">
+                <div class="cart-header-title">
+                    <i class="bi bi-bag"></i>
+                    <span>Keranjang</span>
+                    <span class="cart-item-count" id="cartHeaderCount"></span>
+                </div>
+                <button type="button" class="cart-close-btn" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
             </div>
-            <div class="modal-body p-0" id="cartModalBody">
-                <!-- Items will be loaded here -->
-                <div class="d-flex justify-content-center align-items-center py-5">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
+            
+            <!-- Cart Items -->
+            <div class="cart-modal-body" id="cartModalBody">
+                <div class="cart-loading">
+                    <div class="cart-spinner"></div>
                 </div>
             </div>
-            <div class="modal-footer border-0 justify-content-between">
-                <div class="text-start">
-                    <small class="text-muted d-block">Total</small>
-                    <span class="fs-5 fw-bold text-primary" id="cartModalTotal">Rp 0</span>
+            
+            <!-- Elegant Footer -->
+            <div class="cart-modal-footer">
+                <div class="cart-total-section">
+                    <span class="cart-total-label">Total</span>
+                    <span class="cart-total-amount" id="cartModalTotal">Rp 0</span>
                 </div>
-                <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
-                    <a href="{{ url('/customer/orders/create') }}" class="btn btn-primary rounded-pill px-4" id="btnCheckout">
-                        Checkout <i class="bi bi-arrow-right ms-1"></i>
-                    </a>
-                </div>
+                <a href="{{ url('/customer/orders/create') }}" class="cart-checkout-btn" id="btnCheckout">
+                    <span>Checkout</span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
             </div>
         </div>
     </div>
@@ -500,13 +504,23 @@
         const modalBody = document.getElementById('cartModalBody');
         const modalTotal = document.getElementById('cartModalTotal');
         const btnCheckout = document.getElementById('btnCheckout');
+        const headerCount = document.getElementById('cartHeaderCount');
+        
+        // Update header count
+        if (headerCount) {
+            headerCount.textContent = data.items ? `(${data.items.length})` : '';
+        }
         
         if (!data.items || data.items.length === 0) {
             modalBody.innerHTML = `
-                <div class="text-center py-5">
-                    <i class="bi bi-cart-x fs-1 text-muted mb-3 d-block"></i>
-                    <p class="text-muted">Keranjang kosong</p>
-                    <button class="btn btn-sm btn-outline-primary rounded-pill" data-bs-dismiss="modal">Mulai Belanja</button>
+                <div class="cart-empty">
+                    <div class="cart-empty-icon">
+                        <i class="bi bi-bag"></i>
+                    </div>
+                    <p class="cart-empty-text">Keranjang masih kosong</p>
+                    <button class="cart-start-btn" data-bs-dismiss="modal">
+                        Mulai Belanja
+                    </button>
                 </div>
             `;
             modalTotal.innerText = 'Rp 0';
@@ -515,38 +529,38 @@
         }
 
         btnCheckout.classList.remove('disabled');
-        modalTotal.innerText = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(data.total);
+        modalTotal.innerText = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(data.total);
 
-        let html = '<ul class="list-group list-group-flush bg-transparent">';
+        let html = '<div class="cart-items-list">';
         data.items.forEach(item => {
-            // Check if menu exists (soft delete handling)
             if (!item.menu) return;
 
+            const subtotal = item.menu.price * item.quantity;
             html += `
-                <li class="list-group-item bg-transparent d-flex gap-3 align-items-center p-3 border-bottom-0">
-                     <img src="${item.menu.image_url}" alt="${item.menu.name}" class="rounded-3 object-fit-cover" style="width: 60px; height: 60px;">
-                     <div class="flex-grow-1">
-                         <h6 class="mb-1 text-truncate fw-semibold" style="max-width: 180px;">${item.menu.name}</h6>
-                         <div class="text-primary small fw-bold">
-                            ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(item.menu.price)}
-                         </div>
-                     </div>
-                     <div class="d-flex align-items-center gap-2 bg-light bg-opacity-50 rounded-pill px-2 py-1 border border-secondary border-opacity-25" style="backdrop-filter: blur(5px);">
-                         <button class="btn btn-sm btn-link p-0 text-dark" onclick="updateCartItem(${item.id}, ${item.quantity}, -1)">
-                            <i class="bi bi-dash-circle-fill"></i>
-                         </button>
-                         <span class="fw-bold small px-2" style="min-width: 20px; text-align: center;">${item.quantity}</span>
-                         <button class="btn btn-sm btn-link p-0 text-primary" onclick="updateCartItem(${item.id}, ${item.quantity}, 1)">
-                            <i class="bi bi-plus-circle-fill"></i>
-                         </button>
-                     </div>
-                     <button class="btn btn-sm btn-link text-danger p-0 ms-2" onclick="removeCartItem(${item.id})">
-                        <i class="bi bi-trash"></i>
-                     </button>
-                </li>
+                <div class="cart-item">
+                    <img src="${item.menu.image_url}" alt="${item.menu.name}" class="cart-item-img">
+                    <div class="cart-item-info">
+                        <h6 class="cart-item-name">${item.menu.name}</h6>
+                        <span class="cart-item-price">${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(subtotal)}</span>
+                    </div>
+                    <div class="cart-item-actions">
+                        <div class="cart-qty-control">
+                            <button class="cart-qty-btn" onclick="updateCartItem(${item.id}, ${item.quantity}, -1)" ${item.quantity <= 1 ? 'disabled' : ''}>
+                                <i class="bi bi-dash"></i>
+                            </button>
+                            <span class="cart-qty-value">${item.quantity}</span>
+                            <button class="cart-qty-btn" onclick="updateCartItem(${item.id}, ${item.quantity}, 1)">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </div>
+                        <button class="cart-remove-btn" onclick="removeCartItem(${item.id})">
+                            <i class="bi bi-trash3"></i>
+                        </button>
+                    </div>
+                </div>
             `;
         });
-        html += '</ul>';
+        html += '</div>';
         modalBody.innerHTML = html;
     }
 
@@ -717,32 +731,341 @@
         font-size: 1.5rem;
     }
     
-    /* Modal Glassmorphism */
-    .glass-modal {
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    /* ===== ELEGANT CART MODAL STYLES ===== */
+    .modal-sm-custom .modal-dialog {
+        max-width: 380px;
+    }
+    
+    .cart-modal-elegant {
+        background: linear-gradient(145deg, #0a1f2e 0%, #0d2836 100%);
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+    }
+    
+    /* Header */
+    .cart-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    
+    .cart-header-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    
+    .cart-header-title i {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+    
+    .cart-item-count {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.5);
+        font-weight: 400;
+    }
+    
+    .cart-close-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.6);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .cart-close-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+    
+    /* Body */
+    .cart-modal-body {
+        padding: 16px;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    .cart-modal-body::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    .cart-modal-body::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+    }
+    
+    .cart-loading {
+        display: flex;
+        justify-content: center;
+        padding: 40px;
+    }
+    
+    .cart-spinner {
+        width: 32px;
+        height: 32px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        border-top-color: #C89B3A;
+        border-radius: 50%;
+        animation: cart-spin 0.8s linear infinite;
+    }
+    
+    @keyframes cart-spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Empty State */
+    .cart-empty {
+        text-align: center;
+        padding: 40px 20px;
+    }
+    
+    .cart-empty-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .cart-empty-icon i {
+        font-size: 1.8rem;
+        color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .cart-empty-text {
+        color: rgba(255, 255, 255, 0.5);
+        margin-bottom: 20px;
+        font-size: 0.95rem;
+    }
+    
+    .cart-start-btn {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+        padding: 10px 24px;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .cart-start-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    /* Cart Items */
+    .cart-items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .cart-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 16px;
+        transition: background 0.2s ease;
+    }
+    
+    .cart-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .cart-item-img {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    
+    .cart-item-info {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .cart-item-name {
+        margin: 0 0 4px 0;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #fff;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .cart-item-price {
+        font-size: 0.85rem;
+        color: #C89B3A;
+        font-weight: 600;
+    }
+    
+    .cart-item-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+    }
+    
+    .cart-qty-control {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 50px;
+        padding: 4px;
+    }
+    
+    .cart-qty-btn {
+        width: 28px;
+        height: 28px;
+        border: none;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.7);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    
+    .cart-qty-btn:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+    
+    .cart-qty-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+    
+    .cart-qty-value {
+        min-width: 28px;
+        text-align: center;
+        font-weight: 600;
+        color: #fff;
+        font-size: 0.9rem;
+    }
+    
+    .cart-remove-btn {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    
+    .cart-remove-btn:hover {
+        background: rgba(220, 53, 69, 0.2);
+    }
+    
+    /* Footer */
+    .cart-modal-footer {
+        padding: 20px 24px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+    }
+    
+    .cart-total-section {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .cart-total-label {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .cart-total-amount {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #C89B3A;
+    }
+    
+    .cart-checkout-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #C89B3A 0%, #a67c28 100%);
+        color: #fff;
+        padding: 12px 28px;
+        border-radius: 50px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(200, 155, 58, 0.3);
+    }
+    
+    .cart-checkout-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(200, 155, 58, 0.4);
+        color: #fff;
+    }
+    
+    .cart-checkout-btn.disabled {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+    
+    /* Light Mode Support */
+    [data-theme="light"] .cart-modal-elegant {
+        background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+    
+    [data-theme="light"] .cart-header-title,
+    [data-theme="light"] .cart-item-name,
+    [data-theme="light"] .cart-qty-value {
         color: #0C2A36;
-        border-radius: 20px;
     }
     
-    [data-theme="dark"] .glass-modal {
-        background: rgba(12, 42, 54, 0.9);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #E6EFEF;
+    [data-theme="light"] .cart-close-btn {
+        background: rgba(0, 0, 0, 0.05);
+        color: rgba(0, 0, 0, 0.6);
     }
     
-    .glass-modal .btn-close {
-        filter: grayscale(1);
-    }
-    [data-theme="dark"] .glass-modal .btn-close {
-        filter: invert(1) grayscale(1);
+    [data-theme="light"] .cart-item {
+        background: rgba(0, 0, 0, 0.02);
     }
     
-    .glass-modal .list-group-item {
-        color: inherit;
+    [data-theme="light"] .cart-qty-control {
+        background: rgba(0, 0, 0, 0.06);
+    }
+    
+    [data-theme="light"] .cart-qty-btn {
+        color: rgba(0, 0, 0, 0.7);
     }
     /* 
      * IMPORTANT: Disable ALL CSS :hover and :focus pseudo-classes for menu-card
