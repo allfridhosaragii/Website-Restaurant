@@ -2,8 +2,12 @@
 
 @section('title', 'The Legacy • Culinaire')
 
+@extends('layouts.guest')
+
+@section('title', 'The Legacy • Culinaire')
+
 @section('content')
-<div class="smooth-wrapper">
+<div class="about-luxury-wrapper smooth-wrapper">
     
     <!-- HERO SECTION: THE LEGACY -->
     <section class="about-hero-section" id="hero">
@@ -259,8 +263,8 @@
 </div>
 
 <style>
-/* CORE LUXURY SETTINGS */
-:root {
+/* CORE LUXURY SETTINGS - SCOPED */
+.about-luxury-wrapper {
     --bg-primary: #050608;
     --bg-secondary: #0A0C10;
     --gold: #D4AF37;
@@ -269,14 +273,31 @@
     --font-display: 'Playfair Display', serif;
     --font-serif: 'Lora', serif;
     --font-mono: 'Space Mono', monospace;
-}
 
-body { 
-    background: var(--bg-primary); 
+    /* Force Dark Theme */
+    background-color: var(--bg-primary); 
     color: var(--text-white); 
     font-family: var(--font-serif);
     overflow-x: hidden; 
+    width: 100%;
+    min-height: 100vh;
+    position: relative;
+    z-index: 10;
 }
+
+/* Force text colors to be visible regardless of global theme */
+.about-luxury-wrapper h1,
+.about-luxury-wrapper h2,
+.about-luxury-wrapper h3,
+.about-luxury-wrapper h4,
+.about-luxury-wrapper h5,
+.about-luxury-wrapper h6,
+.about-luxury-wrapper p,
+.about-luxury-wrapper span,
+.about-luxury-wrapper div {
+    color: inherit;
+}
+
 
 /* TYPOGRAPHY */
 .display-super { 
