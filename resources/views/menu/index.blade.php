@@ -113,32 +113,65 @@
     </div>
 </section>
 
-<!-- Floating Cart Button -->
-<div id="floatingCartContainer" class="cart-float-container">
-    <button type="button" class="cart-float-btn" onclick="toggleCartPanel()">
-        <i class="bi bi-bag-fill"></i>
-        <span class="cart-float-badge" id="cartCountBadge">0</span>
+<!-- Luxury Floating Cart Button -->
+<div id="floatingCartContainer" class="lux-cart-float">
+    <button type="button" class="lux-cart-btn" onclick="toggleCartPanel()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4z"/>
+        </svg>
+        <span class="lux-cart-count" id="cartCountBadge">0</span>
     </button>
 </div>
 
-<!-- Slide-out Cart Panel -->
-<div class="cart-overlay" id="cartOverlay" onclick="closeCartPanel()"></div>
-<div class="cart-panel" id="cartPanel">
-    <div class="cart-panel-header">
-        <span class="cart-panel-title">Keranjang <span id="cartHeaderCount"></span></span>
-        <button class="cart-panel-close" onclick="closeCartPanel()">
-            <i class="bi bi-x"></i>
-        </button>
-    </div>
-    <div class="cart-panel-body" id="cartModalBody"></div>
-    <div class="cart-panel-footer">
-        <div class="cart-footer-total">
-            <span>Total</span>
-            <span id="cartModalTotal">Rp 0</span>
+<!-- Luxury Cart Panel -->
+<div class="lux-overlay" id="cartOverlay" onclick="closeCartPanel()"></div>
+<div class="lux-cart-panel" id="cartPanel">
+    <!-- Premium Header -->
+    <div class="lux-cart-head">
+        <div class="lux-cart-head-inner">
+            <div class="lux-cart-brand">
+                <span class="lux-cart-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4z"/>
+                    </svg>
+                </span>
+                <div class="lux-cart-titles">
+                    <span class="lux-cart-label">Shopping Bag</span>
+                    <span class="lux-cart-count-text" id="cartHeaderCount"></span>
+                </div>
+            </div>
+            <button class="lux-close-btn" onclick="closeCartPanel()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                </svg>
+            </button>
         </div>
-        <a href="{{ url('/customer/orders/create') }}" class="cart-footer-btn" id="btnCheckout">
-            Checkout <i class="bi bi-arrow-right"></i>
+    </div>
+    
+    <!-- Cart Content -->
+    <div class="lux-cart-content" id="cartModalBody"></div>
+    
+    <!-- Premium Footer -->
+    <div class="lux-cart-foot">
+        <div class="lux-shipping-notice">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5v-7zm1.294 7.456A1.999 1.999 0 0 1 4.732 11h5.536a2.01 2.01 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456zM12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12v4zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+            </svg>
+            <span>Gratis ongkir untuk pesanan di atas Rp 200.000</span>
+        </div>
+        <div class="lux-total-row">
+            <span class="lux-total-label">Subtotal</span>
+            <span class="lux-total-price" id="cartModalTotal">Rp 0</span>
+        </div>
+        <a href="{{ url('/customer/orders/create') }}" class="lux-checkout-btn" id="btnCheckout">
+            <span>Lanjut ke Pembayaran</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8"/>
+            </svg>
         </a>
+        <button class="lux-continue-btn" onclick="closeCartPanel()">
+            Lanjut Belanja
+        </button>
     </div>
 </div>
 @endsection
@@ -485,18 +518,22 @@
         
         // Update header count
         if (headerCount) {
-            headerCount.textContent = data.items ? `(${data.items.length})` : '';
+            const count = data.items ? data.items.length : 0;
+            headerCount.textContent = count > 0 ? `${count} item${count > 1 ? 's' : ''}` : '';
         }
         
         if (!data.items || data.items.length === 0) {
             modalBody.innerHTML = `
-                <div class="cart-empty">
-                    <div class="cart-empty-icon">
-                        <i class="bi bi-bag"></i>
+                <div class="lux-empty">
+                    <div class="lux-empty-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4z"/>
+                        </svg>
                     </div>
-                    <p class="cart-empty-text">Keranjang masih kosong</p>
-                    <button class="cart-start-btn" data-bs-dismiss="modal">
-                        Mulai Belanja
+                    <h4 class="lux-empty-title">Keranjang Kosong</h4>
+                    <p class="lux-empty-text">Sepertinya kamu belum menambahkan menu apapun</p>
+                    <button class="lux-empty-btn" onclick="closeCartPanel()">
+                        Jelajahi Menu
                     </button>
                 </div>
             `;
@@ -508,31 +545,45 @@
         btnCheckout.classList.remove('disabled');
         modalTotal.innerText = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(data.total);
 
-        let html = '<div class="cart-items-list">';
-        data.items.forEach(item => {
+        let html = '<div class="lux-items">';
+        data.items.forEach((item, index) => {
             if (!item.menu) return;
 
             const subtotal = item.menu.price * item.quantity;
+            const unitPrice = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(item.menu.price);
+            const totalPrice = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(subtotal);
+            
             html += `
-                <div class="cart-item">
-                    <img src="${item.menu.image_url}" alt="${item.menu.name}" class="cart-item-img">
-                    <div class="cart-item-info">
-                        <h6 class="cart-item-name">${item.menu.name}</h6>
-                        <span class="cart-item-price">${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(subtotal)}</span>
+                <div class="lux-item" style="animation-delay: ${index * 0.05}s">
+                    <div class="lux-item-img-wrap">
+                        <img src="${item.menu.image_url}" alt="${item.menu.name}" class="lux-item-img">
                     </div>
-                    <div class="cart-item-actions">
-                        <div class="cart-qty-control">
-                            <button class="cart-qty-btn" onclick="updateCartItem(${item.id}, ${item.quantity}, -1)" ${item.quantity <= 1 ? 'disabled' : ''}>
-                                <i class="bi bi-dash"></i>
-                            </button>
-                            <span class="cart-qty-value">${item.quantity}</span>
-                            <button class="cart-qty-btn" onclick="updateCartItem(${item.id}, ${item.quantity}, 1)">
-                                <i class="bi bi-plus"></i>
+                    <div class="lux-item-details">
+                        <div class="lux-item-top">
+                            <h5 class="lux-item-name">${item.menu.name}</h5>
+                            <button class="lux-item-remove" onclick="removeCartItem(${item.id})">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                                </svg>
                             </button>
                         </div>
-                        <button class="cart-remove-btn" onclick="removeCartItem(${item.id})">
-                            <i class="bi bi-trash3"></i>
-                        </button>
+                        <span class="lux-item-unit">${unitPrice}</span>
+                        <div class="lux-item-bottom">
+                            <div class="lux-qty">
+                                <button class="lux-qty-btn" onclick="updateCartItem(${item.id}, ${item.quantity}, -1)" ${item.quantity <= 1 ? 'disabled' : ''}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
+                                    </svg>
+                                </button>
+                                <span class="lux-qty-num">${item.quantity}</span>
+                                <button class="lux-qty-btn" onclick="updateCartItem(${item.id}, ${item.quantity}, 1)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <span class="lux-item-total">${totalPrice}</span>
+                        </div>
                     </div>
                 </div>
             `;
@@ -664,268 +715,344 @@
         background: white;
     }
 
-    /* ===== ULTRA-MINIMAL CART PANEL ===== */
+    /* ========== LUXURY CART DESIGN ========== */
     
-    /* Floating Button */
-    .cart-float-container {
+    /* Premium Floating Button */
+    .lux-cart-float {
         position: fixed;
-        bottom: 24px;
-        right: 24px;
-        z-index: 1000;
+        bottom: 28px;
+        right: 28px;
+        z-index: 999;
         opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.3s ease;
+        transform: translateY(24px) scale(0.9);
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         pointer-events: none;
     }
     
-    .cart-float-container.show {
+    .lux-cart-float.show {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
         pointer-events: auto;
     }
     
-    .cart-float-btn {
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
+    .lux-cart-btn {
+        width: 60px;
+        height: 60px;
         border: none;
-        background: #C89B3A;
-        color: #fff;
-        font-size: 1.25rem;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        color: #C89B3A;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         position: relative;
-        box-shadow: 0 4px 20px rgba(200, 155, 58, 0.4);
-        transition: all 0.25s ease;
+        box-shadow: 
+            0 8px 32px rgba(0, 0, 0, 0.3),
+            0 0 0 1px rgba(200, 155, 58, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
     }
     
-    .cart-float-btn:hover {
-        transform: scale(1.08);
-        box-shadow: 0 6px 28px rgba(200, 155, 58, 0.5);
+    .lux-cart-btn::before {
+        content: '';
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #C89B3A 0%, #a67c28 100%);
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
     }
     
-    .cart-float-btn:active {
+    .lux-cart-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 
+            0 12px 40px rgba(0, 0, 0, 0.35),
+            0 0 0 1px rgba(200, 155, 58, 0.4);
+    }
+    
+    .lux-cart-btn:hover::before {
+        opacity: 0.15;
+    }
+    
+    .lux-cart-btn:active {
         transform: scale(0.95);
     }
     
-    .cart-float-badge {
+    .lux-cart-count {
         position: absolute;
-        top: -4px;
-        right: -4px;
-        min-width: 22px;
-        height: 22px;
-        background: #dc3545;
+        top: -6px;
+        right: -6px;
+        min-width: 24px;
+        height: 24px;
+        background: linear-gradient(135deg, #C89B3A 0%, #a67c28 100%);
         color: #fff;
-        font-size: 0.75rem;
-        font-weight: 600;
+        font-size: 0.7rem;
+        font-weight: 700;
         border-radius: 50px;
         display: none;
         align-items: center;
         justify-content: center;
-        padding: 0 6px;
+        padding: 0 7px;
+        box-shadow: 0 2px 8px rgba(200, 155, 58, 0.4);
+        letter-spacing: -0.02em;
     }
-    
+
     /* Overlay */
-    .cart-overlay {
+    .lux-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(4px);
+        background: rgba(10, 15, 25, 0.7);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
         z-index: 1050;
         opacity: 0;
         visibility: hidden;
-        transition: all 0.3s ease;
+        transition: all 0.4s ease;
     }
     
-    .cart-overlay.show {
+    .lux-overlay.show {
         opacity: 1;
         visibility: visible;
     }
-    
-    /* Slide Panel */
-    .cart-panel {
+
+    /* Cart Panel */
+    .lux-cart-panel {
         position: fixed;
         top: 0;
         right: 0;
         width: 100%;
-        max-width: 360px;
+        max-width: 420px;
         height: 100%;
-        background: #0d1f2d;
+        background: linear-gradient(180deg, #0f1923 0%, #0a1018 100%);
         z-index: 1051;
         transform: translateX(100%);
-        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
         display: flex;
         flex-direction: column;
+        box-shadow: -20px 0 60px rgba(0, 0, 0, 0.4);
     }
     
-    .cart-panel.open {
+    .lux-cart-panel.open {
         transform: translateX(0);
     }
+
+    /* Header */
+    .lux-cart-head {
+        padding: 0 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
     
-    .cart-panel-header {
+    .lux-cart-head-inner {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 24px 0;
     }
     
-    .cart-panel-title {
-        color: #fff;
-        font-size: 1.1rem;
+    .lux-cart-brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    
+    .lux-cart-icon {
+        width: 44px;
+        height: 44px;
+        background: linear-gradient(135deg, rgba(200, 155, 58, 0.15) 0%, rgba(200, 155, 58, 0.05) 100%);
+        border: 1px solid rgba(200, 155, 58, 0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #C89B3A;
+    }
+    
+    .lux-cart-titles {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .lux-cart-label {
+        font-size: 1.15rem;
         font-weight: 600;
+        color: #fff;
+        letter-spacing: -0.02em;
     }
     
-    .cart-panel-title span {
+    .lux-cart-count-text {
+        font-size: 0.8rem;
         color: rgba(255, 255, 255, 0.4);
         font-weight: 400;
     }
     
-    .cart-panel-close {
-        width: 36px;
-        height: 36px;
+    .lux-close-btn {
+        width: 40px;
+        height: 40px;
         border: none;
-        background: rgba(255, 255, 255, 0.05);
-        color: rgba(255, 255, 255, 0.6);
-        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 10px;
         cursor: pointer;
-        font-size: 1.25rem;
         display: flex;
         align-items: center;
         justify-content: center;
+        color: rgba(255, 255, 255, 0.5);
         transition: all 0.2s ease;
     }
     
-    .cart-panel-close:hover {
-        background: rgba(255, 255, 255, 0.1);
+    .lux-close-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
         color: #fff;
     }
-    
-    .cart-panel-body {
+
+    /* Content */
+    .lux-cart-content {
         flex: 1;
         overflow-y: auto;
+        padding: 20px 24px;
+    }
+    
+    .lux-cart-content::-webkit-scrollbar {
+        width: 5px;
+    }
+    
+    .lux-cart-content::-webkit-scrollbar-thumb {
+        background: rgba(200, 155, 58, 0.3);
+        border-radius: 5px;
+    }
+
+    /* Cart Items */
+    .lux-items {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .lux-item {
+        display: flex;
+        gap: 16px;
         padding: 16px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        border-radius: 16px;
+        animation: luxItemSlide 0.4s ease forwards;
+        opacity: 0;
+        transform: translateX(20px);
     }
     
-    .cart-panel-body::-webkit-scrollbar {
-        width: 4px;
+    @keyframes luxItemSlide {
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
     }
     
-    .cart-panel-body::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 4px;
-    }
-    
-    .cart-panel-footer {
-        padding: 16px 20px;
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(0, 0, 0, 0.2);
-    }
-    
-    .cart-footer-total {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 12px;
-        color: #fff;
-        font-size: 1rem;
-    }
-    
-    .cart-footer-total span:last-child {
-        color: #C89B3A;
-        font-weight: 700;
-        font-size: 1.15rem;
-    }
-    
-    .cart-footer-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        width: 100%;
-        padding: 14px;
-        background: #C89B3A;
-        color: #fff;
-        border: none;
+    .lux-item-img-wrap {
+        flex-shrink: 0;
+        width: 80px;
+        height: 80px;
         border-radius: 12px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.25s ease;
+        overflow: hidden;
+        position: relative;
     }
     
-    .cart-footer-btn:hover {
-        background: #d4a84a;
-        color: #fff;
-    }
-    
-    .cart-footer-btn.disabled {
-        opacity: 0.5;
+    .lux-item-img-wrap::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
         pointer-events: none;
     }
     
-    /* Cart Items */
-    .cart-items-list {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-    
-    .cart-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px;
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 12px;
-    }
-    
-    .cart-item-img {
-        width: 48px;
-        height: 48px;
-        border-radius: 10px;
+    .lux-item-img {
+        width: 100%;
+        height: 100%;
         object-fit: cover;
+        transition: transform 0.3s ease;
     }
     
-    .cart-item-info {
+    .lux-item:hover .lux-item-img {
+        transform: scale(1.05);
+    }
+    
+    .lux-item-details {
         flex: 1;
         min-width: 0;
-    }
-    
-    .cart-item-name {
-        margin: 0 0 2px 0;
-        font-size: 0.9rem;
-        font-weight: 500;
-        color: #fff;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    .cart-item-price {
-        font-size: 0.8rem;
-        color: #C89B3A;
-        font-weight: 600;
-    }
-    
-    .cart-item-actions {
         display: flex;
-        align-items: center;
+        flex-direction: column;
+    }
+    
+    .lux-item-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
         gap: 8px;
     }
     
-    .cart-qty-control {
-        display: flex;
-        align-items: center;
-        background: rgba(255, 255, 255, 0.06);
-        border-radius: 8px;
-        padding: 2px;
+    .lux-item-name {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #fff;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
     
-    .cart-qty-btn {
-        width: 26px;
-        height: 26px;
+    .lux-item-remove {
+        flex-shrink: 0;
+        width: 24px;
+        height: 24px;
+        border: none;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.3);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+    
+    .lux-item-remove:hover {
+        background: rgba(220, 53, 69, 0.15);
+        color: #dc3545;
+    }
+    
+    .lux-item-unit {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.4);
+        margin-top: 4px;
+    }
+    
+    .lux-item-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+        padding-top: 12px;
+    }
+    
+    .lux-qty {
+        display: flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .lux-qty-btn {
+        width: 32px;
+        height: 32px;
         border: none;
         background: transparent;
         color: rgba(255, 255, 255, 0.6);
-        border-radius: 6px;
         cursor: pointer;
         display: flex;
         align-items: center;
@@ -933,137 +1060,250 @@
         transition: all 0.15s ease;
     }
     
-    .cart-qty-btn:hover:not(:disabled) {
-        background: rgba(255, 255, 255, 0.1);
+    .lux-qty-btn:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.08);
         color: #fff;
     }
     
-    .cart-qty-btn:disabled {
-        opacity: 0.3;
+    .lux-qty-btn:disabled {
+        opacity: 0.25;
+        cursor: not-allowed;
     }
     
-    .cart-qty-value {
-        min-width: 24px;
+    .lux-qty-num {
+        min-width: 32px;
         text-align: center;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         font-weight: 600;
         color: #fff;
     }
     
-    .cart-remove-btn {
-        width: 28px;
-        height: 28px;
-        border: none;
-        background: rgba(220, 53, 69, 0.1);
-        color: #dc3545;
-        border-radius: 6px;
-        cursor: pointer;
+    .lux-item-total {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #C89B3A;
+    }
+
+    /* Footer */
+    .lux-cart-foot {
+        padding: 20px 24px 28px;
+        background: linear-gradient(180deg, rgba(15, 25, 35, 0.95) 0%, rgba(10, 16, 24, 1) 100%);
+        border-top: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    
+    .lux-shipping-notice {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        background: rgba(200, 155, 58, 0.08);
+        border: 1px solid rgba(200, 155, 58, 0.15);
+        border-radius: 10px;
+        margin-bottom: 16px;
+        color: #C89B3A;
+        font-size: 0.8rem;
+    }
+    
+    .lux-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+    
+    .lux-total-label {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .lux-total-price {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: -0.02em;
+    }
+    
+    .lux-checkout-btn {
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.15s ease;
+        gap: 10px;
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #C89B3A 0%, #a67c28 100%);
+        border: none;
+        border-radius: 14px;
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        box-shadow: 0 4px 20px rgba(200, 155, 58, 0.25);
+        transition: all 0.3s ease;
     }
     
-    .cart-remove-btn:hover {
-        background: rgba(220, 53, 69, 0.2);
+    .lux-checkout-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(200, 155, 58, 0.35);
+        color: #fff;
     }
     
-    /* Loading & Empty States */
-    .cart-loading {
-        display: flex;
-        justify-content: center;
-        padding: 60px 0;
+    .lux-checkout-btn.disabled {
+        opacity: 0.4;
+        pointer-events: none;
     }
     
-    .cart-spinner {
-        width: 28px;
-        height: 28px;
-        border: 2px solid rgba(255, 255, 255, 0.1);
-        border-top-color: #C89B3A;
-        border-radius: 50%;
-        animation: spin 0.7s linear infinite;
+    .lux-continue-btn {
+        width: 100%;
+        padding: 14px;
+        margin-top: 10px;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
     }
     
-    @keyframes spin { to { transform: rotate(360deg); } }
-    
-    .cart-empty {
+    .lux-continue-btn:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: #fff;
+    }
+
+    /* Empty State */
+    .lux-empty {
         text-align: center;
         padding: 60px 20px;
     }
     
-    .cart-empty-icon {
-        width: 56px;
-        height: 56px;
-        margin: 0 auto 16px;
-        background: rgba(255, 255, 255, 0.05);
+    .lux-empty-icon {
+        width: 88px;
+        height: 88px;
+        margin: 0 auto 24px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
-        color: rgba(255, 255, 255, 0.2);
+        color: rgba(255, 255, 255, 0.15);
     }
     
-    .cart-empty-text {
-        color: rgba(255, 255, 255, 0.4);
-        font-size: 0.9rem;
-        margin-bottom: 16px;
-    }
-    
-    .cart-start-btn {
-        background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.15);
+    .lux-empty-title {
+        font-size: 1.15rem;
+        font-weight: 600;
         color: #fff;
-        padding: 10px 20px;
-        border-radius: 8px;
+        margin: 0 0 8px;
+    }
+    
+    .lux-empty-text {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.4);
+        margin: 0 0 24px;
+    }
+    
+    .lux-empty-btn {
+        padding: 12px 28px;
+        background: linear-gradient(135deg, #C89B3A 0%, #a67c28 100%);
+        border: none;
+        border-radius: 12px;
+        color: #fff;
+        font-size: 0.9rem;
+        font-weight: 600;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
     }
     
-    .cart-start-btn:hover {
-        background: rgba(255, 255, 255, 0.05);
+    .lux-empty-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(200, 155, 58, 0.3);
     }
     
-    .cart-error {
-        text-align: center;
-        padding: 40px;
-        color: #dc3545;
+    /* Loading */
+    .cart-loading {
+        display: flex;
+        justify-content: center;
+        padding: 80px 0;
     }
     
+    .cart-spinner {
+        width: 32px;
+        height: 32px;
+        border: 2px solid rgba(255, 255, 255, 0.08);
+        border-top-color: #C89B3A;
+        border-radius: 50%;
+        animation: luxSpin 0.8s linear infinite;
+    }
+    
+    @keyframes luxSpin { to { transform: rotate(360deg); } }
+
     /* Light Mode */
-    [data-theme="light"] .cart-panel {
-        background: #fff;
-        box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
+    [data-theme="light"] .lux-cart-panel {
+        background: linear-gradient(180deg, #fefefe 0%, #f8f9fa 100%);
+        box-shadow: -20px 0 60px rgba(0, 0, 0, 0.1);
     }
     
-    [data-theme="light"] .cart-panel-title,
-    [data-theme="light"] .cart-item-name,
-    [data-theme="light"] .cart-qty-value,
-    [data-theme="light"] .cart-footer-total {
-        color: #0d1f2d;
+    [data-theme="light"] .lux-cart-head {
+        border-color: rgba(0, 0, 0, 0.06);
     }
     
-    [data-theme="light"] .cart-item {
+    [data-theme="light"] .lux-cart-label,
+    [data-theme="light"] .lux-item-name,
+    [data-theme="light"] .lux-qty-num,
+    [data-theme="light"] .lux-total-price,
+    [data-theme="light"] .lux-empty-title {
+        color: #0f1923;
+    }
+    
+    [data-theme="light"] .lux-cart-icon {
+        background: rgba(200, 155, 58, 0.1);
+    }
+    
+    [data-theme="light"] .lux-close-btn {
+        background: rgba(0, 0, 0, 0.04);
+        color: rgba(0, 0, 0, 0.5);
+    }
+    
+    [data-theme="light"] .lux-item {
         background: rgba(0, 0, 0, 0.02);
+        border-color: rgba(0, 0, 0, 0.04);
     }
     
-    [data-theme="light"] .cart-qty-control {
-        background: rgba(0, 0, 0, 0.05);
+    [data-theme="light"] .lux-qty {
+        background: rgba(0, 0, 0, 0.03);
+        border-color: rgba(0, 0, 0, 0.06);
     }
     
-    [data-theme="light"] .cart-qty-btn {
+    [data-theme="light"] .lux-qty-btn {
         color: rgba(0, 0, 0, 0.5);
     }
     
-    [data-theme="light"] .cart-panel-close {
-        background: rgba(0, 0, 0, 0.05);
-        color: rgba(0, 0, 0, 0.5);
+    [data-theme="light"] .lux-cart-foot {
+        background: #fff;
+        border-color: rgba(0, 0, 0, 0.06);
     }
     
+    [data-theme="light"] .lux-continue-btn {
+        border-color: rgba(0, 0, 0, 0.1);
+        color: rgba(0, 0, 0, 0.6);
+    }
+
     /* Mobile */
-    @media (max-width: 400px) {
-        .cart-panel {
+    @media (max-width: 480px) {
+        .lux-cart-panel {
             max-width: 100%;
+        }
+        
+        .lux-cart-float {
+            bottom: 20px;
+            right: 20px;
+        }
+        
+        .lux-cart-btn {
+            width: 54px;
+            height: 54px;
         }
     }
     /* 
