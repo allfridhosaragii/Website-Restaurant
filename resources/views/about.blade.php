@@ -2,14 +2,6 @@
 
 @section('title', 'The Legacy • Culinaire')
 
-@extends('layouts.guest')
-
-@section('title', 'The Legacy • Culinaire')
-
-@extends('layouts.guest')
-
-@section('title', 'The Legacy • Culinaire')
-
 @section('content')
 <!-- WRAPPER: Forced Dark Theme & CSS Isolation -->
 <div class="about-luxury-wrapper smooth-wrapper" id="aboutPageRoot">
@@ -276,7 +268,7 @@
     width: 100%;
     min-height: 100vh;
     position: relative;
-    z-index: 50; /* Above everything else */
+    z-index: 50;
     overflow-x: hidden;
     padding-bottom: 0;
 }
@@ -297,12 +289,9 @@
 .about-luxury-wrapper .text-gold { color: #D4AF37 !important; }
 .about-luxury-wrapper .text-white { color: #ffffff !important; }
 .about-luxury-wrapper .text-white-50 { color: rgba(255,255,255,0.5) !important; }
+.about-luxury-wrapper .text-gray-300 { color: #d1d5db !important; }
+.about-luxury-wrapper .text-gray-400 { color: #9ca3af !important; }
 
-/* Navbar Fixes for this Page */
-.about-luxury-wrapper ~ nav, 
-body:has(.about-luxury-wrapper) nav {
-    /* Ensure navbar is visible on dark bg */
-}
 /* Disable strikethrough if present globally */
 .nav-link { text-decoration: none !important; }
 
@@ -357,7 +346,7 @@ body:has(.about-luxury-wrapper) nav {
     align-items: center;
     margin-bottom: 150px;
     position: relative;
-    opacity: 0; /* Animated in by JS */
+    opacity: 0;
     transform: translateY(50px);
     transition: all 0.8s ease-out;
 }
@@ -400,8 +389,8 @@ body:has(.about-luxury-wrapper) nav {
     overflow-y: hidden;
     white-space: nowrap;
     padding-bottom: 30px;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     cursor: grab;
     padding-left: 10%;
     padding-right: 10%;
@@ -447,11 +436,11 @@ body:has(.about-luxury-wrapper) nav {
     position: relative;
     max-width: 900px;
     margin: 0 auto;
-    height: 1200px; /* Force height so valid sticky area */
+    height: 1200px;
 }
 .stack-card {
     position: sticky;
-    top: 100px; /* Will be overridden inline */
+    top: 100px;
     height: 450px;
     width: 100%;
     background: #111;
@@ -467,7 +456,24 @@ body:has(.about-luxury-wrapper) nav {
 .sc-content { padding: 60px; width: 50%; display: flex; flex-direction: column; justify-content: center; }
 .sc-image { width: 50%; height: 100%; }
 .sc-image img { width: 100%; height: 100%; object-fit: cover; }
-.sc-year { font-size: 4rem; font-family: var(--font-display); font-weight: 700; line-height: 1; margin-bottom: 20px; display: block; }
+.sc-year { font-size: 4rem; font-family: 'Playfair Display', serif; font-weight: 700; line-height: 1; margin-bottom: 20px; display: block; }
+
+/* Responsive */
+@media(max-width: 768px) {
+    .display-super { font-size: 4rem; }
+    .node-content { flex-direction: column !important; gap: 30px; text-align: center; padding: 0 20px; }
+    .node-img { width: 100%; height: 250px; }
+    .node-text { width: 100%; text-align: center !important; }
+    .node-year { font-size: 2.5rem; }
+    .central-line { display: none; }
+    
+    .stack-card { flex-direction: column; height: auto; position: relative; top: 0 !important; margin-bottom: 30px; }
+    .sc-content, .sc-image { width: 100%; }
+    .sc-image { height: 250px; }
+    .sc-content { padding: 30px; }
+    .sc-year { font-size: 2.5rem; }
+    .cards-stack-wrapper { height: auto; }
+}
 </style>
 
 <script>
@@ -491,228 +497,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 entry.target.classList.add('active');
             }
         });
-    }, { threshold: 0.5 }); // Center of screen
+    }, { threshold: 0.5 });
 
     document.querySelectorAll('.spotlight-item').forEach(item => spotlightObserver.observe(item));
-
-    // 3. Stacking Cards Parallax (Optional Enhancement)
-    window.addEventListener('scroll', () => {
-        const cards = document.querySelectorAll('.stack-card');
-        cards.forEach((card, index) => {
-            // Logic handled by CSS sticky mostly, but can add scale effect here if needed
-            // Currently keeping it simple/robust as per user request to fix bugs first
-        });
-    });
-});
-</script>
-@endsection
-
-
-/* TYPOGRAPHY */
-.display-super { 
-    font-family: var(--font-display); 
-    font-size: clamp(4rem, 15vw, 12rem); 
-    font-weight: 400; 
-    line-height: 0.9;
-    letter-spacing: -0.02em;
-}
-.display-3 {
-    font-family: var(--font-display);
-    font-weight: 400;
-    letter-spacing: -1px;
-}
-.font-display { font-family: var(--font-display); }
-.font-mono { font-family: var(--font-mono); }
-.text-gold { color: var(--gold); }
-.text-white-50 { color: var(--text-muted); }
-.tracking-widest { letter-spacing: 0.2em; }
-
-/* 1. HERO */
-.about-hero-section {
-    height: 100vh; width: 100%; position: relative; 
-    display: flex; align-items: center; justify-content: center; 
-}
-.hero-bg {
-    position: absolute; inset: 0; background-size: cover; background-position: center; 
-    opacity: 0.4; filter: contrast(1.1) saturate(0.8);
-}
-.hero-content { 
-    position: relative; z-index: 2; text-align: center; 
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-}
-.hero-content h1 {
-    opacity: 0; animation: fadeUp 1s ease forwards 0.5s;
-}
-.scroll-indicator {
-    position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
-    display: flex; flex-direction: column; align-items: center; gap: 15px; opacity: 0;
-    animation: fadeIn 1s ease forwards 1.5s;
-}
-.scroll-indicator .line {
-    width: 1px; height: 60px; background: rgba(255,255,255,0.2);
-    position: relative; overflow: hidden;
-}
-.scroll-indicator .line::after {
-    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--gold); animation: scrollLine 2s infinite;
-}
-
-/* 2. ERA 1: CENTRAL TIMELINE */
-.era-section { padding: 200px 0; background: var(--bg-primary); }
-.central-timeline {
-    position: relative; max-width: 1000px; margin: 0 auto;
-}
-.central-line {
-    position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; 
-    background: rgba(255,255,255,0.1); transform: translateX(-50%);
-}
-.timeline-node {
-    display: flex; justify-content: center; align-items: center;
-    margin-bottom: 200px; position: relative;
-}
-.node-year {
-    position: absolute; font-size: 12rem; opacity: 0.05; z-index: 0;
-    font-weight: 700; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    white-space: nowrap; transition: opacity 0.5s;
-}
-.timeline-node.visible .node-year { opacity: 0.1; }
-.node-content {
-    width: 100%; display: flex; align-items: center; justify-content: center; gap: 80px;
-    z-index: 1;
-}
-.node-img {
-    width: 400px; height: 500px; overflow: hidden; opacity: 0; 
-    transform: translateY(50px); transition: all 1s ease;
-}
-.node-text {
-    width: 300px; opacity: 0; transform: translateY(50px); transition: all 1s ease 0.2s;
-}
-.timeline-node:nth-child(even) .node-content { flex-direction: row-reverse; }
-.timeline-node.visible .node-img, .timeline-node.visible .node-text {
-    opacity: 1; transform: translateY(0);
-}
-.node-img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.5); }
-
-/* 3. ERA 2: GLASSMORPHISM HORIZONTAL */
-.horizontal-wrapper { height: 350vh; position: relative; background: var(--bg-secondary); }
-.horizontal-sticky {
-    position: sticky; top: 0; height: 100vh; overflow: hidden;
-    display: flex; align-items: center;
-}
-.horizontal-intro {
-    position: absolute; left: 10vw; width: 400px; z-index: 10;
-}
-.h-line { width: 60px; height: 1px; background: var(--gold); }
-.horizontal-track {
-    display: flex; gap: 40px; position: absolute; left: 45%; top: 50%; transform: translateY(-50%);
-}
-.glass-card {
-    width: 350px; height: 500px; padding: 40px;
-    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
-    backdrop-filter: blur(10px);
-    display: flex; flex-direction: column; justify-content: space-between;
-    transition: all 0.3s;
-}
-.glass-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); }
-.h-year { font-family: var(--font-display); font-size: 4rem; color: var(--gold); opacity: 0.8; }
-.h-content h3 { font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 10px; }
-.h-content p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
-
-/* 4. ERA 3: HIGH CONTRAST SPOTLIGHT */
-.spotlight-section { padding: 200px 0; background: #000; }
-.spotlight-list { position: relative; max-width: 800px; margin: 0 auto; }
-.spotlight-item {
-    display: flex; gap: 50px; padding: 100px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    opacity: 0.1; filter: blur(3px); transition: all 0.6s ease;
-}
-.spotlight-item.active { opacity: 1; filter: blur(0); }
-.sl-year {
-    font-family: var(--font-display); font-size: 5rem; color: var(--gold);
-    line-height: 1; 
-}
-.sl-content h3 { font-size: 2rem; margin-bottom: 15px; }
-.sl-content p { color: var(--text-muted); font-size: 1.1rem; line-height: 1.6; }
-
-/* 5. ERA 4: MASSIVE STACKING */
-.stacking-section { padding: 100px 0 200px; background: var(--bg-primary); }
-.cards-container { max-width: 1100px; margin: 0 auto; position: relative; padding-top: 50px; }
-.stack-card {
-    position: sticky; top: calc(10vh + var(--index) * 30px);
-    height: 70vh; margin-bottom: 50px;
-    background: #12141a; border-radius: 2px;
-    display: flex; overflow: hidden;
-    box-shadow: 0 -20px 50px rgba(0,0,0,0.5);
-}
-.sc-content { width: 40%; padding: 60px; display: flex; flex-direction: column; justify-content: center; }
-.sc-year { font-family: var(--font-mono); font-size: 1rem; letter-spacing: 0.2em; margin-bottom: 30px; display: block; }
-.sc-content h2 { font-family: var(--font-display); font-size: 3.5rem; line-height: 1.1; margin-bottom: 20px; }
-.sc-image { width: 60%; height: 100%; }
-.sc-image img { width: 100%; height: 100%; object-fit: cover; }
-.last-card { background: var(--gold); }
-
-/* ANIMATIONS */
-@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } from { opacity: 0; transform: translateY(30px); } }
-@keyframes fadeIn { to { opacity: 1; } from { opacity: 0; } }
-@keyframes scrollLine { 0% { top: -100%; } 100% { top: 100%; } }
-
-/* RESPONSIVE */
-@media(max-width: 768px) {
-    .node-content { flex-direction: column !important; gap: 30px; text-align: center; }
-    .node-img { width: 100%; height: 400px; }
-    .node-text { width: 100%; }
-    .node-year { font-size: 6rem; }
-    
-    .horizontal-intro { position: relative; width: 100%; left: 0; padding: 40px; }
-    .horizontal-sticky { position: relative; height: auto; display: block; overflow-x: scroll; }
-    .horizontal-track { position: relative; left: 0; top: 0; transform: none; padding: 20px; gap: 20px; }
-    .horizontal-wrapper { height: auto; }
-    
-    .stack-card { flex-direction: column; height: auto; position: relative; top: 0 !important; margin-bottom: 30px; }
-    .sc-content, .sc-image { width: 100%; }
-    .sc-image { height: 300px; }
-}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Vertical Era Animations
-    const nodes = document.querySelectorAll('.timeline-node');
-    const nodeObs = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if(entry.isIntersecting) entry.target.classList.add('visible');
-        });
-    }, { threshold: 0.3 });
-    nodes.forEach(n => nodeObs.observe(n));
-
-    // 2. Horizontal Scroll
-    const hWrapper = document.querySelector('.horizontal-wrapper');
-    const hTrack = document.querySelector('.horizontal-track');
-    window.addEventListener('scroll', () => {
-        if(window.innerWidth > 768 && hWrapper) {
-            const rect = hWrapper.getBoundingClientRect();
-            const top = rect.top;
-            const dist = hWrapper.offsetHeight - window.innerHeight;
-            if(top <= 0 && -top < dist) {
-                const percent = -top / dist;
-                const move = percent * (hTrack.scrollWidth - window.innerWidth * 0.5);
-                hTrack.style.transform = `translateY(-50%) translateX(-${move}px)`;
-                document.querySelector('.horizontal-intro').style.opacity = 1 - (percent * 3);
-            }
-        }
-    });
-
-    // 3. Spotlight
-    const spots = document.querySelectorAll('.spotlight-item');
-    const spotObs = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if(entry.isIntersecting) {
-                spots.forEach(s => s.classList.remove('active'));
-                entry.target.classList.add('active');
-            }
-        });
-    }, { threshold: 0.5, rootMargin: "-20% 0px -20% 0px" });
-    spots.forEach(s => spotObs.observe(s));
 });
 </script>
 @endsection
