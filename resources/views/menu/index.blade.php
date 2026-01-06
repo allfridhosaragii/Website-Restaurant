@@ -651,6 +651,8 @@
         // Optimistic UI Update - update immediately
         const item = document.querySelector(`.lux-item[data-id="${id}"]`) || 
                      document.querySelector(`.lux-item:has([onclick*="updateCartItem(${id},"])`);
+        
+        let unitPrice = 0;
         if (item) {
             const qtyEl = item.querySelector('.lux-qty-num');
             const priceEl = item.querySelector('.lux-item-total');
@@ -659,7 +661,7 @@
             
             // Update subtotal based on unit price
             if (priceEl && unitEl) {
-                const unitPrice = parseInt(unitEl.textContent.replace(/[^\d]/g, ''));
+                unitPrice = parseInt(unitEl.textContent.replace(/[^\d]/g, ''));
                 const newTotal = unitPrice * newQty;
                 priceEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(newTotal);
             }
@@ -667,10 +669,21 @@
             // Update button state
             const minusBtn = item.querySelector('.lux-qty-btn:first-child');
             if (minusBtn) minusBtn.disabled = (newQty <= 1);
+            
+            // Update onclick to reflect new quantity
+            const minusBtnAll = item.querySelectorAll('.lux-qty-btn');
+            if (minusBtnAll[0]) minusBtnAll[0].setAttribute('onclick', `updateCartItem(${id}, ${newQty}, -1)`);
+            if (minusBtnAll[1]) minusBtnAll[1].setAttribute('onclick', `updateCartItem(${id}, ${newQty}, 1)`);
         }
         
-        // Update total immediately (rough estimate)
-        updateTotalOptimistic(change);
+        // Update grand total immediately
+        const totalEl = document.getElementById('cartModalTotal');
+        if (totalEl && unitPrice) {
+            const currentTotal = parseInt(totalEl.textContent.replace(/[^\d]/g, '')) || 0;
+            const priceDiff = unitPrice * change;
+            const newGrandTotal = currentTotal + priceDiff;
+            totalEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(newGrandTotal);
+        }
         
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         
@@ -685,15 +698,14 @@
         })
         .then(res => res.json())
         .then(data => {
+            // Only update badge count, no re-render needed
             if(data.success) {
-                // Sync with server data
-                refreshCartContent();
                 updateCartCount();
             }
         })
         .catch(err => {
             console.error(err);
-            refreshCartContent(); // Revert on error
+            refreshCartContent(); // Revert on error only
         });
     }
 
