@@ -818,7 +818,7 @@
         background: rgba(10, 15, 25, 0.7);
         backdrop-filter: blur(8px);
         -webkit-backdrop-filter: blur(8px);
-        z-index: 1050;
+        z-index: 9998;
         opacity: 0;
         visibility: hidden;
         transition: all 0.4s ease;
@@ -838,7 +838,7 @@
         max-width: 420px;
         height: 100%;
         background: linear-gradient(180deg, #0f1923 0%, #0a1018 100%);
-        z-index: 1051;
+        z-index: 9999;
         transform: translateX(100%);
         transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
         display: flex;
