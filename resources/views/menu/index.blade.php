@@ -1095,7 +1095,7 @@
     
     .lux-item-unit {
         font-size: 0.8rem;
-        color: rgba(255, 255, 255, 0.4);
+        color: rgba(255, 255, 255, 0.55);
         margin-top: 4px;
     }
     
@@ -1110,8 +1110,8 @@
     .lux-qty {
         display: flex;
         align-items: center;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
         border-radius: 10px;
         overflow: hidden;
     }
@@ -1121,7 +1121,7 @@
         height: 32px;
         border: none;
         background: transparent;
-        color: rgba(255, 255, 255, 0.6);
+        color: rgba(255, 255, 255, 0.75);
         cursor: pointer;
         display: flex;
         align-items: center;
