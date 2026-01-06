@@ -34,7 +34,7 @@
                 
                 <!-- 2009 -->
                 <div class="timeline-node" data-year="2009">
-                    <div class="node-year font-display text-gold">2009</div>
+                    <div class="node-year-label font-display text-gold">2009</div>
                     <div class="node-content">
                         <div class="node-img">
                             <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80" alt="2009">
@@ -48,7 +48,7 @@
 
                 <!-- 2010 -->
                 <div class="timeline-node" data-year="2010">
-                    <div class="node-year font-display text-gold">2010</div>
+                    <div class="node-year-label font-display text-gold">2010</div>
                     <div class="node-content">
                         <div class="node-img">
                             <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80" alt="2010">
@@ -62,7 +62,7 @@
 
                 <!-- 2011 -->
                 <div class="timeline-node" data-year="2011">
-                    <div class="node-year font-display text-gold">2011</div>
+                    <div class="node-year-label font-display text-gold">2011</div>
                     <div class="node-content">
                         <div class="node-img">
                             <img src="https://images.unsplash.com/photo-1550966871-3ed3c47e2ce2?w=800&q=80" alt="2011">
@@ -76,7 +76,7 @@
 
                  <!-- 2012 -->
                 <div class="timeline-node" data-year="2012">
-                     <div class="node-year font-display text-gold">2012</div>
+                     <div class="node-year-label font-display text-gold">2012</div>
                     <div class="node-content">
                         <div class="node-img">
                             <img src="https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?w=800&q=80" alt="2012">
@@ -246,8 +246,8 @@
                         <p class="text-gray-300" data-i18n="timeline_2025_desc">{{ __('messages.timeline_2025_desc') }}</p>
                     </div>
                     <div class="sc-image">
-                        <!-- UPDATED: Replaced broken image with High Tech/Abstract image -->
-                        <img src="https://images.unsplash.com/photo-1519681393784-d8e5b5a4570bd?w=800&q=80" alt="2025">
+                         <!-- FIXED: Known High Quality Abstract Tech Image -->
+                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80" alt="2025">
                     </div>
                 </div>
             </div>
@@ -345,7 +345,7 @@
 .timeline-node {
     display: flex;
     align-items: center;
-    margin-bottom: 150px;
+    margin-bottom: 100px;
     position: relative;
     opacity: 0;
     transform: translateY(50px);
@@ -356,33 +356,39 @@
 .timeline-node:nth-child(odd) .node-text { text-align: right; }
 .timeline-node:nth-child(even) .node-text { text-align: left; }
 
-/* UPDATED NODE YEAR CSS - Watermark Style to prevent overlap */
-.node-year {
-    position: absolute;
-    left: 50%;
-    top: 50%; /* Center vertically as well */
-    transform: translate(-50%, -50%); /* Center perfectly */
-    font-size: 8rem; /* Large watermark size */
-    font-weight: 700;
-    color: rgba(212, 175, 55, 0.05); /* Very faint gold - WATERMARK */
-    z-index: 0; /* Behind content */
-    pointer-events: none;
-    line-height: 1;
-    white-space: nowrap;
+/* FIXED LAYOUT: Floating Year Label */
+.timeline-node:nth-child(odd) .node-year-label {
+    right: 52%; /* Offset from center to left */
+    text-align: right;
 }
+.timeline-node:nth-child(even) .node-year-label {
+    left: 52%; /* Offset from center to right */
+    text-align: left;
+}
+.node-year-label {
+    position: absolute;
+    top: 0;
+    font-size: 5rem;
+    font-weight: 700;
+    color: rgba(212, 175, 55, 0.15); /* Subtle but visible */
+    z-index: 0;
+    line-height: 1;
+}
+
 .node-content {
     width: 100%;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     padding: 0 50px;
     position: relative;
-    z-index: 2; /* Content above watermark */
+    z-index: 2; /* Content strictly above */
+    margin-top: 50px; /* Push content down so year is visible above/behind */
 }
-.node-img { width: 40%; height: 300px; overflow: hidden; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); }
+.node-img { width: 40%; height: 260px; overflow: hidden; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); }
 .node-img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); transition: 0.5s; }
 .timeline-node:hover .node-img img { filter: grayscale(0); transform: scale(1.05); }
-.node-text { width: 45%; }
+.node-text { width: 45%; padding-top: 10px; }
 
 
 /* Horizontal Scroll (Simplified) */
@@ -468,10 +474,19 @@
 /* Responsive */
 @media(max-width: 768px) {
     .display-super { font-size: 4rem; }
-    .node-content { flex-direction: column !important; gap: 30px; text-align: center; padding: 0 20px; }
+    .node-content { flex-direction: column !important; gap: 30px; text-align: center; padding: 0 20px; margin-top: 80px; }
     .node-img { width: 100%; height: 250px; }
     .node-text { width: 100%; text-align: center !important; }
-    .node-year { font-size: 5rem; top: 20px; transform: translateX(-50%); opacity: 0.1; } /* Adjusted for mobile */
+    /* FIXED MOBILE LAYOUT: Year centered top */
+    .timeline-node:nth-child(odd) .node-year-label, 
+    .timeline-node:nth-child(even) .node-year-label {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        top: 0;
+        text-align: center;
+        font-size: 4rem;
+    }
     .central-line { display: none; }
     
     .stack-card { flex-direction: column; height: auto; position: relative; top: 0 !important; margin-bottom: 30px; }
