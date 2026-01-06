@@ -662,8 +662,8 @@
         .then(res => res.json())
         .then(data => {
             if(data.success) {
-                openCartModal(); // Refresh modal
-                updateCartCount(); // Refresh badge
+                refreshCartContent(); // Refresh content only, don't toggle panel
+                updateCartCount();
             }
         })
         .catch(err => console.error(err));
@@ -685,11 +685,23 @@
         .then(res => res.json())
         .then(data => {
             if(data.success) {
-                openCartModal(); // Refresh modal
-                updateCartCount(); // Refresh badge
+                refreshCartContent(); // Refresh content only, don't toggle panel
+                updateCartCount();
             }
         })
         .catch(err => console.error(err));
+    }
+
+    // Refresh cart content without closing/reopening panel
+    function refreshCartContent() {
+        fetch('/customer/cart')
+            .then(res => res.json())
+            .then(data => {
+                renderCartModal(data);
+                const badge = document.getElementById('cartCountBadge');
+                if(badge) badge.textContent = data.count || 0;
+            })
+            .catch(err => console.error(err));
     }
 
 
