@@ -1065,7 +1065,7 @@
         margin: 0;
         font-size: 0.95rem;
         font-weight: 500;
-        color: #fff;
+        color: #ffffff !important;
         line-height: 1.4;
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -1323,7 +1323,7 @@
     [data-theme="light"] .lux-qty-num,
     [data-theme="light"] .lux-total-price,
     [data-theme="light"] .lux-empty-title {
-        color: #0f1923;
+        color: #0f1923 !important;
     }
     
     [data-theme="light"] .lux-cart-count-text,
