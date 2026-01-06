@@ -367,10 +367,10 @@
 }
 .node-year-label {
     position: absolute;
-    top: 0;
+    top: -40px; /* Moved up to clear content */
     font-size: 5rem;
     font-weight: 700;
-    color: rgba(212, 175, 55, 0.15); /* Subtle but visible */
+    color: rgba(212, 175, 55, 0.15); 
     z-index: 0;
     line-height: 1;
 }
@@ -382,8 +382,8 @@
     align-items: flex-start;
     padding: 0 50px;
     position: relative;
-    z-index: 2; /* Content strictly above */
-    margin-top: 50px; /* Push content down so year is visible above/behind */
+    z-index: 2; 
+    margin-top: 80px; /* Increased margin to push text below year label */
 }
 .node-img { width: 40%; height: 260px; overflow: hidden; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); }
 .node-img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); transition: 0.5s; }
