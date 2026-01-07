@@ -1,16 +1,5 @@
 <?php
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Artisan;
-// FORCE MIGRATE ROUTE (Temporary for Railway Sync)
-Route::get('/force-migrate-db', function() {
-    try {
-        Artisan::call('migrate --force');
-        $output = Artisan::output();
-        return response()->json(['success' => true, 'message' => 'Migration executed!', 'output' => $output]);
-    } catch (\Exception $e) {
-        return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
-    }
-});
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ReservationController;
