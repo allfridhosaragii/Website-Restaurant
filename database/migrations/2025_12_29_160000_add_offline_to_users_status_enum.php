@@ -9,6 +9,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Skip for SQLite (doesn't support MODIFY COLUMN)
+        if (DB::connection()->getDriverName() === 'sqlite') {
+            return;
+        }
         // Modify ENUM to include 'offline' value
         DB::statement("ALTER TABLE users MODIFY COLUMN status ENUM('active', 'suspended', 'blocked', 'offline') DEFAULT 'active'");
     }
