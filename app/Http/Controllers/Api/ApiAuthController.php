@@ -52,6 +52,8 @@ class ApiAuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'phone' => $user->phone,
+                'role' => $user->role,
+                'is_admin' => $user->is_admin,
             ],
             'token' => $token,
         ], 201);
@@ -112,6 +114,8 @@ class ApiAuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'phone' => $user->phone,
+                'role' => $user->role,
+                'is_admin' => $user->is_admin,
             ],
             'token' => $user->createToken('mobile-app')->plainTextToken,
         ]);
@@ -174,6 +178,8 @@ class ApiAuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'phone' => $user->phone,
+                'role' => $user->role,
+                'is_admin' => $user->is_admin,
             ],
             'token' => $user->createToken('mobile-app-google')->plainTextToken,
         ]);
@@ -251,6 +257,8 @@ class ApiAuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'phone' => $user->phone,
+                'role' => $user->role,
+                'is_admin' => $user->is_admin,
             ],
         ]);
     }
