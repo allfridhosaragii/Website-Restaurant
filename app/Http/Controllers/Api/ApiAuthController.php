@@ -54,6 +54,7 @@ class ApiAuthController extends Controller
                 'phone' => $user->phone,
                 'role' => $user->role,
                 'is_admin' => $user->is_admin,
+                'avatar_url' => $user->profile_photo_path,
             ],
             'token' => $token,
         ], 201);
@@ -116,6 +117,7 @@ class ApiAuthController extends Controller
                 'phone' => $user->phone,
                 'role' => $user->role,
                 'is_admin' => $user->is_admin,
+                'avatar_url' => $user->profile_photo_path,
             ],
             'token' => $user->createToken('mobile-app')->plainTextToken,
         ]);
@@ -180,6 +182,7 @@ class ApiAuthController extends Controller
                 'phone' => $user->phone,
                 'role' => $user->role,
                 'is_admin' => $user->is_admin,
+                'avatar_url' => $user->profile_photo_path,
             ],
             'token' => $user->createToken('mobile-app-google')->plainTextToken,
         ]);
@@ -224,6 +227,7 @@ class ApiAuthController extends Controller
                 'is_admin' => $user->is_admin,
                 'status' => $user->status,
                 'created_at' => $user->created_at,
+                'avatar_url' => $user->profile_photo_path,
             ],
         ]);
     }
@@ -289,7 +293,9 @@ class ApiAuthController extends Controller
                     $result = json_decode($response, true);
                     if (isset($result['secure_url'])) {
                         $user->profile_photo_path = $result['secure_url'];
-                        \Log::info('Cloudinary upload success: ' . $result['secure_url']);
+                        \Log::info('Cloudinary upload success. URL: ' . $result['secure_url']);
+                    } else {
+                        \Log::error('Cloudinary response missing secure_url: ' . json_encode($result));
                     }
                 } else {
                     \Log::error('Cloudinary upload failed with HTTP ' . $httpCode . ': ' . $response);
@@ -299,7 +305,9 @@ class ApiAuthController extends Controller
             }
         }
         
-        $user->save();
+        $saved = $user->save();
+        \Log::info('User update saved: ' . ($saved ? 'true' : 'false'));
+        \Log::info('Profile photo path after save: ' . $user->profile_photo_path);
 
         return response()->json([
             'success' => true,

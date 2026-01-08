@@ -13,9 +13,10 @@
             <div class="col-lg-4">
                 <div class="card text-center p-4">
                     <div class="mb-3">
-                        <div class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center" 
-                             style="width: 100px; height: 100px;">
-                            <i class="bi bi-person-fill text-white" style="font-size: 3rem;"></i>
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center overflow-hidden" 
+                             style="width: 100px; height: 100px; background-color: #f8f9fa;">
+                            <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" 
+                                 class="w-100 h-100" style="object-fit: cover;">
                         </div>
                     </div>
                     <h5 class="mb-1">{{ Auth::user()->name ?? 'Customer' }}</h5>

@@ -18,6 +18,7 @@ class User extends Authenticatable
         'is_admin',
         'status',
         'role',
+        'profile_photo_path',
     ];
     protected $hidden = [
         'password',
@@ -87,5 +88,15 @@ class User extends Authenticatable
     public function isOffline(): bool
     {
         return $this->status === 'offline';
+    }
+
+    public function getProfilePhotoUrlAttribute()
+    {
+        if ($this->profile_photo_path) {
+            return $this->profile_photo_path;
+        }
+
+        $name = urlencode($this->name);
+        return 'https://ui-avatars.com/api/?name='.$name.'&color=7F9CF5&background=EBF4FF';
     }
 }

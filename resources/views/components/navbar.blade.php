@@ -84,8 +84,9 @@
                     @auth
                         <div class="dropdown" id="profileDropdown">
                             <button class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2 text-truncate" 
-                                    type="button" id="profileDropdownBtn" aria-expanded="false" style="max-width: 200px;">
-                                <i class="bi bi-person-circle"></i>
+                                    type="button" id="profileDropdownBtn" aria-expanded="false" style="max-width: 250px;">
+                                <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" 
+                                     class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
                                 <span class="d-none d-md-inline text-truncate">{{ Auth::user()->name ?? 'User' }}</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow" id="profileDropdownMenu">
