@@ -4,6 +4,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0C2A36">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Culinaire Admin">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <link rel="apple-touch-icon" href="{{ asset('icons/icon-192x192.png') }}">
+    
     <title>@yield('title', 'Dashboard') - Culinaire Admin</title>
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -116,7 +125,7 @@
                     </div>
                     <div class="dropdown">
                         <button class="btn btn-link p-0 d-flex align-items-center gap-2 text-decoration-none" data-bs-toggle="dropdown" data-bs-boundary="viewport" aria-expanded="false">
-                            <img src="https://i.pravatar.cc/40?img=12" alt="Admin" class="rounded-circle" 
+                            <img src="{{ Auth::user()->profile_photo_url }}" alt="Admin" class="rounded-circle" 
                                  style="width: 40px; height: 40px; object-fit: cover;">
                             <div class="d-none d-md-block text-start">
                                 <strong class="d-block text-dark small">{{ Auth::user()->name ?? 'Admin' }}</strong>
@@ -224,6 +233,17 @@
             // Check immediately on page load
             checkMaintenanceStatus();
         })();
+    </script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('[PWA] Service Worker registered:', reg.scope))
+                    .catch(err => console.log('[PWA] SW registration failed:', err));
+            });
+        }
     </script>
 </body>
 </html>

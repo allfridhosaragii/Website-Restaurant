@@ -73,8 +73,10 @@
             <div class="col-lg-4">
                 <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-primary text-white mb-4">
                     <div class="card-body p-4 text-center">
-                        <div class="bg-white bg-opacity-25 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                            <span class="fs-1 fw-bold">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3 overflow-hidden" 
+                             style="width: 80px; height: 80px; background-color: rgba(255, 255, 255, 0.25);">
+                            <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" 
+                                 class="w-100 h-100" style="object-fit: cover;">
                         </div>
                         <h5 class="fw-bold mb-1">{{ $user->name }}</h5>
                         <p class="opacity-75 mb-0">{{ $user->email }}</p>
