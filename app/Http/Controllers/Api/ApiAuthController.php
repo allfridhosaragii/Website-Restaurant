@@ -252,8 +252,15 @@ class ApiAuthController extends Controller
         }
 
         if ($request->hasFile('avatar')) {
-            $path = $request->file('avatar')->store('profile-photos', 'public');
-            $user->profile_photo_path = $path;
+            // Use Cloudinary for cloud storage
+            \Cloudinary\Configuration\Configuration::instance('cloudinary://474775265674185:pI64ZhoDmEy2fhevZp-kqzzVuCE@dh9ysyfit');
+            
+            $uploadedFile = \CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::upload(
+                $request->file('avatar')->getRealPath(),
+                ['folder' => 'profile-photos']
+            );
+            
+            $user->profile_photo_path = $uploadedFile->getSecurePath();
         }
         
         $user->save();
@@ -268,9 +275,7 @@ class ApiAuthController extends Controller
                 'phone' => $user->phone,
                 'role' => $user->role,
                 'is_admin' => $user->is_admin,
-                'avatar_url' => $user->profile_photo_path 
-                    ? asset('storage/' . $user->profile_photo_path)
-                    : null,
+                'avatar_url' => $user->profile_photo_path,
             ],
         ]);
     }
