@@ -253,22 +253,49 @@ class ApiAuthController extends Controller
 
         if ($request->hasFile('avatar')) {
             try {
-                // Use Cloudinary for cloud storage
-                \Cloudinary\Configuration\Configuration::instance('cloudinary://474775265674185:pI64ZhoDmEy2fhevZp-kqzzVuCE@dh9ysyfit');
+                // Cloudinary credentials
+                $cloudName = 'dh9ysyfit';
+                $apiKey = '474775265674185';
+                $apiSecret = 'pI64ZhoDmEy2fhevZp-kqzzVuCE';
                 
-                $result = \CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::upload(
-                    $request->file('avatar')->getRealPath(),
-                    ['folder' => 'profile-photos']
-                );
+                // Get the file
+                $file = $request->file('avatar');
+                $filePath = $file->getRealPath();
                 
-                // Get the secure URL
-                $url = $result->getSecurePath();
-                if ($url) {
-                    $user->profile_photo_path = $url;
+                // Create timestamp and signature for Cloudinary
+                $timestamp = time();
+                $folder = 'profile-photos';
+                $signatureString = "folder={$folder}&timestamp={$timestamp}{$apiSecret}";
+                $signature = sha1($signatureString);
+                
+                // Use cURL to upload directly to Cloudinary API
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, "https://api.cloudinary.com/v1_1/{$cloudName}/image/upload");
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, [
+                    'file' => new \CURLFile($filePath, $file->getMimeType(), $file->getClientOriginalName()),
+                    'api_key' => $apiKey,
+                    'timestamp' => $timestamp,
+                    'signature' => $signature,
+                    'folder' => $folder,
+                ]);
+                
+                $response = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+                
+                if ($httpCode === 200) {
+                    $result = json_decode($response, true);
+                    if (isset($result['secure_url'])) {
+                        $user->profile_photo_path = $result['secure_url'];
+                        \Log::info('Cloudinary upload success: ' . $result['secure_url']);
+                    }
+                } else {
+                    \Log::error('Cloudinary upload failed with HTTP ' . $httpCode . ': ' . $response);
                 }
             } catch (\Exception $e) {
-                // Log error but don't fail the request
-                \Log::error('Cloudinary upload failed: ' . $e->getMessage());
+                \Log::error('Cloudinary upload exception: ' . $e->getMessage());
             }
         }
         
