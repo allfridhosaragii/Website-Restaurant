@@ -252,15 +252,24 @@ class ApiAuthController extends Controller
         }
 
         if ($request->hasFile('avatar')) {
-            // Use Cloudinary for cloud storage
-            \Cloudinary\Configuration\Configuration::instance('cloudinary://474775265674185:pI64ZhoDmEy2fhevZp-kqzzVuCE@dh9ysyfit');
-            
-            $uploadedFile = \CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::upload(
-                $request->file('avatar')->getRealPath(),
-                ['folder' => 'profile-photos']
-            );
-            
-            $user->profile_photo_path = $uploadedFile->getSecurePath();
+            try {
+                // Use Cloudinary for cloud storage
+                \Cloudinary\Configuration\Configuration::instance('cloudinary://474775265674185:pI64ZhoDmEy2fhevZp-kqzzVuCE@dh9ysyfit');
+                
+                $result = \CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::upload(
+                    $request->file('avatar')->getRealPath(),
+                    ['folder' => 'profile-photos']
+                );
+                
+                // Get the secure URL
+                $url = $result->getSecurePath();
+                if ($url) {
+                    $user->profile_photo_path = $url;
+                }
+            } catch (\Exception $e) {
+                // Log error but don't fail the request
+                \Log::error('Cloudinary upload failed: ' . $e->getMessage());
+            }
         }
         
         $user->save();
