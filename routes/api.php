@@ -8,6 +8,12 @@ use App\Http\Controllers\Api\ApiCartController;
 use App\Http\Controllers\Api\ApiOrderController;
 use App\Http\Controllers\Api\ApiReservationController;
 use App\Http\Controllers\Api\ApiFavoriteController;
+use App\Http\Controllers\Api\Admin\ApiAdminOrderController;
+use App\Http\Controllers\Api\Admin\ApiAdminReservationController;
+use App\Http\Controllers\Api\Admin\ApiAdminUserController;
+use App\Http\Controllers\Api\Admin\ApiAdminMenuController;
+use App\Http\Controllers\Api\Admin\ApiAdminReportController;
+use App\Http\Controllers\Api\Admin\ApiAdminCmsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,5 +89,35 @@ Route::middleware('auth:sanctum')->group(function () {
                             ->whereIn('status', ['accepted', 'completed'])
                             ->count() * 10000,
         ]);
+    });
+
+    // ---------------------------------------------------
+    // SUPER APP ADMIN API ROUTES
+    // ---------------------------------------------------
+    Route::prefix('admin')->group(function () {
+        // Dashboard / Reports
+        Route::get('/reports', [ApiAdminReportController::class, 'index']);
+        
+        // Orders Management
+        Route::get('/orders', [ApiAdminOrderController::class, 'index']);
+        Route::put('/orders/{id}/status', [ApiAdminOrderController::class, 'updateStatus']);
+        
+        // Reservations Management
+        Route::get('/reservations', [ApiAdminReservationController::class, 'index']);
+        Route::put('/reservations/{id}/status', [ApiAdminReservationController::class, 'updateStatus']);
+        
+        // User Management
+        Route::get('/users', [ApiAdminUserController::class, 'index']);
+        Route::put('/users/{id}/status', [ApiAdminUserController::class, 'updateStatus']);
+        
+        // Menu Management
+        Route::get('/menus', [ApiAdminMenuController::class, 'index']);
+        Route::post('/menus', [ApiAdminMenuController::class, 'store']);
+        Route::put('/menus/{slug}', [ApiAdminMenuController::class, 'update']);
+        Route::delete('/menus/{slug}', [ApiAdminMenuController::class, 'destroy']);
+
+        // CMS & Settings
+        Route::get('/cms', [ApiAdminCmsController::class, 'index']);
+        Route::post('/cms/maintenance', [ApiAdminCmsController::class, 'toggleMaintenance']);
     });
 });

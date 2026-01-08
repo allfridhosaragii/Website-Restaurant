@@ -231,11 +231,15 @@ class ApiAuthController extends Controller
     /**
      * Update user profile
      */
+    /**
+     * Update user profile with avatar support
+     */
     public function updateProfile(Request $request)
     {
         $request->validate([
             'name' => 'sometimes|string|max:255',
             'phone' => 'nullable|string|max:20',
+            'avatar' => 'nullable|image|max:2048', // 2MB Max
         ]);
 
         $user = $request->user();
@@ -245,6 +249,11 @@ class ApiAuthController extends Controller
         }
         if ($request->has('phone')) {
             $user->phone = $request->phone;
+        }
+
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('profile-photos', 'public');
+            $user->profile_photo_path = $path;
         }
         
         $user->save();
@@ -259,6 +268,7 @@ class ApiAuthController extends Controller
                 'phone' => $user->phone,
                 'role' => $user->role,
                 'is_admin' => $user->is_admin,
+                'avatar_url' => $user->profile_photo_url, // Assumes Jetstream HasProfilePhoto trait
             ],
         ]);
     }
