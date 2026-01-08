@@ -268,7 +268,9 @@ class ApiAuthController extends Controller
                 'phone' => $user->phone,
                 'role' => $user->role,
                 'is_admin' => $user->is_admin,
-                'avatar_url' => $user->profile_photo_url, // Assumes Jetstream HasProfilePhoto trait
+                'avatar_url' => $user->profile_photo_path 
+                    ? asset('storage/' . $user->profile_photo_path)
+                    : null,
             ],
         ]);
     }
