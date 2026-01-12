@@ -91,7 +91,7 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow" id="profileDropdownMenu">
                                 <li>
-                                    <a class="dropdown-item" href="{{ Auth::user()->isAdmin() ? url('/admin/dashboard') : url('/dashboard') }}">
+                                    <a class="dropdown-item" href="{{ (Auth::user()->isAdmin() && Auth::user()->email !== 'pedoprimasaragi@gmail.com') ? url('/admin/dashboard') : url('/customer/dashboard') }}">
                                         <i class="bi bi-speedometer2 me-2"></i><span data-i18n="dashboard">{{ __('messages.dashboard') }}</span>
                                     </a>
                                 </li>
