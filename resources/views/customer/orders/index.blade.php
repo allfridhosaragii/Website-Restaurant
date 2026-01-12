@@ -66,7 +66,7 @@
                         </div>
                         @elseif($order->payment_status === 'pending')
                         <div class="mt-3">
-                            <a href="#" class="btn btn-sm btn-primary">
+                            <a href="{{ url('/payment/' . $order->id . '/pay') }}" class="btn btn-sm btn-primary">
                                 <i class="bi bi-credit-card me-1"></i><span data-i18n="pay_now">{{ __('messages.pay_now') }}</span>
                             </a>
                         </div>

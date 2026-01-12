@@ -33,6 +33,9 @@ Route::prefix('auth')->group(function () {
     Route::post('/google', [ApiAuthController::class, 'googleAuth']);
 });
 
+// Payment Notification (DOKU Callback)
+Route::post('/payment/notification', [\App\Http\Controllers\PaymentController::class, 'callback']);
+
 // Public Menu Routes
 Route::get('/menus', [ApiMenuController::class, 'index']);
 Route::get('/menus/{slug}', [ApiMenuController::class, 'show']);

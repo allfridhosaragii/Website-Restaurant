@@ -454,6 +454,11 @@ Route::prefix('customer')->middleware('auth')->group(function () {
     Route::put('/cart/{id}', [\App\Http\Controllers\CartController::class, 'update']);
     Route::get('/cart/count', [\App\Http\Controllers\CartController::class, 'count']);
     Route::delete('/cart', [\App\Http\Controllers\CartController::class, 'clear']);
+    Route::delete('/cart', [\App\Http\Controllers\CartController::class, 'clear']);
+
+    // Payment Routes
+    Route::get('/payment/return', [\App\Http\Controllers\PaymentController::class, 'return']);
+    Route::get('/payment/{id}/pay', [\App\Http\Controllers\PaymentController::class, 'pay']);
 });
 Route::get('/dashboard', function () {
     if (auth()->check()) {
