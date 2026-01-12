@@ -490,7 +490,7 @@
                 alert('✅ Pesanan berhasil dibuat!\\n\\nNomor Pesanan: ' + data.order_number + '\\nTotal: Rp ' + data.total.toLocaleString('id-ID'));
                 // Redirect to orders page
                 // Redirect to payment page
-                window.location.href = '/payment/' + data.order_id + '/pay';
+                window.location.href = '/customer/payment/' + data.order_id + '/pay';
             } else {
                 throw new Error(data.message || 'Gagal membuat pesanan');
             }

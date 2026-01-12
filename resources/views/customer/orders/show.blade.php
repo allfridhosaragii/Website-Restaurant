@@ -123,7 +123,7 @@
                             @endif
                         </div>
                         @if($order->payment_status === 'pending')
-                        <a href="{{ url('/payment/' . $order->id . '/pay') }}" class="btn btn-primary w-100">
+                        <a href="{{ url('/customer/payment/' . $order->id . '/pay') }}" class="btn btn-primary w-100">
                             <i class="bi bi-credit-card me-2"></i>Bayar Sekarang
                         </a>
                         @endif
