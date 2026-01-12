@@ -58,58 +58,89 @@ class PaymentController extends Controller
 
     public function callback(Request $request)
     {
-        Log::info('DOKU Callback Received', $request->all());
+        // Log everything for debugging
+        Log::channel('single')->info('=== DOKU CALLBACK START ===');
+        Log::channel('single')->info('Headers: ' . json_encode($request->headers->all()));
+        Log::channel('single')->info('Raw Body: ' . $request->getContent());
+        Log::channel('single')->info('Parsed Body: ' . json_encode($request->all()));
 
-        $headerSignature = $request->header('Signature');
-        $clientId = $request->header('Client-Id');
-        $requestId = $request->header('Request-Id');
-        $timestamp = $request->header('Request-Timestamp');
-        $path = '/api/payment/notification'; // Must match exactly what Doku sends as Request-Target
+        $data = $request->all();
 
-        // Verify Signature (Optional but recommended - simplifying for now or implementing strict check)
-        // To strictly verify:
-         // $content = $request->getContent();
-         // $signature = $this->dokuService->generateSignature($requestId, $timestamp, $content); 
-         // if ($signature !== $headerSignature) { ... }
+        // Try multiple possible payload formats from DOKU
+        $orderNumber = null;
+        $transactionStatus = null;
 
-        // Logic to update order
-        $orderNumber = $request->input('order.invoice_number');
-        $transactionStatus = $request->input('transaction.status');
+        // Format 1: order.invoice_number (Checkout API)
+        if (isset($data['order']['invoice_number'])) {
+            $orderNumber = $data['order']['invoice_number'];
+        }
+        // Format 2: invoice_number at root level
+        elseif (isset($data['invoice_number'])) {
+            $orderNumber = $data['invoice_number'];
+        }
+        // Format 3: transaction.invoice_number
+        elseif (isset($data['transaction']['invoice_number'])) {
+            $orderNumber = $data['transaction']['invoice_number'];
+        }
+
+        // Get transaction status from various possible locations
+        if (isset($data['transaction']['status'])) {
+            $transactionStatus = $data['transaction']['status'];
+        } elseif (isset($data['status'])) {
+            $transactionStatus = $data['status'];
+        } elseif (isset($data['payment']['status'])) {
+            $transactionStatus = $data['payment']['status'];
+        }
+
+        Log::channel('single')->info("Extracted - Order: {$orderNumber}, Status: {$transactionStatus}");
 
         if (!$orderNumber) {
-            return response()->json(['error' => 'Invalid data'], 400);
+            Log::channel('single')->error('No order number found in callback');
+            return response()->json(['error' => 'Invalid data - no order number'], 400);
         }
 
         $order = DB::table('orders')->where('order_number', $orderNumber)->first();
 
         if (!$order) {
-            Log::error('Order not found for callback: ' . $orderNumber);
+            Log::channel('single')->error('Order not found: ' . $orderNumber);
             return response()->json(['error' => 'Order not found'], 404);
         }
 
-        if ($transactionStatus == 'SUCCESS') {
+        Log::channel('single')->info("Found order ID: {$order->id}, Current status: {$order->payment_status}");
+
+        // Check for success status (DOKU uses various formats)
+        $successStatuses = ['SUCCESS', 'PAID', 'COMPLETED', 'success', 'paid', 'completed'];
+        $failedStatuses = ['FAILED', 'EXPIRED', 'CANCELLED', 'failed', 'expired', 'cancelled'];
+
+        if (in_array($transactionStatus, $successStatuses)) {
             DB::table('orders')->where('id', $order->id)->update([
                 'payment_status' => 'paid',
-                'status' => 'processing', // Automatically move to processing if paid
+                'status' => 'processing',
                 'updated_at' => now()
             ]);
             
-            // Add activity log
             DB::table('activity_logs')->insert([
                 'user_id' => $order->user_id,
                 'action' => 'payment_success',
-                'description' => "Pembayaran berhasil untuk pesanan #" . $order->order_number,
+                'description' => "Pembayaran berhasil untuk pesanan #{$order->order_number} (via callback)",
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
                 'created_at' => now(),
             ]);
 
-        } else if ($transactionStatus == 'FAILED') {
+            Log::channel('single')->info('Order marked as PAID successfully');
+
+        } elseif (in_array($transactionStatus, $failedStatuses)) {
             DB::table('orders')->where('id', $order->id)->update([
                 'payment_status' => 'failed',
                 'updated_at' => now()
             ]);
+            Log::channel('single')->info('Order marked as FAILED');
+        } else {
+            Log::channel('single')->warning("Unknown status: {$transactionStatus}");
         }
+
+        Log::channel('single')->info('=== DOKU CALLBACK END ===');
 
         return response()->json(['message' => 'Notification processed']);
     }
