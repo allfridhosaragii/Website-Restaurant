@@ -151,6 +151,16 @@
                             @endif
                         </div>
                     </div>
+                    @if($order->payment_status === 'pending')
+                    <div class="mt-3">
+                        <form action="{{ url('/admin/orders/' . $order->id . '/mark-paid') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-success w-100" onclick="return confirm('Tandai pesanan ini sebagai LUNAS?')">
+                                <i class="bi bi-check-circle me-2"></i>Tandai Lunas (Manual)
+                            </button>
+                        </form>
+                    </div>
+                    @endif
                 </div>
             </div>
             @if($order->status !== 'completed' && $order->status !== 'cancelled')
