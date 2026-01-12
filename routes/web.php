@@ -483,6 +483,7 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::get('/orders', [AdminOrderController::class, 'index']);
     Route::get('/orders/{id}', [AdminOrderController::class, 'show']);
     Route::put('/orders/{id}/status', [AdminOrderController::class, 'updateStatus']);
+    Route::post('/orders/{id}/mark-paid', [AdminOrderController::class, 'markAsPaid']);
     Route::get('/reservations', [AdminReservationController::class, 'index']);
     Route::get('/reservations/{id}', [AdminReservationController::class, 'show']);
     Route::put('/reservations/{id}/status', [AdminReservationController::class, 'updateStatus']);

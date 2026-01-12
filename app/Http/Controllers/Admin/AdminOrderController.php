@@ -84,4 +84,30 @@ class AdminOrderController extends Controller
         ]);
         return back()->with('success', 'Status pesanan berhasil diperbarui!');
     }
+
+    public function markAsPaid(Request $request, $id)
+    {
+        $order = DB::table('orders')->where('id', $id)->first();
+
+        if (!$order) {
+            return back()->with('error', 'Pesanan tidak ditemukan');
+        }
+
+        DB::table('orders')->where('id', $id)->update([
+            'payment_status' => 'paid',
+            'status' => $order->status === 'pending' ? 'processing' : $order->status,
+            'updated_at' => now(),
+        ]);
+
+        DB::table('activity_logs')->insert([
+            'user_id' => auth()->id(),
+            'action' => 'mark_order_paid',
+            'description' => "Menandai pesanan #{$order->order_number} sebagai LUNAS (manual)",
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'created_at' => now(),
+        ]);
+
+        return back()->with('success', 'Pesanan berhasil ditandai sebagai LUNAS!');
+    }
 }
