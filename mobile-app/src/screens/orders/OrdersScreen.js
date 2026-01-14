@@ -38,8 +38,9 @@ const OrdersScreen = ({ navigation }) => {
                 axios.get(`${BASE_URL}/reservations`, config).catch(() => ({ data: [] }))
             ]);
 
-            const ordersData = ordersRes.data?.data || ordersRes.data || [];
-            const reservationsData = reservationsRes.data?.data || reservationsRes.data || [];
+            // API returns { success: true, orders: [...] } and { success: true, reservations: [...] }
+            const ordersData = ordersRes.data?.orders || [];
+            const reservationsData = reservationsRes.data?.reservations || [];
 
             setOrders(Array.isArray(ordersData) ? ordersData : []);
             setReservations(Array.isArray(reservationsData) ? reservationsData : []);

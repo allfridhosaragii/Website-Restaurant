@@ -130,17 +130,23 @@ const ProfileScreen = ({ navigation }) => {
 
                 {/* Quick Actions */}
                 <View style={styles.quickActionsRow}>
-                    <TouchableOpacity style={styles.quickActionCard}>
+                    <TouchableOpacity
+                        style={styles.quickActionCard}
+                        onPress={() => navigation.navigate('Orders')}
+                    >
                         <View style={[styles.quickActionIcon, { backgroundColor: '#FCE4EC' }]}>
-                            <MaterialIcon name="gift-outline" size={20} color="#D81B60" />
+                            <MaterialIcon name="clipboard-text-clock-outline" size={20} color="#D81B60" />
                         </View>
                         <View>
-                            <Text style={styles.quickActionValue}>{stats.total_reservations || 0}</Text>
-                            <Text style={styles.quickActionLabel}>Reservasi</Text>
+                            <Text style={styles.quickActionValue}>{stats.total_orders || 0}</Text>
+                            <Text style={styles.quickActionLabel}>Histori</Text>
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.quickActionCard}>
+                    <TouchableOpacity
+                        style={styles.quickActionCard}
+                        onPress={() => navigation.navigate('Favorites')}
+                    >
                         <View style={[styles.quickActionIcon, { backgroundColor: '#FFF3E0' }]}>
                             <Icon name="star-outline" size={20} color="#F57C00" />
                         </View>
