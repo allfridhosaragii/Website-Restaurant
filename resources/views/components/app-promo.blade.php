@@ -556,6 +556,13 @@
     .pulse-stop {
         animation: none !important;
     }
+    
+    /* Scroll hide/show animation */
+    .app-promo-btn-container.scroll-hidden {
+        opacity: 0;
+        transform: translateY(20px) scale(0.8);
+        pointer-events: none;
+    }
 </style>
 
 <script>
@@ -581,6 +588,27 @@
                 }, 5000);
             }
         }, 2000);
+        
+        // Scroll hide/show logic
+        let scrollTimeout;
+        let isScrolling = false;
+        
+        window.addEventListener('scroll', function() {
+            // Hide button when scrolling
+            if (!isScrolling) {
+                promoBtn.classList.add('scroll-hidden');
+                isScrolling = true;
+            }
+            
+            // Clear previous timeout
+            clearTimeout(scrollTimeout);
+            
+            // Show button after scroll stops (300ms delay)
+            scrollTimeout = setTimeout(function() {
+                promoBtn.classList.remove('scroll-hidden');
+                isScrolling = false;
+            }, 300);
+        }, { passive: true });
         
         window.openAppPromoModal = function() {
             modal.classList.add('show');
