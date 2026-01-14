@@ -71,12 +71,13 @@ class ApiOrderController extends Controller
                 return $item->menu ? $item->quantity * $item->menu->price : 0;
             });
             
-            $orderId = (string) Str::uuid();
+            // Generate Order Number
+            $orderNumber = 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(5));
             
             DB::beginTransaction();
             
-            DB::table('orders')->insert([
-                'id' => $orderId,
+            $orderId = DB::table('orders')->insertGetId([
+                'order_number' => $orderNumber,
                 'user_id' => $user->id,
                 'total' => $total,
                 'status' => 'pending',
@@ -91,11 +92,12 @@ class ApiOrderController extends Controller
                 $price = $item->menu ? $item->menu->price : 0;
                 
                 DB::table('order_items')->insert([
-                    'id' => (string) Str::uuid(),
                     'order_id' => $orderId,
                     'menu_id' => $item->menu_id,
                     'quantity' => $item->quantity,
                     'price' => $price,
+                    'subtotal' => $price * $item->quantity, // Added subtotal required by schema
+                    'menu_name' => $item->menu ? $item->menu->name : 'Unknown Item', // Added menu_name required by schema
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -111,6 +113,7 @@ class ApiOrderController extends Controller
                 'message' => 'Order created successfully',
                 'order' => [
                     'id' => $orderId,
+                    'order_number' => $orderNumber,
                     'total' => $total,
                     'status' => 'pending',
                     'payment_method' => $request->payment_method,
