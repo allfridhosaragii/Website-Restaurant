@@ -91,6 +91,20 @@
             
             @php
                 $activeApk = \App\Models\CmsSetting::get('active_apk_filename', 'culinaire-app.apk');
+                $apkPath = public_path('downloads/' . $activeApk);
+                
+                // If setting is invalid or file doesn't exist, try to find the latest APK in the folder
+                if (!$activeApk || !file_exists($apkPath)) {
+                    $downloadPath = public_path('downloads');
+                    $files = glob($downloadPath . '/*.apk');
+                    if (!empty($files)) {
+                        // Sort by modification time to get the latest
+                        usort($files, function($a, $b) {
+                            return filemtime($b) - filemtime($a);
+                        });
+                        $activeApk = basename($files[0]);
+                    }
+                }
             @endphp
             <a href="/downloads/{{ $activeApk }}" download="{{ $activeApk }}" class="app-download-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
