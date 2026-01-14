@@ -1,0 +1,7 @@
+[variables]
+    # Force PHP upload limits for larger APK files
+    NIXPACKS_PHP_POST_MAX_SIZE = "200M"
+    NIXPACKS_PHP_UPLOAD_MAX_FILESIZE = "200M"
+    # Fallback env vars often used by PHP nixpacks
+    PHP_INI_POST_MAX_SIZE = "200M"
+    PHP_INI_UPLOAD_MAX_FILESIZE = "200M"
