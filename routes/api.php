@@ -41,6 +41,9 @@ Route::post('/payment/notification', [\App\Http\Controllers\PaymentController::c
 Route::get('/menus', [ApiMenuController::class, 'index']);
 Route::get('/menus/{slug}', [ApiMenuController::class, 'show']);
 
+// Public Table Routes (for reservation display)
+Route::get('/tables', [ApiTableController::class, 'index']);
+
 // Protected Routes (Require Authentication)
 Route::middleware('auth:sanctum')->group(function () {
     
@@ -74,11 +77,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [ApiReservationController::class, 'show']);
     });
     
-    // Tables
-    Route::prefix('tables')->group(function () {
-        Route::get('/', [ApiTableController::class, 'index']);
-        Route::get('/{id}/availability', [ApiTableController::class, 'checkAvailability']);
-    });
+    // Tables (availability check still requires auth)
+    Route::get('/tables/{id}/availability', [ApiTableController::class, 'checkAvailability']);
     
     // Favorites
     Route::prefix('favorites')->group(function () {
