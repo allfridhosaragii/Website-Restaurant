@@ -54,7 +54,6 @@ const MainTabs = () => {
             <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Beranda' }} />
             <Tab.Screen name="Menu" component={MenuScreen} options={{ title: 'Menu' }} />
             <Tab.Screen name="Reservations" component={ReservationsScreen} options={{ title: 'Reservasi' }} />
-            <Tab.Screen name="Reservations" component={ReservationsScreen} options={{ title: 'Reservasi' }} />
             <Tab.Screen name="Points" component={PointsScreen} options={{ title: 'Poin Saya' }} />
             <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profil' }} />
         </Tab.Navigator>

@@ -29,6 +29,9 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { launchImageLibrary } from 'react-native-image-picker';
+import RNFS from 'react-native-fs';
+import { CameraRoll } from '@react-native-camera-roll/camera-roll';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 // QRIS Image for deposit
 const QRIS_IMAGE = require('../../assets/qris_deposit.jpg');
@@ -229,7 +232,7 @@ const ReservationsScreen = () => {
     const fetchTables = useCallback(async (date) => {
         try {
             setLoading(true);
-            const token = await AsyncStorage.getItem('userToken');
+            const token = await AsyncStorage.getItem('auth_token');
             const response = await axios.get(`${BASE_URL}/tables`, {
                 params: { date },
                 headers: { Authorization: `Bearer ${token}` }
@@ -281,15 +284,16 @@ const ReservationsScreen = () => {
     const createReservation = async () => {
         try {
             setSubmitting(true);
-            const token = await AsyncStorage.getItem('userToken');
+            const token = await AsyncStorage.getItem('auth_token'); // FIXED: userToken -> auth_token
             const response = await axios.post(`${BASE_URL}/reservations`, {
                 date: formData.date,
                 time: formData.time,
                 guests: selectedTable.capacity,
                 name: formData.name,
+                email: formData.email,
                 phone: formData.phone,
                 table_id: selectedTable.id,
-                notes: formData.email || null,
+                notes: null,
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -356,7 +360,7 @@ const ReservationsScreen = () => {
         }, 200);
 
         try {
-            const token = await AsyncStorage.getItem('userToken');
+            const token = await AsyncStorage.getItem('auth_token'); // FIXED: userToken -> auth_token
             const formDataUpload = new FormData();
             formDataUpload.append('deposit_proof', {
                 uri: paymentProof.uri,
@@ -411,11 +415,126 @@ const ReservationsScreen = () => {
         fetchTables(selectedDate);
     };
 
+    const handleDownloadQRIS = async () => {
+        try {
+            // Permission check for Android
+            if (Platform.OS === 'android') {
+                if (Platform.Version >= 33) {
+                    // Android 13+ doesn't need WRITE_EXTERNAL_STORAGE for saving photos via CameraRoll?
+                    // Actually CameraRoll handles it, but let's be safe.
+                    // It typically needs READ_MEDIA_IMAGES (or VISUAL_USER_SELECTED_PHOTOS) to *read*, but *write* is often implicit for own app media.
+                    // However, requesting READ_MEDIA_IMAGES is good practice if we were reading.
+                    // For 'saving', usually no permission is needed if using MediaStore API which CameraRoll uses.
+                } else {
+                    const granted = await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
+                    if (granted !== RESULTS.GRANTED) {
+                        Alert.alert('Izin Ditolak', 'Mohon izinkan akses penyimpanan untuk menyimpan QRIS.');
+                        return;
+                    }
+                }
+            }
+
+            setLoading(true);
+            const source = Image.resolveAssetSource(QRIS_IMAGE);
+            let filePath = source.uri;
+
+            // Handle remote URL (Development Mode)
+            if (source.uri.startsWith('http') || source.uri.startsWith('https')) {
+                const destPath = `${RNFS.CachesDirectoryPath}/qris_deposit.jpg`;
+                const download = RNFS.downloadFile({
+                    fromUrl: source.uri,
+                    toFile: destPath,
+                });
+                await download.promise;
+                filePath = destPath;
+            }
+            // Handle Local Asset (Release/Offline Mode)
+            else if (Platform.OS === 'android' && !source.uri.startsWith('file://')) {
+                const destPath = `${RNFS.CachesDirectoryPath}/qris_deposit.jpg`;
+                try {
+                    if (await RNFS.existsRes('src_assets_qris_deposit')) {
+                        await RNFS.copyFileRes('src_assets_qris_deposit', destPath);
+                        filePath = destPath;
+                    }
+                    else if (await RNFS.existsAssets('qris_deposit.jpg')) {
+                        await RNFS.copyFileAssets('qris_deposit.jpg', destPath);
+                        filePath = destPath;
+                    }
+                    else {
+                        // Fallback to res with simple name
+                        await RNFS.copyFileRes('qris_deposit', destPath);
+                        filePath = destPath;
+                    }
+                } catch (err) {
+                    console.log('Failed to copy asset:', err);
+                    throw new Error(`Gagal menyalin aset: ${err.message}`);
+                }
+            }
+
+            // Save to Gallery
+            await CameraRoll.save(filePath, { type: 'photo', album: 'Culinaire' });
+            Alert.alert('Berhasil', 'QRIS berhasil disimpan ke Galeri.');
+
+        } catch (error) {
+            console.log('Download Error:', error);
+            Alert.alert('Gagal', 'Gagal menyimpan gambar. Pastikan izin diberikan.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     // --- RENDERERS ---
+
+    const renderMap = () => (
+        <ScrollView horizontal contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}>
+            <View style={styles.mapContainerFrame}>
+                {/* Floor Decor */}
+                {[...Array(6)].map((_, i) => (
+                    <View key={i} style={[styles.floorPlank, { top: i * 100 }]} />
+                ))}
+
+                {/* Legend */}
+                <View style={[styles.legendContainer, { marginTop: 16 }]}>
+                    <View style={styles.legendItem}>
+                        <View style={[styles.legendDot, { backgroundColor: 'white', borderColor: '#DDD' }]} />
+                        <Text style={styles.legendText}>Tersedia</Text>
+                    </View>
+                    <View style={styles.legendItem}>
+                        <View style={[styles.legendDot, { backgroundColor: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.3)' }]} />
+                        <Text style={styles.legendText}>Terisi</Text>
+                    </View>
+                    <View style={styles.legendItem}>
+                        <View style={[styles.legendDot, { backgroundColor: '#FFFBEB', borderColor: COLORS.gold }]} />
+                        <Text style={styles.legendText}>Premium</Text>
+                    </View>
+                    <View style={styles.legendItem}>
+                        <View style={[styles.legendDot, { backgroundColor: COLORS.blue, borderColor: COLORS.blue }]} />
+                        <Text style={[styles.legendText, { color: COLORS.blue, fontWeight: 'bold' }]}>Pilihanmu</Text>
+                    </View>
+                </View>
+
+                {/* Grid Container */}
+                <View style={{ width: GRID_SIZE * 6, height: GRID_SIZE * 9, position: 'relative', marginBottom: 20 }}>
+                    {loading ? (
+                        <ActivityIndicator size="large" color={COLORS.maroon} style={{ marginTop: 100 }} />
+                    ) : (
+                        tables.map(table => (
+                            <RestaurantTable
+                                key={table.id}
+                                table={table}
+                                isSelected={selectedTableId === table.id}
+                                onSelect={setSelectedTableId}
+                            />
+                        ))
+                    )}
+                </View>
+            </View>
+        </ScrollView>
+    );
 
     const renderHeader = () => (
         <LinearGradient
-            colors={[COLORS.maroon, COLORS.maroonDark, COLORS.maroonDarker]}
+            colors={[COLORS.maroon, '#6B0F2A']}
             start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
             style={styles.header}
         >
@@ -428,8 +547,8 @@ const ReservationsScreen = () => {
                         <Icon name="calendar" size={24} color="white" />
                     </View>
                     <View>
-                        <Text style={styles.headerTitle}>Reservasi Meja</Text>
-                        <Text style={styles.headerSubtitle}>Pesan tempat spesial Anda</Text>
+                        <Text style={styles.headerTitle}>Reservasi Meja (NEW)</Text>
+                        <Text style={styles.headerSubtitle}>Pesan tempat Anda sekarang</Text>
                     </View>
                 </View>
 
@@ -445,225 +564,189 @@ const ReservationsScreen = () => {
                     </View>
                     <View style={styles.progressItem}>
                         <View style={[styles.progressBar, { backgroundColor: step >= 3 ? COLORS.white : 'rgba(255,255,255,0.3)' }]} />
-                        <Text style={[styles.progressLabel, { opacity: step >= 3 ? 1 : 0.5 }]}>3. Bayar</Text>
+                        <Text style={[styles.progressLabel, { opacity: step >= 3 ? 1 : 0.5 }]}>3. Pembayaran</Text>
                     </View>
                 </View>
             </View>
         </LinearGradient>
     );
 
-    const renderStats = () => (
-        <View style={styles.statsGrid}>
-            {[
-                { label: 'Tersedia', val: stats.available, color: COLORS.green, bg: '#ECFDF5', border: '#A7F3D0' },
-                { label: 'Terboking', val: stats.booked, color: COLORS.red, bg: '#FEF2F2', border: '#FECACA' },
-                { label: 'VIP', val: stats.vip, color: COLORS.gold, bg: '#FFFBEB', border: '#FDE68A' },
-                { label: 'Kapasitas', val: stats.capacity, color: COLORS.blue, bg: '#EFF6FF', border: '#BFDBFE' },
-            ].map((stat, i) => (
-                <View key={i} style={[styles.statCard, { backgroundColor: stat.bg, borderColor: stat.border }]}>
-                    <Text style={[styles.statVal, { color: stat.color }]}>{stat.val}</Text>
-                    <Text style={[styles.statLabel, { color: stat.color }]}>{stat.label}</Text>
-                </View>
-            ))}
-        </View>
-    );
-
-    const renderMap = () => (
-        <View style={{ marginTop: 16 }}>
-            {/* Legend */}
-            <View style={styles.legendContainer}>
-                {[
-                    { label: 'Available', color: '#FFF', border: '#E5E7EB' },
-                    { label: 'Selected', color: COLORS.blue, border: COLORS.blue },
-                    { label: 'Booked', color: '#FEE2E2', border: '#FCA5A5' },
-                    { label: 'Premium', color: '#FFFBEB', border: COLORS.gold }
-                ].map((l, i) => (
-                    <View key={i} style={styles.legendItem}>
-                        <View style={[styles.legendDot, { backgroundColor: l.color, borderColor: l.border, borderWidth: 1 }]} />
-                        <Text style={styles.legendText}>{l.label}</Text>
-                    </View>
-                ))}
+    const renderSelectedTableCard = (showChangeButton = false) => (
+        <View style={styles.mejaCard}>
+            <View>
+                <Text style={styles.mejaCardLabel}>Meja Terpilih</Text>
+                <Text style={styles.mejaCardValue}>Meja {selectedTable?.number} - {selectedTable?.capacity} Orang</Text>
             </View>
-
-            {/* Vertical Scroll Map container */}
-            <View style={styles.mapContainerFrame}>
-                {/* Floor Texture Background */}
-                <View style={styles.floorPlank} />
-                <View style={[styles.floorPlank, { top: 100 }]} />
-                <View style={[styles.floorPlank, { top: 200 }]} />
-                <View style={[styles.floorPlank, { top: 300 }]} />
-                <View style={[styles.floorPlank, { top: 400 }]} />
-                <View style={[styles.floorPlank, { top: 500 }]} />
-
-                {/* Tables Layer */}
-                <View style={{ height: 650, width: '100%', position: 'relative' }}>
-                    {tables.map(table => (
-                        <RestaurantTable
-                            key={table.id}
-                            table={table}
-                            isSelected={selectedTableId === table.id}
-                            onSelect={setSelectedTableId}
-                        />
-                    ))}
-                </View>
-            </View>
-
-            {/* Selected Info Card */}
-            {selectedTable && (
-                <Animated.View entering={SlideInDown} exiting={SlideOutDown} style={styles.selectionCard}>
-                    <LinearGradient
-                        colors={['#EFF6FF', '#DBEAFE']}
-                        start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-                        style={styles.selectionGradient}
-                    >
-                        <View style={styles.selectionIconBox}>
-                            <Icon name="restaurant" size={20} color={COLORS.blue} />
-                        </View>
-                        <View style={{ flex: 1 }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                                <Text style={styles.selectionTitle}>Meja Terpilih</Text>
-                                {selectedTable.isPremium && <Icon name="star" size={14} color={COLORS.gold} />}
-                            </View>
-                            <Text style={styles.selectionDetail}>Meja {selectedTable.number} • Kapasitas {selectedTable.capacity} Orang</Text>
-                        </View>
-                        <TouchableOpacity style={styles.nextBtnSmall} onPress={handleNext}>
-                            <Text style={styles.nextBtnText}>Lanjut</Text>
-                            <Icon name="arrow-forward" size={16} color="white" />
-                        </TouchableOpacity>
-                    </LinearGradient>
-                </Animated.View>
+            {showChangeButton && (
+                <TouchableOpacity style={styles.mejaChangeBtn} onPress={() => setStep(1)}>
+                    <Text style={styles.mejaChangeBtnText}>Ganti</Text>
+                </TouchableOpacity>
             )}
         </View>
     );
 
-    const renderForm = () => (
-        <Animated.View entering={FadeIn} style={styles.formContainer}>
-            <Text style={styles.formTitle}>Lengkapi Data Reservasi</Text>
+    const renderInfoPenting = () => (
+        <View style={styles.infoPentingContainer}>
+            <Text style={styles.infoPentingTitle}>Informasi Penting</Text>
+            <View style={styles.bulletItem}>
+                <Text style={styles.bulletPoint}>•</Text>
+                <Text style={styles.bulletText}>Reservasi dapat dilakukan minimal 2 jam sebelum waktu kedatangan</Text>
+            </View>
+            <View style={styles.bulletItem}>
+                <Text style={styles.bulletPoint}>•</Text>
+                <Text style={styles.bulletText}>Konfirmasi akan dikirim melalui email dan WhatsApp</Text>
+            </View>
+            <View style={styles.bulletItem}>
+                <Text style={styles.bulletPoint}>•</Text>
+                <Text style={styles.bulletText}>Harap datang tepat waktu, meja akan ditahan maksimal 15 menit</Text>
+            </View>
+            <View style={styles.bulletItem}>
+                <Text style={styles.bulletPoint}>•</Text>
+                <Text style={styles.bulletText}>Untuk reservasi grup (10+ orang), hubungi kami langsung</Text>
+            </View>
+        </View>
+    );
 
-            <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Nama Lengkap</Text>
-                <View style={styles.inputWrapper}>
-                    <Icon name="person-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
+    const renderForm = () => (
+        <View style={{ paddingBottom: 40 }}>
+            {renderSelectedTableCard(true)}
+
+            <View style={styles.formCard}>
+                <Text style={styles.sectionTitle}>Informasi Reservasi</Text>
+
+                <View style={styles.inputGroup}>
+                    <Text style={styles.inputLabel}>Nama Lengkap</Text>
                     <TextInput
-                        style={styles.input}
-                        placeholder="Nama Pemesan"
+                        style={styles.simpleInput}
+                        placeholder="Masukkan nama lengkap"
                         value={formData.name}
                         onChangeText={t => setFormData({ ...formData, name: t })}
                     />
                 </View>
-            </View>
 
-            <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Nomor Telepon</Text>
-                <View style={styles.inputWrapper}>
-                    <Icon name="call-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                <View style={styles.inputGroup}>
+                    <Text style={styles.inputLabel}>Nomor Telepon</Text>
                     <TextInput
-                        style={styles.input}
+                        style={styles.simpleInput}
                         placeholder="08xx-xxxx-xxxx"
                         keyboardType="phone-pad"
                         value={formData.phone}
                         onChangeText={t => setFormData({ ...formData, phone: t })}
                     />
                 </View>
-            </View>
 
-            <View style={styles.rowInputs}>
-                <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
-                    <Text style={styles.inputLabel}>Tanggal</Text>
-                    <View style={styles.inputWrapper}>
-                        <Icon name="calendar-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="YYYY-MM-DD"
-                            value={formData.date}
-                            onChangeText={t => setFormData({ ...formData, date: t })}
-                        />
+                <View style={styles.inputGroup}>
+                    <Text style={styles.inputLabel}>Email</Text>
+                    <TextInput
+                        style={styles.simpleInput}
+                        placeholder="email@example.com"
+                        keyboardType="email-address"
+                        value={formData.email}
+                        onChangeText={t => setFormData({ ...formData, email: t })}
+                    />
+                </View>
+
+                <View style={styles.rowInputs}>
+                    <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
+                        <Text style={styles.inputLabel}>Tanggal Reservasi</Text>
+                        <View style={styles.iconInputWrapper}>
+                            <Icon name="calendar-outline" size={20} color="#666" style={styles.inputInnerIcon} />
+                            <TextInput
+                                style={[styles.simpleInput, { paddingLeft: 44 }]}
+                                value={formData.date}
+                                editable={false} // Disable manual edit for now, typically needs DatePicker
+                            />
+                            <Icon name="chevron-down" size={16} color="#666" style={styles.inputArrowIcon} />
+                        </View>
+                    </View>
+                    <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
+                        <Text style={styles.inputLabel}>Waktu</Text>
+                        <TouchableOpacity onPress={() => {/* Show Time Picker logic */ }}>
+                            <View style={styles.iconInputWrapper}>
+                                <Icon name="time-outline" size={20} color="#666" style={styles.inputInnerIcon} />
+                                <TextInput
+                                    style={[styles.simpleInput, { paddingLeft: 44 }]}
+                                    placeholder="Pilih waktu"
+                                    value={formData.time}
+                                    onChangeText={t => setFormData({ ...formData, time: t })}
+                                />
+                            </View>
+                        </TouchableOpacity>
                     </View>
                 </View>
-                <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
-                    <Text style={styles.inputLabel}>Waktu</Text>
-                    <View style={styles.inputWrapper}>
-                        <Icon name="time-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="19:00"
-                            value={formData.time}
-                            onChangeText={t => setFormData({ ...formData, time: t })}
-                        />
-                    </View>
+
+                <View style={styles.actionButtons}>
+                    <TouchableOpacity style={styles.btnBack} onPress={() => setStep(1)}>
+                        <Icon name="arrow-back" size={18} color="#333" />
+                        <Text style={styles.btnBackText}>Kembali</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.btnPrimary} onPress={handleNext}>
+                        <Text style={styles.btnPrimaryText}>Pembayaran</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
 
-            <View style={styles.buttonsRow}>
-                <TouchableOpacity style={styles.backBtn} onPress={() => setStep(1)}>
-                    <Icon name="arrow-back" size={20} color="#374151" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
-                    <LinearGradient
-                        colors={[COLORS.maroon, COLORS.maroonDark]}
-                        start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-                        style={styles.submitGradient}
-                    >
-                        <Text style={styles.submitText}>Lanjut Pembayaran →</Text>
-                    </LinearGradient>
-                </TouchableOpacity>
-            </View>
-        </Animated.View>
+            {renderInfoPenting()}
+        </View>
     );
 
     // Step 3: Payment
     const renderStep3 = () => (
-        <Animated.View entering={FadeIn} style={styles.formContainer}>
-            <Text style={styles.formTitle}>💳 Pembayaran Deposit</Text>
-
-            {/* Deposit Info Banner */}
-            <View style={styles.depositBanner}>
-                <Icon name="wallet-outline" size={24} color={COLORS.maroon} />
-                <View style={{ marginLeft: 12, flex: 1 }}>
-                    <Text style={styles.depositLabel}>Deposit Reservasi</Text>
-                    <Text style={styles.depositAmount}>Rp {DEPOSIT_AMOUNT.toLocaleString('id-ID')}</Text>
-                    <Text style={styles.depositNote}>✓ Deposit dikembalikan setelah check-in</Text>
+        <View style={{ paddingBottom: 40 }}>
+            <View style={styles.blueBanner}>
+                <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+                    <Text style={{ fontSize: 16 }}>💰</Text>
+                    <View style={{ marginLeft: 8 }}>
+                        <Text style={styles.blueBannerTitle}>Deposit Reservasi</Text>
+                        <Text style={styles.blueBannerText}>Untuk mengkonfirmasi reservasi Anda, diperlukan pembayaran deposit sebesar:</Text>
+                        <Text style={styles.blueBannerAmount}>Rp {DEPOSIT_AMOUNT.toLocaleString('id-ID')}</Text>
+                        <View style={{ marginTop: 8 }}>
+                            <Text style={styles.blueBannerCheck}>✓ Deposit akan dikembalikan setelah check-in</Text>
+                            <Text style={styles.blueBannerCheck}>✓ Berlaku untuk semua tipe meja</Text>
+                            <Text style={styles.blueBannerCheck}>✓ Transfer ke QRIS di bawah</Text>
+                        </View>
+                    </View>
                 </View>
             </View>
 
-            {/* Selected Table Info */}
-            {selectedTable && (
-                <View style={styles.selectedTableInfo}>
-                    <Icon name="restaurant-outline" size={20} color={COLORS.blue} />
-                    <Text style={styles.selectedTableText}>
-                        Meja {selectedTable.number} • {selectedTable.capacity} Tamu • {formData.date} {formData.time}
-                    </Text>
+            {renderSelectedTableCard(false)}
+
+            <View style={styles.paymentCard}>
+                <Text style={[styles.sectionTitle, { textAlign: 'center' }]}>Scan QRIS untuk{'\n'}Pembayaran</Text>
+
+                <View style={styles.qrisWrapper}>
+                    <Image source={QRIS_IMAGE} style={styles.qrisImageLarge} resizeMode="cover" />
                 </View>
-            )}
 
-            {/* QRIS Display */}
-            <View style={styles.qrisContainer}>
-                <Text style={styles.qrisTitle}>Scan QRIS untuk Pembayaran</Text>
-                <Image source={QRIS_IMAGE} style={styles.qrisImage} resizeMode="contain" />
-                <Text style={styles.qrisAmount}>Total: Rp {DEPOSIT_AMOUNT.toLocaleString('id-ID')}</Text>
-            </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 12 }}>
+                    <Text style={{ fontSize: 16 }}>💳</Text>
+                    <Text style={{ fontSize: 14, color: '#666' }}>Scan QRIS  Rp {DEPOSIT_AMOUNT.toLocaleString('id-ID')}</Text>
+                </View>
+                <Text style={{ textAlign: 'center', fontSize: 12, color: '#999', marginTop: 4 }}>Gunakan aplikasi mobile banking Anda</Text>
 
-            {/* Upload Section */}
-            <View style={styles.uploadSection}>
-                <Text style={styles.uploadTitle}>📷 Upload Bukti Pembayaran</Text>
-
-                <TouchableOpacity style={styles.uploadButton} onPress={pickPaymentProof}>
-                    {paymentProof ? (
-                        <View style={styles.uploadPreview}>
-                            <Image source={{ uri: paymentProof.uri }} style={styles.previewImage} />
-                            <View style={styles.uploadCheckBadge}>
-                                <Icon name="checkmark" size={12} color="white" />
-                            </View>
-                        </View>
-                    ) : (
-                        <View style={styles.uploadPlaceholder}>
-                            <Icon name="cloud-upload-outline" size={40} color="#9CA3AF" />
-                            <Text style={styles.uploadPlaceholderText}>Klik untuk upload bukti</Text>
-                            <Text style={styles.uploadPlaceholderHint}>PNG, JPG (max 5MB)</Text>
-                        </View>
-                    )}
+                <TouchableOpacity style={styles.downloadBtn} onPress={handleDownloadQRIS}>
+                    <Icon name="download-outline" size={18} color="#333" />
+                    <Text style={styles.downloadBtnText}>Download QRIS (Simpan ke Galeri)</Text>
                 </TouchableOpacity>
 
+                <View style={styles.dividerDashed} />
+
+                <Text style={[styles.sectionTitle, { fontSize: 16, marginBottom: 16 }]}>📷 Upload Bukti Pembayaran</Text>
+
+                <TouchableOpacity style={styles.uploadBox} onPress={pickPaymentProof}>
+                    {paymentProof ? (
+                        <View style={{ width: '100%', alignItems: 'center' }}>
+                            <Image source={{ uri: paymentProof.uri }} style={{ width: 100, height: 100, borderRadius: 8, marginBottom: 8 }} />
+                            <Text style={{ color: COLORS.green, fontWeight: 'bold' }}>✓ File terpilih</Text>
+                        </View>
+                    ) : (
+                        <>
+                            <Icon name="cloud-upload-outline" size={32} color="#999" />
+                            <Text style={{ fontSize: 12, color: '#666', marginTop: 8 }}>Klik untuk upload bukti transfer</Text>
+                            <Text style={{ fontSize: 10, color: '#999', marginTop: 4 }}>PNG, JPG (MAX. 5MB)</Text>
+                        </>
+                    )}
+                </TouchableOpacity>
                 {/* Progress Bar */}
                 {isUploading && (
                     <View style={styles.progressBarContainer}>
@@ -671,32 +754,28 @@ const ReservationsScreen = () => {
                         <Text style={styles.progressText}>{uploadProgress}%</Text>
                     </View>
                 )}
-            </View>
 
-            {/* Buttons */}
-            <View style={styles.buttonsRow}>
-                <TouchableOpacity style={styles.backBtn} onPress={() => setStep(2)}>
-                    <Icon name="arrow-back" size={20} color={COLORS.grayDark} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.submitBtn, (!paymentProof || isUploading) && { opacity: 0.6 }]}
-                    onPress={handleConfirmPayment}
-                    disabled={!paymentProof || isUploading}
-                >
-                    <LinearGradient
-                        colors={[COLORS.maroon, COLORS.maroonDark]}
-                        start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-                        style={styles.submitGradient}
+                <View style={styles.actionButtons}>
+                    <TouchableOpacity style={styles.btnBack} onPress={() => setStep(2)}>
+                        <Icon name="arrow-back" size={18} color="#333" />
+                        <Text style={styles.btnBackText}>Kembali</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.btnPrimary, { backgroundColor: (!paymentProof || isUploading) ? '#ccc' : COLORS.maroon }]}
+                        onPress={handleConfirmPayment}
+                        disabled={!paymentProof || isUploading}
                     >
                         {isUploading ? (
-                            <ActivityIndicator color="white" />
+                            <ActivityIndicator color="white" size="small" />
                         ) : (
-                            <Text style={styles.submitText}>✓ Konfirmasi Pembayaran</Text>
+                            <Text style={styles.btnPrimaryText}>Konfirmasi{'\n'}Pembayaran</Text>
                         )}
-                    </LinearGradient>
-                </TouchableOpacity>
+                    </TouchableOpacity>
+                </View>
             </View>
-        </Animated.View>
+
+            {renderInfoPenting()}
+        </View>
     );
 
     return (
@@ -708,8 +787,15 @@ const ReservationsScreen = () => {
                 <View style={styles.content}>
                     {step === 1 && (
                         <Animated.View entering={FadeIn}>
-                            {renderStats()}
                             {renderMap()}
+                            {selectedTable && (
+                                <Animated.View entering={SlideInDown} style={{ marginTop: 20 }}>
+                                    {renderSelectedTableCard(false)}
+                                    <TouchableOpacity style={[styles.btnPrimary, { marginTop: 16 }]} onPress={handleNext}>
+                                        <Text style={styles.btnPrimaryText}>Lanjut Isi Data</Text>
+                                    </TouchableOpacity>
+                                </Animated.View>
+                            )}
                         </Animated.View>
                     )}
                     {step === 2 && renderForm()}
@@ -770,61 +856,84 @@ const ReservationsScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.cream },
-    header: { padding: 24, paddingBottom: 32, borderBottomLeftRadius: 32, borderBottomRightRadius: 32, position: 'relative', overflow: 'hidden' },
+    container: { flex: 1, backgroundColor: '#F8F6F4' }, // Premium cream background
+    header: { padding: 24, paddingBottom: 32, borderBottomLeftRadius: 0, borderBottomRightRadius: 0 },
     headerDecorCircle1: { position: 'absolute', top: -30, right: -30, width: 200, height: 200, borderRadius: 100, backgroundColor: 'rgba(255,255,255,0.05)' },
     headerDecorCircle2: { position: 'absolute', bottom: -40, left: -20, width: 150, height: 150, borderRadius: 75, backgroundColor: 'rgba(255,255,255,0.05)' },
     headerContent: { zIndex: 1 },
     titleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 24 },
     iconBox: { width: 48, height: 48, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center', marginRight: 16 },
     headerTitle: { fontSize: 24, fontWeight: 'bold', color: COLORS.white, fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif' },
-    headerSubtitle: { color: 'rgba(255,255,255,0.8)', fontSize: 14 },
-    progressContainer: { flexDirection: 'row', gap: 12 },
+    headerSubtitle: { color: 'rgba(255,255,255,0.8)', fontSize: 13 },
+    progressContainer: { flexDirection: 'row', gap: 8 },
     progressItem: { flex: 1 },
-    progressBar: { height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.3)', marginBottom: 8 },
-    progressLabel: { fontSize: 12, color: COLORS.white, fontWeight: '600' },
+    progressBar: { height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.3)', marginBottom: 6 },
+    progressLabel: { fontSize: 10, color: COLORS.white, fontWeight: '500' },
 
     content: { padding: 16, paddingTop: 24 },
 
+    // Components
+    mejaCard: { backgroundColor: 'white', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderRadius: 16, marginBottom: 20, shadowColor: "#000", shadowOpacity: 0.05, shadowRadius: 5, elevation: 2 },
+    mejaCardLabel: { fontSize: 12, color: '#666', marginBottom: 4 },
+    mejaCardValue: { fontSize: 16, fontWeight: 'bold', color: '#333' },
+    mejaChangeBtn: { backgroundColor: '#334155', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8 },
+    mejaChangeBtnText: { color: 'white', fontSize: 12, fontWeight: '600' },
+
+    formCard: { backgroundColor: 'white', borderRadius: 24, padding: 24, shadowColor: "#000", shadowOpacity: 0.05, shadowRadius: 10, elevation: 3, marginBottom: 24 },
+    sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#1F2937', marginBottom: 20 },
+
+    inputGroup: { marginBottom: 16 },
+    inputLabel: { fontSize: 13, color: '#374151', marginBottom: 8, fontWeight: '500' },
+    simpleInput: { backgroundColor: 'white', borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 12, padding: 12, fontSize: 14, color: '#333' },
+    iconInputWrapper: { position: 'relative' },
+    inputInnerIcon: { position: 'absolute', left: 12, top: 12, zIndex: 1 },
+    inputArrowIcon: { position: 'absolute', right: 12, top: 14 },
+    rowInputs: { flexDirection: 'row', width: '100%' },
+
+    actionButtons: { flexDirection: 'row', gap: 12, marginTop: 12 },
+    btnBack: { flex: 1, backgroundColor: '#E2E8F0', padding: 14, borderRadius: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
+    btnBackText: { color: '#334155', fontWeight: 'bold', fontSize: 14 },
+    btnPrimary: { flex: 1.5, backgroundColor: COLORS.maroon, padding: 14, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+    btnPrimaryText: { color: 'white', fontWeight: 'bold', fontSize: 14, textAlign: 'center' },
+
+    // Info Penting
+    infoPentingContainer: { backgroundColor: 'white', padding: 24, borderRadius: 16, marginTop: 0 },
+    infoPentingTitle: { fontSize: 16, fontWeight: 'bold', color: '#1F2937', marginBottom: 12, fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif' },
+    bulletItem: { flexDirection: 'row', gap: 8, marginBottom: 8 },
+    bulletPoint: { color: COLORS.maroon, fontSize: 16, lineHeight: 20 },
+    bulletText: { flex: 1, fontSize: 12, color: '#4B5563', lineHeight: 20 },
+
+    // Payment specific
+    blueBanner: { backgroundColor: '#EFF6FF', padding: 16, borderRadius: 16, marginBottom: 20, borderWidth: 1, borderColor: '#DBEAFE' },
+    blueBannerTitle: { fontSize: 14, fontWeight: 'bold', color: '#1E40AF', marginBottom: 4 },
+    blueBannerText: { fontSize: 12, color: '#1E3A8A', marginBottom: 8, lineHeight: 18 },
+    blueBannerAmount: { fontSize: 24, fontWeight: 'bold', color: '#2563EB', marginBottom: 8 },
+    blueBannerCheck: { fontSize: 11, color: '#3B82F6', marginBottom: 2 },
+
+    paymentCard: { backgroundColor: 'white', borderRadius: 24, padding: 24, shadowColor: "#000", shadowOpacity: 0.05, shadowRadius: 10, elevation: 3, marginBottom: 24 },
+    qrisWrapper: { alignItems: 'center', marginVertical: 12 },
+    qrisImageLarge: { width: 200, height: 260, borderRadius: 12 },
+    downloadBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#F3F4F6', padding: 12, borderRadius: 12, marginTop: 16, width: '100%' },
+    downloadBtnText: { color: '#374151', fontWeight: '600', fontSize: 14 },
+
+    dividerDashed: { height: 1, borderWidth: 1, borderColor: '#E5E7EB', borderStyle: 'dashed', marginVertical: 24, width: '100%' },
+
+    uploadBox: { borderRadius: 16, borderWidth: 1.5, borderColor: '#D1D5DB', borderStyle: 'dashed', padding: 24, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F9FAFB' },
+    progressBarContainer: { marginTop: 12, height: 6, backgroundColor: '#E5E7EB', borderRadius: 3, overflow: 'hidden' },
+    progressBarFill: { height: '100%', backgroundColor: COLORS.maroon },
+    progressText: { textAlign: 'right', fontSize: 10, color: '#666', marginTop: 4 },
+
+    // Old map styles (keep necessary ones)
     statsGrid: { flexDirection: 'row', gap: 8, marginBottom: 24 },
     statCard: { flex: 1, padding: 8, borderRadius: 12, borderWidth: 1, alignItems: 'center' },
     statVal: { fontSize: 18, fontWeight: 'bold' },
     statLabel: { fontSize: 10, fontWeight: '600' },
-
     legendContainer: { flexDirection: 'row', justifyContent: 'center', gap: 16, marginBottom: 16, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
     legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
     legendDot: { width: 10, height: 10, borderRadius: 5, borderWidth: 1 },
     legendText: { fontSize: 12, color: COLORS.grayDark },
-
-    // Map New Styles
     mapContainerFrame: { width: '100%', alignItems: 'center', marginVertical: 0, overflow: 'hidden', borderRadius: 24, backgroundColor: '#FFFBF5', borderWidth: 1, borderColor: '#F3F4F6', minHeight: 600 },
     floorPlank: { position: 'absolute', width: '200%', height: 120, backgroundColor: 'rgba(0,0,0,0.02)', transform: [{ rotate: '-5deg' }], left: '-50%', borderWidth: 0, borderBottomWidth: 1, borderColor: 'rgba(0,0,0,0.01)' },
-
-    areaLabel: { position: 'absolute', top: '40%', alignSelf: 'center', alignItems: 'center', justifyContent: 'center', zIndex: 0 },
-    areaBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.white, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20, borderWidth: 1, borderColor: COLORS.grayLight, shadowColor: "#000", shadowOpacity: 0.05, shadowRadius: 5, elevation: 2 },
-    areaGlow: { position: 'absolute', width: 200, height: 200, borderRadius: 100, backgroundColor: COLORS.goldLight, opacity: 0.15 },
-
-    selectionCard: { marginTop: 16, marginHorizontal: 0, borderRadius: 16, overflow: 'hidden', elevation: 5, shadowColor: COLORS.blue, shadowOpacity: 0.2, shadowRadius: 10 },
-    selectionGradient: { padding: 16, flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1, borderColor: '#BFDBFE', borderRadius: 16 },
-    selectionIconBox: { width: 40, height: 40, borderRadius: 12, backgroundColor: 'rgba(37, 99, 235, 0.1)', alignItems: 'center', justifyContent: 'center' },
-    selectionTitle: { fontSize: 14, fontWeight: 'bold', color: '#1E3A8A' },
-    selectionDetail: { fontSize: 12, color: '#1E40AF' },
-    nextBtnSmall: { backgroundColor: COLORS.blue, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8, flexDirection: 'row', alignItems: 'center', gap: 4 },
-    nextBtnText: { color: 'white', fontWeight: 'bold', fontSize: 12 },
-
-    formContainer: { backgroundColor: COLORS.white, borderRadius: 24, padding: 24, shadowColor: "#000", shadowOpacity: 0.05, shadowRadius: 10, elevation: 3 },
-    formTitle: { fontSize: 20, fontWeight: 'bold', color: COLORS.grayDark, marginBottom: 24 },
-    inputGroup: { marginBottom: 16 },
-    inputLabel: { fontSize: 14, fontWeight: '600', color: COLORS.grayDark, marginBottom: 8 },
-    inputWrapper: { position: 'relative' },
-    inputIcon: { position: 'absolute', left: 16, top: 14, zIndex: 1 },
-    input: { backgroundColor: '#F9FAFB', borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 12, padding: 12, paddingLeft: 48, fontSize: 14, color: COLORS.grayDark },
-    rowInputs: { flexDirection: 'row' },
-    buttonsRow: { flexDirection: 'row', marginTop: 24, gap: 12 },
-    backBtn: { width: 50, height: 50, borderRadius: 12, backgroundColor: '#F3F4F6', alignItems: 'center', justifyContent: 'center' },
-    submitBtn: { flex: 1, borderRadius: 12, overflow: 'hidden' },
-    submitGradient: { padding: 16, alignItems: 'center', justifyContent: 'center' },
-    submitText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
 
     modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center', padding: 24 },
     receiptCard: { backgroundColor: 'white', width: '100%', borderRadius: 24, padding: 32, alignItems: 'center', elevation: 10 },
@@ -837,31 +946,6 @@ const styles = StyleSheet.create({
     receiptVal: { fontWeight: 'bold', color: COLORS.grayDark },
     closeReceiptBtn: { marginTop: 24, width: '100%', backgroundColor: COLORS.grayLight, padding: 16, borderRadius: 12, alignItems: 'center' },
     closeReceiptText: { fontWeight: 'bold', color: COLORS.grayDark },
-
-    // Step 3 Styles (Deposit Payment)
-    depositBanner: { flexDirection: 'row', backgroundColor: '#FEF3C7', padding: 16, borderRadius: 16, marginBottom: 20, alignItems: 'flex-start' },
-    depositLabel: { fontSize: 14, fontWeight: '600', color: COLORS.grayDark },
-    depositAmount: { fontSize: 28, fontWeight: 'bold', color: COLORS.maroon, marginVertical: 4 },
-    depositNote: { fontSize: 12, color: '#10B981' },
-    selectedTableInfo: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#EFF6FF', padding: 12, borderRadius: 12, marginBottom: 20 },
-    selectedTableText: { fontSize: 13, color: '#1E40AF', fontWeight: '500' },
-    qrisContainer: { backgroundColor: '#F9FAFB', padding: 20, borderRadius: 16, alignItems: 'center', marginBottom: 20, borderWidth: 1, borderColor: '#E5E7EB' },
-    qrisTitle: { fontSize: 14, fontWeight: '600', color: COLORS.grayDark, marginBottom: 16 },
-    qrisImage: { width: SCREEN_WIDTH - 100, height: SCREEN_WIDTH - 80, borderRadius: 12, backgroundColor: '#FFF' },
-    qrisAmount: { fontSize: 16, fontWeight: 'bold', color: COLORS.maroon, marginTop: 16 },
-    uploadSection: { marginBottom: 20 },
-    uploadTitle: { fontSize: 14, fontWeight: '600', color: COLORS.grayDark, marginBottom: 12 },
-    uploadButton: { width: '100%', minHeight: 120, borderWidth: 2, borderStyle: 'dashed', borderColor: '#D1D5DB', borderRadius: 16, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-    uploadPreview: { width: '100%', height: 200, position: 'relative' },
-    previewImage: { width: '100%', height: '100%', borderRadius: 14 },
-    uploadCheckBadge: { position: 'absolute', top: 8, right: 8, width: 24, height: 24, borderRadius: 12, backgroundColor: COLORS.green, alignItems: 'center', justifyContent: 'center' },
-    uploadPlaceholder: { alignItems: 'center', padding: 20 },
-    uploadPlaceholderText: { fontSize: 14, color: '#6B7280', marginTop: 8 },
-    uploadPlaceholderHint: { fontSize: 12, color: '#9CA3AF', marginTop: 4 },
-    progressBarContainer: { marginTop: 12, height: 20, backgroundColor: '#E5E7EB', borderRadius: 10, overflow: 'hidden', position: 'relative' },
-    progressBarFill: { position: 'absolute', top: 0, left: 0, height: '100%', backgroundColor: COLORS.blue, borderRadius: 10 },
-    progressText: { position: 'absolute', width: '100%', textAlign: 'center', lineHeight: 20, fontSize: 12, fontWeight: 'bold', color: 'white' },
-    // Receipt deposit section
     depositSection: { width: '100%', backgroundColor: '#F0FDF4', padding: 16, borderRadius: 12, marginTop: 16, marginBottom: 8 },
     depositSectionTitle: { fontSize: 14, fontWeight: '600', color: '#065F46', marginBottom: 8 },
     depositSectionRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },

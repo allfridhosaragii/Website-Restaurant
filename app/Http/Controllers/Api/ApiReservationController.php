@@ -44,11 +44,13 @@ class ApiReservationController extends Controller
      */
     public function store(Request $request)
     {
+        // Validate request data including email - Last Update: 2026-01-14 16:26
         $request->validate([
             'date' => 'required|date|after_or_equal:today',
             'time' => 'required|string',
             'guests' => 'required|integer|min:1|max:50',
             'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
             'phone' => 'required|string|max:20',
             'table_id' => 'required|integer|exists:tables,id',
             'notes' => 'nullable|string|max:500',
@@ -73,6 +75,7 @@ class ApiReservationController extends Controller
             'time' => $request->time,
             'guests' => $request->guests,
             'name' => $request->name,
+            'email' => $request->email,
             'phone' => $request->phone,
             'table_id' => $request->table_id,
             'notes' => $request->notes,
