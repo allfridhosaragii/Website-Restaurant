@@ -590,24 +590,21 @@
             }
             
             // Scroll hide/show logic (only after button is visible)
-            let scrollTimeout;
-            let isScrolling = false;
+            let scrollTimeout = null;
             
             window.addEventListener('scroll', function() {
-                // Hide button when scrolling
-                if (!isScrolling && promoBtn.style.display !== 'none') {
-                    promoBtn.classList.add('scroll-hidden');
-                    isScrolling = true;
+                // Immediately hide button when scrolling starts
+                promoBtn.classList.add('scroll-hidden');
+                
+                // Clear any existing timeout
+                if (scrollTimeout) {
+                    clearTimeout(scrollTimeout);
                 }
                 
-                // Clear previous timeout
-                clearTimeout(scrollTimeout);
-                
-                // Show button after scroll stops (400ms delay)
+                // Show button 500ms after scroll stops
                 scrollTimeout = setTimeout(function() {
                     promoBtn.classList.remove('scroll-hidden');
-                    isScrolling = false;
-                }, 400);
+                }, 500);
             }, { passive: true });
         }, 2000);
         
