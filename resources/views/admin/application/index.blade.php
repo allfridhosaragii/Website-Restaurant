@@ -2,191 +2,179 @@
 @section('title', 'Pengaturan Aplikasi')
 @push('styles')
 <style>
+:root {
+    --premium-gradient: linear-gradient(135deg, #0c2a36 0%, #16252b 100%);
+    --accent-gradient: linear-gradient(135deg, #c89b3a 0%, #f0d78c 100%);
+    --card-bg: rgba(255, 255, 255, 0.85);
+    --card-border: rgba(12, 42, 54, 0.08);
+    --glass-bg: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="dark"] {
+    --card-bg: rgba(22, 37, 43, 0.85);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --glass-bg: rgba(12, 42, 54, 0.6);
+}
+
 .app-settings-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
+    margin-bottom: 2.5rem;
 }
 .app-settings-header h1 {
-    margin: 0;
-    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 1rem;
 }
-.app-settings-header h1 i {
-    color: var(--accent);
-}
+
 .app-card {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--card-border);
     border-radius: 1.5rem;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
 .app-card-header {
-    padding: 1.5rem;
-    background: linear-gradient(135deg, rgba(12, 42, 54, 0.03) 0%, rgba(200, 155, 58, 0.05) 100%);
-    border-bottom: 1px solid rgba(12, 42, 54, 0.08);
+    padding: 1.75rem;
+    border-bottom: 1px solid var(--card-border);
+    background: rgba(12, 42, 54, 0.02);
 }
 .app-card-header h3 {
-    margin: 0 0 0.25rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-.app-card-header h3 i {
-    color: var(--accent);
+    font-weight: 700;
+    margin: 0;
+    font-size: 1.25rem;
 }
 .app-card-header p {
-    margin: 0;
+    margin: 0.5rem 0 0;
     color: var(--text-muted);
     font-size: 0.9rem;
 }
+
 .app-card-body {
-    padding: 1.5rem;
+    padding: 1.75rem;
 }
-.app-form-group {
-    margin-bottom: 1.5rem;
-}
-.app-form-group:last-child {
-    margin-bottom: 0;
-}
-.app-form-label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-.app-form-help {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin-top: 0.5rem;
-}
-.app-form-input {
-    width: 100%;
-    padding: 0.875rem 1rem;
-    border: 2px solid rgba(12, 42, 54, 0.1);
-    border-radius: 0.75rem;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.8);
-}
-.app-form-input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 4px rgba(200, 155, 58, 0.15);
-    outline: none;
-}
+
 .app-upload-zone {
-    border: 2px dashed rgba(12, 42, 54, 0.2);
-    border-radius: 1rem;
-    padding: 2rem;
+    border: 2px dashed var(--card-border);
+    border-radius: 1.25rem;
+    padding: 3rem 2rem;
     text-align: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    background: rgba(12, 42, 54, 0.02);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    background: var(--glass-bg);
+    position: relative;
+    overflow: hidden;
+}
+.app-upload-zone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent-gradient);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
 }
 .app-upload-zone:hover {
     border-color: var(--accent);
-    background: rgba(200, 155, 58, 0.05);
+    transform: translateY(-2px);
 }
 .app-upload-zone.dragover {
+    background: rgba(200, 155, 58, 0.05);
     border-color: var(--accent);
-    background: rgba(200, 155, 58, 0.1);
+}
+.app-upload-zone * {
+    position: relative;
+    z-index: 1;
 }
 .app-upload-zone i {
-    font-size: 3rem;
-    color: var(--accent);
-    margin-bottom: 1rem;
+    font-size: 3.5rem;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1.5rem;
+    display: inline-block;
 }
-.app-upload-zone h5 {
-    margin: 0 0 0.5rem;
+
+.history-table {
+    border-collapse: separate;
+    border-spacing: 0 0.5rem;
+}
+.history-table thead th {
+    border: none;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    color: var(--text-muted);
+    padding: 1rem 1.5rem;
+}
+.history-table tbody tr {
+    transition: all 0.2s ease;
+    background: rgba(0, 0, 0, 0.02);
+}
+[data-theme="dark"] .history-table tbody tr {
+    background: rgba(255, 255, 255, 0.02);
+}
+.history-table tbody td {
+    border: none;
+    padding: 1rem 1.5rem;
+    vertical-align: middle;
+}
+.history-table tbody tr td:first-child { border-top-left-radius: 1rem; border-bottom-left-radius: 1rem; }
+.history-table tbody tr td:last-child { border-top-right-radius: 1rem; border-bottom-right-radius: 1rem; }
+
+.history-item-name {
+    font-weight: 600;
     color: var(--text-primary);
 }
-.app-upload-zone p {
-    margin: 0;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
-.app-current-file {
-    background: rgba(25, 135, 84, 0.1);
-    border: 1px solid rgba(25, 135, 84, 0.2);
-    border-radius: 0.75rem;
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-.app-current-file i {
-    font-size: 2.5rem;
-    color: #198754;
-}
-.app-current-file-info {
-    flex: 1;
-}
-.app-current-file-info h6 {
-    margin: 0 0 0.25rem;
-    font-weight: 600;
-}
-.app-current-file-info p {
-    margin: 0;
-    font-size: 0.85rem;
+.history-item-meta {
+    font-size: 0.8rem;
     color: var(--text-muted);
 }
-.app-current-file-actions {
-    display: flex;
-    gap: 0.5rem;
+
+.empty-history {
+    padding: 4rem 2rem;
+    text-align: center;
+    color: var(--text-muted);
 }
-.app-save-bar {
-    padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, rgba(25, 135, 84, 0.1) 0%, rgba(25, 135, 84, 0.05) 100%);
-    border-top: 1px solid rgba(25, 135, 84, 0.2);
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
+.empty-history i {
+    font-size: 3rem;
+    opacity: 0.3;
+    margin-bottom: 1rem;
+    display: block;
 }
-.app-info-box {
-    background: rgba(13, 110, 253, 0.1);
-    border: 1px solid rgba(13, 110, 253, 0.2);
-    border-radius: 0.75rem;
-    padding: 1rem;
+
+.progress {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    height: 12px;
 }
-.app-info-box h6 {
-    margin: 0 0 0.75rem;
-    color: #0d6efd;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+.progress-bar {
+    background: var(--accent-gradient);
+    box-shadow: 0 0 15px rgba(200, 155, 58, 0.3);
 }
-.app-info-box ul {
-    margin: 0;
-    padding-left: 1.25rem;
+
+.btn-primary {
+    background: var(--accent-gradient);
+    border: none;
+    font-weight: 700;
+    padding: 0.8rem 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(200, 155, 58, 0.2);
+    transition: all 0.3s ease;
 }
-.app-info-box li {
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-}
-[data-theme="dark"] .app-card {
-    background: rgba(22, 37, 43, 0.9);
-    border-color: rgba(255, 255, 255, 0.1);
-}
-[data-theme="dark"] .app-card-header {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.06);
-}
-[data-theme="dark"] .app-form-input {
-    background: rgba(22, 37, 43, 0.8);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: var(--text-light);
-}
-[data-theme="dark"] .app-upload-zone {
-    border-color: rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.02);
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(200, 155, 58, 0.3);
+    background: var(--accent-gradient);
 }
 </style>
 @endpush
@@ -212,56 +200,66 @@
     <div class="col-lg-8">
         <div class="app-card">
             <div class="app-card-header">
-                <h3><i class="bi bi-upload"></i> Upload File APK</h3>
-                <p>Upload file APK langsung untuk download instan tanpa login</p>
+                <h3><i class="bi bi-cloud-upload"></i> APK Deployment Center</h3>
+                <p>Deploy pembaruan APK langsung ke CDN dengan akses instan 🚀</p>
             </div>
             <div class="app-card-body">
                 @if($currentApk)
-                <div class="app-current-file mb-3">
-                    <i class="bi bi-file-earmark-zip"></i>
-                    <div class="app-current-file-info">
-                        <h6>{{ $currentApk['name'] }}</h6>
-                        <p>{{ $currentApk['size'] }} • Diupload {{ $currentApk['date'] }}</p>
-                    </div>
-                    <div class="app-current-file-actions">
-                        <a href="{{ $currentApk['url'] }}" class="btn btn-sm btn-outline-success" target="_blank">
-                            <i class="bi bi-download"></i> Test Download
+                <div class="app-current-file mb-4" style="background: rgba(25, 135, 84, 0.05); border: 1px solid rgba(25, 135, 84, 0.15);">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="p-3 rounded-circle" style="background: rgba(25, 135, 84, 0.1);">
+                            <i class="bi bi-file-earmark-check" style="font-size: 2rem; color: #198754;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1 fw-bold">{{ $currentApk['name'] }}</h6>
+                            <p class="mb-0 text-muted small">{{ $currentApk['size'] }} • Versi saat ini di-deploy pada {{ $currentApk['date'] }}</p>
+                        </div>
+                        <a href="{{ $currentApk['url'] }}" class="btn btn-sm btn-outline-success px-3" target="_blank">
+                            <i class="bi bi-cloud-download me-1"></i> Verifikasi
                         </a>
                     </div>
                 </div>
                 @endif
                 
                 <div class="app-form-group">
-                    <label class="app-form-label">File APK Baru</label>
+                    <label class="app-form-label mb-3">Pilar Utama Aplikasi (File APK)</label>
                     <div class="app-upload-zone" id="uploadZone" onclick="document.getElementById('apkFile').click()">
-                        <i class="bi bi-cloud-arrow-up"></i>
-                        <h5>Klik atau drag file APK ke sini</h5>
-                        <p>Maksimal ukuran file: 200MB (Direct Speed 🚀)</p>
+                        <div class="py-4">
+                            <i class="bi bi-cloud-arrow-up"></i>
+                            <h5 class="fw-bold">Unggah Versi Baru</h5>
+                            <p class="text-muted">Seret file APK ke sini atau klik untuk menjelajah</p>
+                            <span class="badge rounded-pill bg-light text-dark mt-3 px-3 py-2 border">Maksimal 200MB</span>
+                        </div>
                     </div>
                     <input type="file" name="apk_file" id="apkFile" accept=".apk" style="display: none;">
                     
-                    <div id="filePreview" style="display: none;" class="mt-3">
-                        <div class="alert alert-info mb-0">
-                            <i class="bi bi-file-earmark me-2"></i>
-                            <span id="fileName"></span>
-                            <span class="text-muted ms-2" id="fileSize"></span>
+                    <div id="filePreview" style="display: none;" class="mt-4">
+                        <div class="p-3 rounded-3 border d-flex align-items-center gap-3 bg-light bg-opacity-10">
+                            <i class="bi bi-file-earmark-zip fw-bold text-accent" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <div id="fileName" class="fw-bold"></div>
+                                <div id="fileSize" class="small text-muted"></div>
+                            </div>
+                            <div class="ms-auto">
+                                <span class="badge bg-success">Siap Upload</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div id="uploadProgressContainer" style="display: none;" class="mt-3">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span class="text-primary fw-semibold" id="uploadStatusText">Mengunggah...</span>
-                            <span class="text-primary fw-semibold" id="uploadPercentage">0%</span>
+                    <div id="uploadProgressContainer" style="display: none;" class="mt-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-bold" id="uploadStatusText">Mempersiapkan...</span>
+                            <span class="fw-extrabold text-accent" id="uploadPercentage">0%</span>
                         </div>
-                        <div class="progress" style="height: 10px; border-radius: 5px;">
-                            <div id="uploadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                        <div class="progress">
+                            <div id="uploadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"></div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="app-save-bar">
-                <button type="button" id="btnUpload" class="btn btn-primary btn-lg">
-                    <i class="bi bi-cloud-upload me-2"></i>Mulai Upload
+            <div class="app-save-bar border-0 bg-transparent px-4 pb-4">
+                <button type="button" id="btnUpload" class="btn btn-primary btn-lg w-100 py-3 shadow-lg">
+                    <i class="bi bi-lightning-fill me-2"></i>Luncurkan Pembaruan
                 </button>
             </div>
         </div>
@@ -270,29 +268,37 @@
     <div class="col-lg-4">
         <div class="app-card">
             <div class="app-card-header">
-                <h3><i class="bi bi-clock-history"></i> Riwayat Upload</h3>
-                <p>100 Upload terakhir</p>
+                <h3 class="mb-0">Riwayat Penempatan</h3>
+                <p>Log pembaruan sistem</p>
             </div>
             <div class="app-card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0" style="font-size: 0.85rem;">
-                        <thead class="table-light">
+                    <table class="table history-table mb-0">
+                        <thead>
                             <tr>
-                                <th class="ps-3">Nama File</th>
-                                <th>Ukuran</th>
-                                <th class="pe-3">Waktu</th>
+                                <th>Arsip APK</th>
+                                <th class="text-end">Rincian</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($history as $item)
                             <tr>
-                                <td class="ps-3 fw-medium">{{ $item['name'] }}</td>
-                                <td>{{ $item['size'] }}</td>
-                                <td class="pe-3 text-muted">{{ $item['date'] }}</td>
+                                <td>
+                                    <div class="history-item-name">{{ $item['name'] }}</div>
+                                    <div class="history-item-meta">{{ $item['date'] }}</div>
+                                </td>
+                                <td class="text-end">
+                                    <span class="badge rounded-pill bg-light text-dark border">{{ $item['size'] }}</span>
+                                </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="3" class="text-center py-4 text-muted">Belum ada riwayat upload</td>
+                                <td colspan="2">
+                                    <div class="empty-history">
+                                        <i class="bi bi-journal-x"></i>
+                                        <p>Belum ada rekaman pembaruan</p>
+                                    </div>
+                                </td>
                             </tr>
                             @endforelse
                         </tbody>
