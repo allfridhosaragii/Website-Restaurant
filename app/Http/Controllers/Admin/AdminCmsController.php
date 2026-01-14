@@ -8,6 +8,7 @@ use App\Models\CmsSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
 class AdminCmsController extends Controller
 {
     public function index()
@@ -313,24 +314,20 @@ class AdminCmsController extends Controller
     public function application()
     {
         $currentApk = null;
-        $downloadPath = public_path('downloads');
+        $activeApk = CmsSetting::get('active_apk_filename');
         
-        // Find the latest APK file in the downloads directory
-        $files = glob($downloadPath . '/*.apk');
-        if (!empty($files)) {
-            // Sort by modification time to get the latest
-            usort($files, function($a, $b) {
-                return filemtime($b) - filemtime($a);
-            });
+        if ($activeApk) {
+            $supabaseUrl = env('SUPABASE_URL');
+            $bucket = env('SUPABASE_BUCKET');
+            $publicUrl = "{$supabaseUrl}/storage/v1/object/public/{$bucket}/apks/{$activeApk}";
             
-            $latestFile = $files[0];
-            $filename = basename($latestFile);
-            
+            // We can add a simple check if the file exists on Supabase if needed, 
+            // but for now we'll trust the database record for the UI.
             $currentApk = [
-                'name' => $filename,
-                'size' => $this->formatFileSize(filesize($latestFile)),
-                'date' => date('d M Y H:i', filemtime($latestFile)),
-                'url' => url('/downloads/' . $filename),
+                'name' => $activeApk,
+                'size' => CmsSetting::get('active_apk_size', '48 MB'), // We'll store size in DB too
+                'date' => CmsSetting::get('active_apk_date', date('d M Y H:i')),
+                'url' => $publicUrl,
             ];
         }
         
@@ -351,31 +348,32 @@ class AdminCmsController extends Controller
                 return redirect('/admin/application')->with('error', 'File harus berformat .apk');
             }
             
-            // Create downloads directory if not exists
-            $downloadPath = public_path('downloads');
-            if (!file_exists($downloadPath)) {
-                mkdir($downloadPath, 0755, true);
-            }
-
-            // CLEANUP: Delete ALL existing files in downloads folder to prevent piling up
-            $files = glob($downloadPath . '/*'); // get all file names
-            foreach($files as $file){ 
-                if(is_file($file)) {
-                    unlink($file); // delete file
-                }
-            }
-            
-            // Move new file
-            // Use timestamp to prevent caching issues and keep history if needed
-            // But we clean up old files anyway as per the logic above
+            // Move file to Supabase
             $timestamp = date('dmy-Hi');
             $newFilename = 'Culinaire-' . $timestamp . '.apk';
-            $file->move($downloadPath, $newFilename);
+            $fileSize = $this->formatFileSize($file->getSize());
+            $fileDate = date('d M Y H:i');
             
-            // Store the filename in settings for the frontend to use
+            $supabaseUrl = env('SUPABASE_URL');
+            $serviceRole = env('SUPABASE_SERVICE_ROLE_KEY');
+            $bucket = env('SUPABASE_BUCKET');
+            
+            $response = Http::withHeaders([
+                'Authorization' => "Bearer {$serviceRole}",
+            ])->attach(
+                'file', file_get_contents($file->getRealPath()), $newFilename
+            )->post("{$supabaseUrl}/storage/v1/object/{$bucket}/apks/{$newFilename}");
+
+            if ($response->failed()) {
+                return redirect('/admin/application')->with('error', 'Gagal upload ke Supabase: ' . $response->body());
+            }
+            
+            // Store the filename and metadata in settings
             CmsSetting::set('active_apk_filename', $newFilename, 'application', 'text');
+            CmsSetting::set('active_apk_size', $fileSize, 'application', 'text');
+            CmsSetting::set('active_apk_date', $fileDate, 'application', 'text');
             
-            return redirect('/admin/application')->with('success', 'Aplikasi berhasil diupload dengan nama ' . $newFilename . '! File lama sudah otomatis dibersihkan.');
+            return redirect('/admin/application')->with('success', 'Aplikasi berhasil diupload ke Supabase dengan nama ' . $newFilename . '!');
         }
 
         return redirect('/admin/application')->with('error', 'Silakan pilih file APK terlebih dahulu');

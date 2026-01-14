@@ -90,23 +90,18 @@
             </div>
             
             @php
-                $activeApk = \App\Models\CmsSetting::get('active_apk_filename', 'culinaire-app.apk');
-                $apkPath = public_path('downloads/' . $activeApk);
+                $activeApk = \App\Models\CmsSetting::get('active_apk_filename');
+                $supabaseUrl = env('SUPABASE_URL');
+                $bucket = env('SUPABASE_BUCKET');
                 
-                // If setting is invalid or file doesn't exist, try to find the latest APK in the folder
-                if (!$activeApk || !file_exists($apkPath)) {
-                    $downloadPath = public_path('downloads');
-                    $files = glob($downloadPath . '/*.apk');
-                    if (!empty($files)) {
-                        // Sort by modification time to get the latest
-                        usort($files, function($a, $b) {
-                            return filemtime($b) - filemtime($a);
-                        });
-                        $activeApk = basename($files[0]);
-                    }
+                if ($activeApk && $supabaseUrl && $bucket) {
+                    $downloadUrl = "{$supabaseUrl}/storage/v1/object/public/{$bucket}/apks/{$activeApk}";
+                } else {
+                    // Fallback to local if Supabase is not configured or no file is active
+                    $downloadUrl = "/downloads/culinaire-app.apk";
                 }
             @endphp
-            <a href="/downloads/{{ $activeApk }}" download="{{ $activeApk }}" class="app-download-btn">
+            <a href="{{ $downloadUrl }}" download="{{ $activeApk ?? 'Culinaire.apk' }}" class="app-download-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                         <polyline points="7 10 12 15 17 10"></polyline>
