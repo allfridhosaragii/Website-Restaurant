@@ -69,7 +69,7 @@
                             </div>
                             <small class="text-muted ms-2">({{ rand(50, 300) }})</small>
                         </div>
-                        <p class="text-muted small mb-3 flex-grow-1">{{ Str::limit($menu->description, 60) }}</p>
+                        <p class="text-muted small mb-3 grow">{{ Str::limit($menu->description, 60) }}</p>
                         <button class="btn btn-primary btn-sm w-100 mt-auto" style="isolation: isolate; position: relative; z-index: 2;" onclick="addToCart(this, {{ $menu->id }})">
                             <i class="bi bi-cart-plus me-1"></i> <span data-i18n="add">{{ __('messages.add') }}</span>
                         </button>

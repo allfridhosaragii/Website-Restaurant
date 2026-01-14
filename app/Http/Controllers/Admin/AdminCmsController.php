@@ -399,4 +399,65 @@ class AdminCmsController extends Controller
         if ($bytes < 1024 * 1024) return round($bytes / 1024, 1) . ' KB';
         return round($bytes / (1024 * 1024), 1) . ' MB';
     }
+
+    public function generateUploadUrl(Request $request)
+    {
+        $request->validate([
+            'filename' => 'required|string',
+        ]);
+
+        $supabaseUrl = env('SUPABASE_URL');
+        $serviceRole = env('SUPABASE_SERVICE_ROLE_KEY');
+        $bucket = env('SUPABASE_BUCKET');
+
+        // 1. Generate new unique filename
+        $timestamp = date('dmy-Hi');
+        $extension = pathinfo($request->filename, PATHINFO_EXTENSION) ?: 'apk';
+        $newFilename = 'Culinaire-' . $timestamp . '.' . $extension;
+
+        // 2. Auto-cleanup: Delete old file
+        $oldFilename = CmsSetting::get('active_apk_filename');
+        if ($oldFilename) {
+            Http::withHeaders([
+                'Authorization' => "Bearer {$serviceRole}",
+            ])->delete("{$supabaseUrl}/storage/v1/object/{$bucket}/apks/{$oldFilename}");
+        }
+
+        // 3. Get Signed Upload URL from Supabase
+        $response = Http::withHeaders([
+            'Authorization' => "Bearer {$serviceRole}",
+            'Content-Type' => 'application/json',
+        ])->post("{$supabaseUrl}/storage/v1/object/upload/sign/{$bucket}/apks/{$newFilename}", [
+            'expiresIn' => 3600 // 1 hour
+        ]);
+
+        if ($response->failed()) {
+            return response()->json(['success' => false, 'message' => 'Gagal membuat upload URL: ' . $response->body()], 500);
+        }
+
+        $data = $response->json();
+        
+        return response()->json([
+            'success' => true,
+            'upload_url' => "{$supabaseUrl}/storage/v1" . $data['url'],
+            'filename' => $newFilename,
+            'supabase_url' => $supabaseUrl
+        ]);
+    }
+
+    public function finalizeUpload(Request $request)
+    {
+        $request->validate([
+            'filename' => 'required|string',
+            'size' => 'required|string',
+        ]);
+
+        $fileDate = date('d M Y H:i');
+
+        CmsSetting::set('active_apk_filename', $request->filename, 'application', 'text');
+        CmsSetting::set('active_apk_size', $request->size, 'application', 'text');
+        CmsSetting::set('active_apk_date', $fileDate, 'application', 'text');
+
+        return response()->json(['success' => true]);
+    }
 }

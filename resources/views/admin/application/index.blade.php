@@ -209,55 +209,62 @@
 </div>
 @endif
 
-<div class="row">
     <div class="col-lg-8">
-        <form action="{{ url('/admin/application') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div class="app-card">
-                <div class="app-card-header">
-                    <h3><i class="bi bi-upload"></i> Upload File APK</h3>
-                    <p>Upload file APK langsung untuk download instan tanpa login</p>
-                </div>
-                <div class="app-card-body">
-                    @if($currentApk)
-                    <div class="app-current-file mb-3">
-                        <i class="bi bi-file-earmark-zip"></i>
-                        <div class="app-current-file-info">
-                            <h6>{{ $currentApk['name'] }}</h6>
-                            <p>{{ $currentApk['size'] }} • Diupload {{ $currentApk['date'] }}</p>
-                        </div>
-                        <div class="app-current-file-actions">
-                            <a href="{{ $currentApk['url'] }}" class="btn btn-sm btn-outline-success" target="_blank">
-                                <i class="bi bi-download"></i> Test Download
-                            </a>
-                        </div>
+        <div class="app-card">
+            <div class="app-card-header">
+                <h3><i class="bi bi-upload"></i> Upload File APK</h3>
+                <p>Upload file APK langsung untuk download instan tanpa login</p>
+            </div>
+            <div class="app-card-body">
+                @if($currentApk)
+                <div class="app-current-file mb-3">
+                    <i class="bi bi-file-earmark-zip"></i>
+                    <div class="app-current-file-info">
+                        <h6>{{ $currentApk['name'] }}</h6>
+                        <p>{{ $currentApk['size'] }} • Diupload {{ $currentApk['date'] }}</p>
                     </div>
-                    @endif
+                    <div class="app-current-file-actions">
+                        <a href="{{ $currentApk['url'] }}" class="btn btn-sm btn-outline-success" target="_blank">
+                            <i class="bi bi-download"></i> Test Download
+                        </a>
+                    </div>
+                </div>
+                @endif
+                
+                <div class="app-form-group">
+                    <label class="app-form-label">File APK Baru</label>
+                    <div class="app-upload-zone" id="uploadZone" onclick="document.getElementById('apkFile').click()">
+                        <i class="bi bi-cloud-arrow-up"></i>
+                        <h5>Klik atau drag file APK ke sini</h5>
+                        <p>Maksimal ukuran file: 200MB (Direct Speed 🚀)</p>
+                    </div>
+                    <input type="file" name="apk_file" id="apkFile" accept=".apk" style="display: none;">
                     
-                    <div class="app-form-group">
-                        <label class="app-form-label">File APK Baru</label>
-                        <div class="app-upload-zone" id="uploadZone" onclick="document.getElementById('apkFile').click()">
-                            <i class="bi bi-cloud-arrow-up"></i>
-                            <h5>Klik atau drag file APK ke sini</h5>
-                            <p>Maksimal ukuran file: 100MB</p>
-                        </div>
-                        <input type="file" name="apk_file" id="apkFile" accept=".apk" style="display: none;">
-                        <div id="filePreview" style="display: none;" class="mt-3">
-                            <div class="alert alert-info mb-0">
-                                <i class="bi bi-file-earmark me-2"></i>
-                                <span id="fileName"></span>
-                                <span class="text-muted ms-2" id="fileSize"></span>
-                            </div>
+                    <div id="filePreview" style="display: none;" class="mt-3">
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-file-earmark me-2"></i>
+                            <span id="fileName"></span>
+                            <span class="text-muted ms-2" id="fileSize"></span>
                         </div>
                     </div>
-                </div>
-                <div class="app-save-bar">
-                    <button type="submit" class="btn btn-primary btn-lg">
-                        <i class="bi bi-cloud-upload me-2"></i>Upload & Simpan
-                    </button>
+
+                    <div id="uploadProgressContainer" style="display: none;" class="mt-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-primary fw-semibold" id="uploadStatusText">Mengunggah...</span>
+                            <span class="text-primary fw-semibold" id="uploadPercentage">0%</span>
+                        </div>
+                        <div class="progress" style="height: 10px; border-radius: 5px;">
+                            <div id="uploadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </form>
+            <div class="app-save-bar">
+                <button type="button" id="btnUpload" class="btn btn-primary btn-lg">
+                    <i class="bi bi-cloud-upload me-2"></i>Mulai Upload
+                </button>
+            </div>
+        </div>
     </div>
     
     <div class="col-lg-4">
@@ -295,6 +302,11 @@ const fileInput = document.getElementById('apkFile');
 const filePreview = document.getElementById('filePreview');
 const fileName = document.getElementById('fileName');
 const fileSize = document.getElementById('fileSize');
+const btnUpload = document.getElementById('btnUpload');
+const uploadProgressContainer = document.getElementById('uploadProgressContainer');
+const uploadProgressBar = document.getElementById('uploadProgressBar');
+const uploadPercentage = document.getElementById('uploadPercentage');
+const uploadStatusText = document.getElementById('uploadStatusText');
 
 // Drag and drop
 uploadZone.addEventListener('dragover', (e) => {
@@ -337,5 +349,92 @@ function formatFileSize(bytes) {
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
 }
+
+// Direct Upload Logic
+btnUpload.addEventListener('click', async () => {
+    const file = fileInput.files[0];
+    if (!file) {
+        alert('Silakan pilih file APK terlebih dahulu');
+        return;
+    }
+
+    try {
+        btnUpload.disabled = true;
+        uploadProgressContainer.style.display = 'block';
+        uploadStatusText.textContent = 'Menyiapkan upload...';
+        
+        // 1. Dapatkan Signed URL dari Laravel
+        const urlResponse = await fetch('/admin/application/generate-upload-url', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ filename: file.name })
+        });
+
+        const urlData = await urlResponse.json();
+        if (!urlData.success) throw new Error(urlData.message);
+
+        const uploadUrl = urlData.upload_url;
+        const newFilename = urlData.filename;
+
+        // 2. Upload langsung ke Supabase pakai XHR (biar ada progress)
+        uploadStatusText.textContent = 'Mengunggah file ke Cloud...';
+        
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', uploadUrl, true);
+        
+        // Supabase expects the file in the body for PUT
+        xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+                const percent = Math.round((e.loaded / e.total) * 100);
+                uploadProgressBar.style.width = percent + '%';
+                uploadPercentage.textContent = percent + '%';
+            }
+        };
+
+        xhr.onload = async () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                // 3. Finalisasi di Laravel
+                uploadStatusText.textContent = 'Menyimpan konfigurasi...';
+                const finalResponse = await fetch('/admin/application/finalize-upload', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        filename: newFilename,
+                        size: formatFileSize(file.size)
+                    })
+                });
+
+                if (finalResponse.ok) {
+                    uploadStatusText.textContent = 'Berhasil!';
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    throw new Error('Gagal finalisasi data');
+                }
+            } else {
+                console.error(xhr.responseText);
+                throw new Error('Gagal mengunggah file ke Supabase storage');
+            }
+        };
+
+        xhr.onerror = () => {
+            throw new Error('Koneksi terputus saat mengunggah');
+        };
+
+        xhr.send(file);
+
+    } catch (error) {
+        alert('Error: ' + error.message);
+        btnUpload.disabled = false;
+        uploadProgressContainer.style.display = 'none';
+    }
+});
 </script>
 @endpush

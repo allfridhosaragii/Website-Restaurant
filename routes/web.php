@@ -493,6 +493,8 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     // Application Download Management
     Route::get('/application', [\App\Http\Controllers\Admin\AdminCmsController::class, 'application']);
     Route::post('/application', [\App\Http\Controllers\Admin\AdminCmsController::class, 'updateApplication']);
+    Route::post('/application/generate-upload-url', [\App\Http\Controllers\Admin\AdminCmsController::class, 'generateUploadUrl']);
+    Route::post('/application/finalize-upload', [\App\Http\Controllers\Admin\AdminCmsController::class, 'finalizeUpload']);
 
     // Admin Access Management (Super Admin Only)
     Route::middleware([\App\Http\Middleware\SuperAdminMiddleware::class])->group(function () {
