@@ -114,14 +114,16 @@ const OrdersScreen = ({ navigation }) => {
 
     const renderReservation = ({ item }) => {
         const statusColor = getStatusColor(item.status);
+        const hasDeposit = item.deposit_amount > 0;
+
         return (
             <TouchableOpacity style={styles.card} activeOpacity={0.8}>
                 <View style={styles.cardHeader}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Icon name="calendar-outline" size={20} color={colors.primary} style={{ marginRight: 8 }} />
                         <View>
-                            <Text style={styles.orderNo}>{item.reservation_date || item.date}</Text>
-                            <Text style={styles.date}>{item.reservation_time || item.time} • {item.guests || item.guest_count} Tamu</Text>
+                            <Text style={styles.orderNo}>ID: {item.id}</Text>
+                            <Text style={styles.date}>{item.reservation_date || item.date}</Text>
                         </View>
                     </View>
                     <View style={[styles.statusBadge, { backgroundColor: statusColor.bg }]}>
@@ -130,12 +132,42 @@ const OrdersScreen = ({ navigation }) => {
                         </Text>
                     </View>
                 </View>
-                {item.table_number && (
-                    <>
-                        <View style={styles.divider} />
-                        <Text style={styles.tableInfo}>Meja: {item.table_number}</Text>
-                    </>
-                )}
+
+                <View style={styles.divider} />
+
+                <View style={styles.reservationDetails}>
+                    <Text style={styles.detailText}>
+                        <Icon name="time-outline" size={14} color="#666" /> {item.reservation_time || item.time}
+                    </Text>
+                    <Text style={styles.detailText}>
+                        <Icon name="people-outline" size={14} color="#666" /> {item.guests || item.guest_count} Tamu
+                    </Text>
+                    {item.table_number && (
+                        <Text style={styles.detailText}>
+                            <Icon name="restaurant-outline" size={14} color="#666" /> Meja {item.table_number}
+                        </Text>
+                    )}
+                </View>
+
+                {/* Deposit Section */}
+                <View style={styles.depositInfoContainer}>
+                    <View style={styles.depositHeader}>
+                        <Text style={styles.depositLabel}>Deposit (QRIS)</Text>
+                        <Text style={styles.depositAmount}>{formatPrice(item.deposit_amount || 150000)}</Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
+                        <Text style={[styles.depositStatus, { color: item.deposit_status === 'paid' ? 'green' : '#F57F17' }]}>
+                            Status: {item.deposit_status ? item.deposit_status.toUpperCase() : 'PENDING'}
+                        </Text>
+
+                        {item.deposit_proof && (
+                            <View style={styles.proofThumbnail}>
+                                <Icon name="image" size={12} color="white" />
+                                <Text style={{ color: 'white', fontSize: 10, marginLeft: 4 }}>Bukti</Text>
+                            </View>
+                        )}
+                    </View>
+                </View>
             </TouchableOpacity>
         );
     };
@@ -226,6 +258,16 @@ const styles = StyleSheet.create({
     loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 60 },
     emptyText: { fontSize: 16, color: '#999', marginTop: 16 },
+
+    // New Styles for Reservation Card
+    reservationDetails: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 16 },
+    detailText: { fontSize: 13, color: '#555', alignItems: 'center' },
+    depositInfoContainer: { backgroundColor: '#F5F5F5', padding: 12, borderRadius: 8, borderLeftWidth: 3, borderLeftColor: colors.primary },
+    depositHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
+    depositLabel: { fontSize: 12, color: '#666', fontWeight: '600' },
+    depositAmount: { fontSize: 14, fontWeight: 'bold', color: colors.primary },
+    depositStatus: { fontSize: 11, fontWeight: 'bold', marginTop: 2 },
+    proofThumbnail: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.primary, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12 },
 });
 
 export default OrdersScreen;

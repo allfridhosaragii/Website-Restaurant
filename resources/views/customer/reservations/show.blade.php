@@ -136,7 +136,7 @@
                     <div class="card-body">
                         <ul class="list-unstyled mb-0">
                             <li class="d-flex gap-3 mb-3">
-                                <div class="flex-shrink-0">
+                                <div class="shrink-0">
                                     <span class="badge bg-primary rounded-circle p-2">
                                         <i class="bi bi-plus-lg"></i>
                                     </span>
@@ -148,7 +148,7 @@
                             </li>
                             @if($reservation->status !== 'pending')
                             <li class="d-flex gap-3">
-                                <div class="flex-shrink-0">
+                                <div class="shrink-0">
                                     <span class="badge bg-{{ $reservation->status === 'accepted' ? 'success' : 'danger' }} rounded-circle p-2">
                                         <i class="bi bi-{{ $reservation->status === 'accepted' ? 'check' : 'x' }}-lg"></i>
                                     </span>
