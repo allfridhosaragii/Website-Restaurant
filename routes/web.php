@@ -341,73 +341,41 @@ Route::prefix('customer')->middleware('auth')->group(function () {
     Route::get('/reservations', [ReservationController::class, 'index']);
     Route::get('/reservations/{id}', [ReservationController::class, 'show']);
     Route::get('/profile', function () {
-        $userId = auth()->id();
-        $totalOrders = \DB::table('orders')->where('user_id', $userId)->count();
-        $totalReservations = \DB::table('reservations')->where('user_id', $userId)->count();
+        $user = auth()->user();
+        $totalOrders = \DB::table('orders')->where('user_id', $user->id)->count();
+        $totalReservations = \DB::table('reservations')->where('user_id', $user->id)->count();
         
-        // New points system: 1.000 per order + 10.000 per accepted reservation
-        $orderPoints = $totalOrders * 1000;
-        $acceptedReservations = \DB::table('reservations')
-            ->where('user_id', $userId)
-            ->whereIn('status', ['accepted', 'completed'])
-            ->count();
-        $reservationPoints = $acceptedReservations * 10000;
-        $points = $orderPoints + $reservationPoints;
+        // Use real points from database (synced with mobile app)
+        $points = $user->points;
         
         return view('customer.profile', compact('totalOrders', 'totalReservations', 'points'));
     });
     Route::get('/point', function () {
-        $userId = auth()->id();
+        $user = auth()->user();
         
-        // New points system: 1.000 per order + 10.000 per accepted reservation
-        $totalOrders = \DB::table('orders')->where('user_id', $userId)->count();
-        $orderPoints = $totalOrders * 1000;
+        // Use real points from database (synced with mobile app)
+        $points = $user->points;
         
-        $acceptedReservations = \DB::table('reservations')
-            ->where('user_id', $userId)
-            ->whereIn('status', ['accepted', 'completed'])
-            ->count();
-        $reservationPoints = $acceptedReservations * 10000;
-        
-        $points = $orderPoints + $reservationPoints;
-        
-        // Get order history
-        $orderHistory = \DB::table('orders')
-            ->where('user_id', $userId)
+        // Get transaction history from point_transactions table
+        $history = \App\Models\PointTransaction::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function ($order) {
+            ->map(function ($tx) {
                 return [
-                    'id' => $order->id,
-                    'date' => $order->created_at,
-                    'description' => 'Order #' . substr($order->id, 0, 8),
-                    'amount' => $order->total,
-                    'points_earned' => 1000,
-                    'type' => 'order'
-                ];
-            });
-        
-        // Get reservation history (only accepted/completed)
-        $reservationHistory = \DB::table('reservations')
-            ->where('user_id', $userId)
-            ->whereIn('status', ['accepted', 'completed'])
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function ($reservation) {
-                return [
-                    'id' => $reservation->id,
-                    'date' => $reservation->created_at,
-                    'description' => 'Reservasi ' . \Carbon\Carbon::parse($reservation->date)->format('d M Y'),
+                    'id' => $tx->id,
+                    'date' => $tx->created_at,
+                    'description' => $tx->description,
                     'amount' => null,
-                    'points_earned' => 10000,
-                    'type' => 'reservation'
+                    'points_earned' => $tx->points,
+                    'type' => $tx->type
                 ];
             });
         
-        // Combine and sort by date
-        $history = $orderHistory->concat($reservationHistory)
-            ->sortByDesc('date')
-            ->values();
+        // Calculate totals for display
+        $orderPoints = $history->where('type', 'order')->sum('points_earned');
+        $reservationPoints = $history->where('type', 'reservation')->sum('points_earned');
+        $totalOrders = $history->where('type', 'order')->count();
+        $acceptedReservations = $history->where('type', 'reservation')->count();
 
         return view('customer.points', compact('points', 'history', 'orderPoints', 'reservationPoints', 'totalOrders', 'acceptedReservations'));
     });
