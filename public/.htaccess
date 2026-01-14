@@ -56,9 +56,10 @@
     # Block access to sensitive file types inside public
     RewriteRule \.(md|json|lock|xml|yml|yaml|log|sh|bat)$ - [F]
 
-    # Prevent direct access to any PHP file except index.php
+    # Prevent direct access to any PHP file except index.php and test-php.php
     # This ensures no one can bypass the router
     RewriteCond %{REQUEST_URI} !^/index.php$
+    RewriteCond %{REQUEST_URI} !^/test-php.php$
     RewriteRule ^.+\.php$ - [F,L]
 
     # ==================================================================
