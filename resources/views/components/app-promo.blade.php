@@ -128,8 +128,10 @@
         bottom: 28px;
         right: 28px;
         z-index: 998;
-        animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) 2s both;
-        transition: opacity 0.3s ease, transform 0.3s ease;
+        animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) 2s forwards;
+        opacity: 1;
+        transform: translateX(0) scale(1);
+        transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
     }
     
     /* On menu page, position above cart button */
@@ -560,9 +562,10 @@
     
     /* Scroll hide/show animation */
     .app-promo-btn-container.scroll-hidden {
-        opacity: 0;
-        transform: translateY(20px) scale(0.8);
+        opacity: 0 !important;
+        transform: translateY(20px) scale(0.8) !important;
         pointer-events: none;
+        visibility: hidden;
     }
 </style>
 
