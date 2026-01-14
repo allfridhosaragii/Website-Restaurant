@@ -496,6 +496,13 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::post('/application/generate-upload-url', [\App\Http\Controllers\Admin\AdminCmsController::class, 'generateUploadUrl']);
     Route::post('/application/finalize-upload', [\App\Http\Controllers\Admin\AdminCmsController::class, 'finalizeUpload']);
 
+    // Inventory Management
+    Route::get('/inventory', [\App\Http\Controllers\Admin\AdminInventoryController::class, 'index'])->name('admin.inventory.index');
+    Route::post('/inventory/{id}/update', [\App\Http\Controllers\Admin\AdminInventoryController::class, 'updateStock']);
+    Route::post('/inventory/{id}/adjust', [\App\Http\Controllers\Admin\AdminInventoryController::class, 'adjustStock']);
+    Route::post('/inventory/{id}/toggle', [\App\Http\Controllers\Admin\AdminInventoryController::class, 'toggleAvailability']);
+    Route::post('/inventory/reset-all', [\App\Http\Controllers\Admin\AdminInventoryController::class, 'resetAllStock']);
+
     // Statistics & Monitoring (Super Admin Only)
     Route::middleware([\App\Http\Middleware\SuperAdminMiddleware::class])->group(function () {
         Route::get('/statistik', [\App\Http\Controllers\Admin\AdminStatisticsController::class, 'index'])->name('admin.statistics.index');
