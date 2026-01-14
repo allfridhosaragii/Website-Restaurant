@@ -313,14 +313,24 @@ class AdminCmsController extends Controller
     public function application()
     {
         $currentApk = null;
-        $apkPath = public_path('downloads/culinaire-app.apk');
+        $downloadPath = public_path('downloads');
         
-        if (file_exists($apkPath)) {
+        // Find the latest APK file in the downloads directory
+        $files = glob($downloadPath . '/*.apk');
+        if (!empty($files)) {
+            // Sort by modification time to get the latest
+            usort($files, function($a, $b) {
+                return filemtime($b) - filemtime($a);
+            });
+            
+            $latestFile = $files[0];
+            $filename = basename($latestFile);
+            
             $currentApk = [
-                'name' => 'culinaire-app.apk',
-                'size' => $this->formatFileSize(filesize($apkPath)),
-                'date' => date('d M Y H:i', filemtime($apkPath)),
-                'url' => url('/downloads/culinaire-app.apk'),
+                'name' => $filename,
+                'size' => $this->formatFileSize(filesize($latestFile)),
+                'date' => date('d M Y H:i', filemtime($latestFile)),
+                'url' => url('/downloads/' . $filename),
             ];
         }
         
@@ -356,10 +366,16 @@ class AdminCmsController extends Controller
             }
             
             // Move new file
-            // We force the name to be consistent so the link always stays valid
-            $file->move($downloadPath, 'culinaire-app.apk');
+            // Use timestamp to prevent caching issues and keep history if needed
+            // But we clean up old files anyway as per the logic above
+            $timestamp = date('dmy-Hi');
+            $newFilename = 'Culinaire-' . $timestamp . '.apk';
+            $file->move($downloadPath, $newFilename);
             
-            return redirect('/admin/application')->with('success', 'Aplikasi berhasil diupload! File lama sudah otomatis dibersihkan.');
+            // Store the filename in settings for the frontend to use
+            CmsSetting::set('active_apk_filename', $newFilename, 'application', 'text');
+            
+            return redirect('/admin/application')->with('success', 'Aplikasi berhasil diupload dengan nama ' . $newFilename . '! File lama sudah otomatis dibersihkan.');
         }
 
         return redirect('/admin/application')->with('error', 'Silakan pilih file APK terlebih dahulu');
