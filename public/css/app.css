@@ -1413,7 +1413,7 @@ body.is-loaded {
     left: 0;
     transform: translate(-50%, -50%);
     border-radius: 50%;
-    z-index: 9999;
+    z-index: 99999;
     pointer-events: none;
 }
 
