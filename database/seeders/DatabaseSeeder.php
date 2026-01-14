@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             MenuSeeder::class,
             ProjectUpdatesSeeder::class,
             ViewerSeeder::class,
+            TableSeeder::class,
         ]);
     }
 }
