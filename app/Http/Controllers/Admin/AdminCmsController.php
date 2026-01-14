@@ -346,20 +346,23 @@ class AdminCmsController extends Controller
             if (!file_exists($downloadPath)) {
                 mkdir($downloadPath, 0755, true);
             }
-            
-            // Delete old APK if exists
-            $oldApk = $downloadPath . '/culinaire-app.apk';
-            if (file_exists($oldApk)) {
-                unlink($oldApk);
+
+            // CLEANUP: Delete ALL existing files in downloads folder to prevent piling up
+            $files = glob($downloadPath . '/*'); // get all file names
+            foreach($files as $file){ 
+                if(is_file($file)) {
+                    unlink($file); // delete file
+                }
             }
             
-            // Move new APK
+            // Move new file
+            // We force the name to be consistent so the link always stays valid
             $file->move($downloadPath, 'culinaire-app.apk');
             
-            return redirect('/admin/application')->with('success', 'File APK berhasil diupload! Download sekarang langsung tanpa login.');
+            return redirect('/admin/application')->with('success', 'Aplikasi berhasil diupload! File lama sudah otomatis dibersihkan.');
         }
-        
-        return redirect('/admin/application')->with('error', 'Pilih file APK untuk diupload.');
+
+        return redirect('/admin/application')->with('error', 'Silakan pilih file APK terlebih dahulu');
     }
     
     private function formatFileSize($bytes)
