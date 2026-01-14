@@ -588,28 +588,28 @@
                     openAppPromoModal();
                 }, 5000);
             }
+            
+            // Scroll hide/show logic (only after button is visible)
+            let scrollTimeout;
+            let isScrolling = false;
+            
+            window.addEventListener('scroll', function() {
+                // Hide button when scrolling
+                if (!isScrolling && promoBtn.style.display !== 'none') {
+                    promoBtn.classList.add('scroll-hidden');
+                    isScrolling = true;
+                }
+                
+                // Clear previous timeout
+                clearTimeout(scrollTimeout);
+                
+                // Show button after scroll stops (400ms delay)
+                scrollTimeout = setTimeout(function() {
+                    promoBtn.classList.remove('scroll-hidden');
+                    isScrolling = false;
+                }, 400);
+            }, { passive: true });
         }, 2000);
-        
-        // Scroll hide/show logic
-        let scrollTimeout;
-        let isScrolling = false;
-        
-        window.addEventListener('scroll', function() {
-            // Hide button when scrolling
-            if (!isScrolling) {
-                promoBtn.classList.add('scroll-hidden');
-                isScrolling = true;
-            }
-            
-            // Clear previous timeout
-            clearTimeout(scrollTimeout);
-            
-            // Show button after scroll stops (300ms delay)
-            scrollTimeout = setTimeout(function() {
-                promoBtn.classList.remove('scroll-hidden');
-                isScrolling = false;
-            }, 300);
-        }, { passive: true });
         
         window.openAppPromoModal = function() {
             modal.classList.add('show');
