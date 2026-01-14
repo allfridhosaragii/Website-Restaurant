@@ -12,15 +12,6 @@ use App\Http\Controllers\Admin\AdminReservationController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\StatusController;
 
-Route::get('/debug-php', function() {
-    echo "<h1>PHP Configuration Test</h1>";
-    echo "upload_max_filesize: " . ini_get('upload_max_filesize') . "<br>";
-    echo "post_max_size: " . ini_get('post_max_size') . "<br>";
-    echo "memory_limit: " . ini_get('memory_limit') . "<br>";
-    echo "max_execution_time: " . ini_get('max_execution_time') . "<br>";
-    phpinfo();
-})->withoutMiddleware([\App\Http\Middleware\MaintenanceMiddleware::class]);
-
 // Secret Maintenance Control Page (Super Admin Only)
 Route::get('/maintenance', function () {
     // If not logged in, redirect to login
