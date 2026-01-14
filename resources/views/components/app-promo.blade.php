@@ -1,3 +1,12 @@
+@php
+    $appDownloadLink = \App\Models\CmsSetting::get('app_download_link', '');
+    $downloadUrl = '/downloads/culinaire-app.apk'; // Default fallback
+    
+    // Convert Google Drive link to direct download URL
+    if ($appDownloadLink && preg_match('/\/d\/([a-zA-Z0-9_-]+)/', $appDownloadLink, $matches)) {
+        $downloadUrl = 'https://drive.google.com/uc?export=download&id=' . $matches[1];
+    }
+@endphp
 {{-- App Promotion Floating Button --}}
 <div id="appPromoButtonContainer" class="app-promo-btn-container" style="display: none;">
     <button id="appPromoBtn" class="app-promo-btn" onclick="openAppPromoModal()">
@@ -92,7 +101,7 @@
                     </div>
                 </div>
                 
-                <a href="/downloads/culinaire-app.apk" download="Culinaire-App.apk" class="app-download-btn">
+                <a href="{{ $downloadUrl }}" target="_blank" rel="noopener" class="app-download-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                         <polyline points="7 10 12 15 17 10"></polyline>

@@ -309,4 +309,30 @@ class AdminCmsController extends Controller
         }
         return response()->json(['success' => false, 'message' => 'No image uploaded'], 400);
     }
+    
+    public function application()
+    {
+        $appDownloadLink = CmsSetting::get('app_download_link', '');
+        $directDownloadUrl = '';
+        
+        // Convert Google Drive link to direct download URL
+        if ($appDownloadLink) {
+            if (preg_match('/\/d\/([a-zA-Z0-9_-]+)/', $appDownloadLink, $matches)) {
+                $directDownloadUrl = 'https://drive.google.com/uc?export=download&id=' . $matches[1];
+            }
+        }
+        
+        return view('admin.application.index', compact('appDownloadLink', 'directDownloadUrl'));
+    }
+    
+    public function updateApplication(Request $request)
+    {
+        $request->validate([
+            'app_download_link' => 'nullable|url',
+        ]);
+        
+        CmsSetting::set('app_download_link', $request->app_download_link);
+        
+        return redirect('/admin/application')->with('success', 'Link download aplikasi berhasil disimpan!');
+    }
 }

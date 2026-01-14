@@ -489,6 +489,10 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::post('/developer/api/content', [\App\Http\Controllers\Admin\AdminCmsController::class, 'apiUpdateContent']);
     Route::post('/developer/api/image', [\App\Http\Controllers\Admin\AdminCmsController::class, 'apiUploadImage']);
     Route::post('/developer/settings', [\App\Http\Controllers\Admin\AdminCmsController::class, 'updateSettings']);
+    
+    // Application Download Management
+    Route::get('/application', [\App\Http\Controllers\Admin\AdminCmsController::class, 'application']);
+    Route::post('/application', [\App\Http\Controllers\Admin\AdminCmsController::class, 'updateApplication']);
 
     // Admin Access Management (Super Admin Only)
     Route::middleware([\App\Http\Middleware\SuperAdminMiddleware::class])->group(function () {
