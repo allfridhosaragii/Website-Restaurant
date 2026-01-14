@@ -309,4 +309,66 @@ class AdminCmsController extends Controller
         }
         return response()->json(['success' => false, 'message' => 'No image uploaded'], 400);
     }
+    
+    public function application()
+    {
+        $currentApk = null;
+        $apkPath = public_path('downloads/culinaire-app.apk');
+        
+        if (file_exists($apkPath)) {
+            $currentApk = [
+                'name' => 'culinaire-app.apk',
+                'size' => $this->formatFileSize(filesize($apkPath)),
+                'date' => date('d M Y H:i', filemtime($apkPath)),
+                'url' => url('/downloads/culinaire-app.apk'),
+            ];
+        }
+        
+        return view('admin.application.index', compact('currentApk'));
+    }
+    
+    public function updateApplication(Request $request)
+    {
+        $request->validate([
+            'apk_file' => 'nullable|file|max:102400', // 100MB max
+        ]);
+        
+        if ($request->hasFile('apk_file')) {
+            $file = $request->file('apk_file');
+            
+            // Validate it's an APK file
+            if ($file->getClientOriginalExtension() !== 'apk') {
+                return redirect('/admin/application')->with('error', 'File harus berformat .apk');
+            }
+            
+            // Create downloads directory if not exists
+            $downloadPath = public_path('downloads');
+            if (!file_exists($downloadPath)) {
+                mkdir($downloadPath, 0755, true);
+            }
+
+            // CLEANUP: Delete ALL existing files in downloads folder to prevent piling up
+            $files = glob($downloadPath . '/*'); // get all file names
+            foreach($files as $file){ 
+                if(is_file($file)) {
+                    unlink($file); // delete file
+                }
+            }
+            
+            // Move new file
+            // We force the name to be consistent so the link always stays valid
+            $file->move($downloadPath, 'culinaire-app.apk');
+            
+            return redirect('/admin/application')->with('success', 'Aplikasi berhasil diupload! File lama sudah otomatis dibersihkan.');
+        }
+
+        return redirect('/admin/application')->with('error', 'Silakan pilih file APK terlebih dahulu');
+    }
+    
+    private function formatFileSize($bytes)
+    {
+        if ($bytes < 1024) return $bytes . ' B';
+        if ($bytes < 1024 * 1024) return round($bytes / 1024, 1) . ' KB';
+        return round($bytes / (1024 * 1024), 1) . ' MB';
+    }
 }

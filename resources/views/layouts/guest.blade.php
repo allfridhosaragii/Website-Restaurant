@@ -325,14 +325,14 @@
                 })
             });
 
-            // Heartbeat every 1 second
+            // Heartbeat every 30 seconds (optimized from 1 second to reduce server load)
             setInterval(() => {
                 fetch('/api/site-visitor/heartbeat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ session_id: pageSessionId, page_url: pageUrl })
                 });
-            }, 1000);
+            }, 30000);
 
             // Send exit on page unload
             window.addEventListener('beforeunload', () => {
@@ -365,5 +365,7 @@
             });
         }
     </script>
+
+    @include('components.app-promo')
 </body>
 </html>

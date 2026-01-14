@@ -168,6 +168,8 @@
         </button>
     </div>
 </div>
+
+<script>document.body.classList.add('menu-page');</script>
 @endsection
 @push('styles')
 <style>

@@ -284,7 +284,7 @@ const ReservationsScreen = () => {
     const createReservation = async () => {
         try {
             setSubmitting(true);
-            const token = await AsyncStorage.getItem('auth_token'); // FIXED: userToken -> auth_token
+            const token = await AsyncStorage.getItem('auth_token'); // FIXED: userToken -> auth_token (Update: 16:43)
             const response = await axios.post(`${BASE_URL}/reservations`, {
                 date: formData.date,
                 time: formData.time,
