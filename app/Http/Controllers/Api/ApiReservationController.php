@@ -47,8 +47,22 @@ class ApiReservationController extends Controller
             'guests' => 'required|integer|min:1|max:50',
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
+            'table_id' => 'required|integer|exists:tables,id',
             'notes' => 'nullable|string|max:500',
         ]);
+        
+        // Check if table is already booked for that date
+        $existingReservation = Reservation::where('table_id', $request->table_id)
+            ->where('date', $request->date)
+            ->whereIn('status', ['pending', 'accepted'])
+            ->first();
+            
+        if ($existingReservation) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Meja ini sudah dipesan untuk tanggal tersebut',
+            ], 422);
+        }
         
         $reservation = Reservation::create([
             'user_id' => $request->user()->id,
@@ -57,6 +71,7 @@ class ApiReservationController extends Controller
             'guests' => $request->guests,
             'name' => $request->name,
             'phone' => $request->phone,
+            'table_id' => $request->table_id,
             'notes' => $request->notes,
             'status' => 'pending',
         ]);
@@ -69,6 +84,7 @@ class ApiReservationController extends Controller
                 'date' => $reservation->date,
                 'time' => $reservation->time,
                 'guests' => $reservation->guests,
+                'table_id' => $reservation->table_id,
                 'status' => $reservation->status,
             ],
         ], 201);

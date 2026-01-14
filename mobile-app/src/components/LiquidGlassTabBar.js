@@ -1,173 +1,264 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
-    TouchableOpacity,
+    Text,
     StyleSheet,
     Dimensions,
-    Animated,
-    Platform,
-    Text,
+    TouchableOpacity
 } from 'react-native';
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    useAnimatedGestureHandler,
+    withSpring,
+    runOnJS,
+    withTiming
+} from 'react-native-reanimated';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { colors } from '../theme/colors';
+import LinearGradient from 'react-native-linear-gradient';
 
-const { width } = Dimensions.get('window');
-const TAB_WIDTH = (width - 40) / 4; // 4 tabs, margin horizontal 20
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const TAB_COUNT = 5;
+const MARGIN_H = 12; // 12px margin left/right
+const CONTAINER_WIDTH = Math.min(SCREEN_WIDTH - (MARGIN_H * 2), 400);
+const TAB_WIDTH = CONTAINER_WIDTH / TAB_COUNT;
+const BAR_HEIGHT = 72;
+
+const SPRING_CONFIG = {
+    damping: 15,
+    mass: 1,
+    stiffness: 120,
+    overshootClamping: false,
+    restDisplacementThreshold: 0.01,
+    restSpeedThreshold: 2,
+};
+
+const COLORS = {
+    brand: '#8B1538',
+    activeIcon: '#8B1538',
+    inactiveIcon: 'rgba(0,0,0,0.4)',
+    pill: 'rgba(0,0,0,0.06)',
+    bg: 'rgba(255, 255, 255, 0.95)',
+};
 
 const LiquidGlassTabBar = ({ state, descriptors, navigation }) => {
-    const animatedValue = useRef(new Animated.Value(0)).current;
+    // Shared Value for Pill Position X (UI Thread)
+    const translateX = useSharedValue(state.index * TAB_WIDTH);
+    const isDragging = useSharedValue(0);
 
+    // Sync external state (e.g. Back button press)
     useEffect(() => {
-        Animated.spring(animatedValue, {
-            toValue: state.index * TAB_WIDTH,
-            useNativeDriver: true,
-            friction: 12,
-            tension: 60,
-        }).start();
+        translateX.value = withSpring(state.index * TAB_WIDTH, SPRING_CONFIG);
     }, [state.index]);
 
+    const handleNavigate = (index) => {
+        const route = state.routes[index];
+        const event = navigation.emit({
+            type: 'tabPress',
+            target: route.key,
+            canPreventDefault: true,
+        });
+
+        if (state.index !== index && !event.defaultPrevented) {
+            navigation.navigate(route.name);
+        }
+    };
+
+    // UI Thread Gesture Handler
+    const gestureHandler = useAnimatedGestureHandler({
+        onStart: (_, ctx) => {
+            isDragging.value = 1;
+            ctx.startX = translateX.value;
+        },
+        onActive: (event, ctx) => {
+            let nextPos = ctx.startX + event.translationX;
+            // Clamp
+            if (nextPos < 0) nextPos = 0;
+            if (nextPos > CONTAINER_WIDTH - TAB_WIDTH) nextPos = CONTAINER_WIDTH - TAB_WIDTH;
+
+            translateX.value = nextPos;
+        },
+        onEnd: (event, _) => {
+            isDragging.value = 0;
+            // Snap to nearest index
+            const targetIndex = Math.round(translateX.value / TAB_WIDTH);
+            const snapPos = targetIndex * TAB_WIDTH;
+
+            translateX.value = withSpring(snapPos, {
+                ...SPRING_CONFIG,
+                velocity: event.velocityX
+            });
+
+            // Navigate on JS Thread
+            runOnJS(handleNavigate)(targetIndex);
+        },
+    });
+
+    const pillStyle = useAnimatedStyle(() => {
+        return {
+            transform: [
+                { translateX: translateX.value },
+                { scale: withTiming(isDragging.value ? 0.9 : 1, { duration: 100 }) }
+            ],
+        };
+    });
+
+    const handleTap = (index) => {
+        // Instant feedback for tap
+        translateX.value = withSpring(index * TAB_WIDTH, SPRING_CONFIG);
+        handleNavigate(index);
+    };
+
+    const getTabConfig = (routeName, isFocused) => {
+        const configs = {
+            Home: { icon: 'home', label: 'Beranda' },
+            Menu: { icon: 'fast-food', label: 'Menu' },
+            Reservations: { icon: 'calendar', label: 'Reservasi' },
+            Orders: { icon: 'time', label: 'Histori' },
+            Profile: { icon: 'person', label: 'Profil' },
+        };
+        const cfg = configs[routeName];
+        let iconName = cfg?.icon || 'square';
+        if (!isFocused) iconName += '-outline';
+        return { icon: iconName, label: cfg?.label || routeName };
+    };
+
     return (
-        <View style={styles.container}>
-            <View style={styles.blurContainer}>
-                {/* Active Indicator (Liquid Glow) */}
-                <Animated.View
-                    style={[
-                        styles.activeIndicator,
-                        {
-                            transform: [{ translateX: animatedValue }],
-                        },
-                    ]}
+        <View style={styles.positionWrapper} pointerEvents="box-none">
+            <View style={styles.containerShadow} />
+
+            <View style={styles.mainContainer}>
+                {/* 
+                    activeOffsetX={[-10, 10]} means:
+                    - Movement within -10px to 10px is IGNORED by PanHandler (passes to children TouchableOpacity)
+                    - Movement > 10px or < -10px ACTIVATES PanHandler (Cancels children touches)
+                    This enables pure Taps AND pure Drag!
+                */}
+                <PanGestureHandler
+                    onGestureEvent={gestureHandler}
+                    activeOffsetX={[-10, 10]}
                 >
-                    <View style={styles.glow} />
-                    <View style={styles.indicatorCore} />
-                </Animated.View>
+                    <Animated.View style={styles.glassBg}>
+                        <Animated.View style={[styles.pill, pillStyle]} />
 
-                {state.routes.map((route, index) => {
-                    const { options } = descriptors[route.key];
-                    const isFocused = state.index === index;
+                        <View style={styles.tabsContainer}>
+                            {state.routes.map((route, index) => {
+                                const isFocused = state.index === index;
+                                const { icon, label } = getTabConfig(route.name, isFocused);
 
-                    const onPress = () => {
-                        const event = navigation.emit({
-                            type: 'tabPress',
-                            target: route.key,
-                            canPreventDefault: true,
-                        });
+                                return (
+                                    <TouchableOpacity
+                                        key={route.key}
+                                        style={styles.tabBtn}
+                                        onPress={() => handleTap(index)}
+                                        activeOpacity={1}
+                                    >
+                                        <Icon
+                                            name={icon}
+                                            size={26}
+                                            color={isFocused ? COLORS.activeIcon : COLORS.inactiveIcon}
+                                            style={styles.iconStyle}
+                                        />
+                                        <Text style={[
+                                            styles.label,
+                                            {
+                                                color: isFocused ? COLORS.activeIcon : COLORS.inactiveIcon,
+                                                fontWeight: isFocused ? '600' : '400'
+                                            }
+                                        ]}>
+                                            {label}
+                                        </Text>
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
 
-                        if (!isFocused && !event.defaultPrevented) {
-                            navigation.navigate(route.name);
-                        }
-                    };
-
-                    // Icons per route
-                    let iconName = 'home-outline';
-                    if (route.name === 'Home') iconName = isFocused ? 'home' : 'home-outline';
-                    else if (route.name === 'Menu') iconName = isFocused ? 'restaurant' : 'restaurant-outline';
-                    else if (route.name === 'Cart') iconName = isFocused ? 'cart' : 'cart-outline';
-                    else if (route.name === 'Profile') iconName = isFocused ? 'person' : 'person-outline';
-
-                    return (
-                        <TouchableOpacity
-                            key={index}
-                            onPress={onPress}
-                            style={styles.tabButton}
-                            activeOpacity={0.8}
-                        >
-                            <Icon
-                                name={iconName}
-                                size={24}
-                                color={isFocused ? colors.accent : 'rgba(255,255,255,0.6)'}
-                                style={[
-                                    styles.icon,
-                                    isFocused && styles.activeIcon
-                                ]}
-                            />
-                            {isFocused && (
-                                <Text style={styles.label}>
-                                    {options.title}
-                                </Text>
-                            )}
-                        </TouchableOpacity>
-                    );
-                })}
+                        <LinearGradient
+                            colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0)']}
+                            start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                            style={styles.topBorder}
+                            pointerEvents="none"
+                        />
+                    </Animated.View>
+                </PanGestureHandler>
             </View>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    positionWrapper: {
         position: 'absolute',
         bottom: 20,
-        left: 20,
-        right: 20,
+        width: SCREEN_WIDTH,
         alignItems: 'center',
+        justifyContent: 'center',
     },
-    blurContainer: {
+    mainContainer: {
+        width: CONTAINER_WIDTH,
+        height: BAR_HEIGHT,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    containerShadow: {
+        position: 'absolute',
+        width: CONTAINER_WIDTH - 20,
+        height: BAR_HEIGHT - 20,
+        bottom: 10,
+        backgroundColor: 'black',
+        borderRadius: 40,
+        opacity: 0.15,
+        transform: [{ scale: 1.1 }]
+    },
+    glassBg: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 36,
+        backgroundColor: COLORS.bg,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.6)',
+        overflow: 'hidden',
+    },
+    pill: {
+        position: 'absolute',
+        top: 6,
+        left: 0,
+        width: TAB_WIDTH,
+        height: BAR_HEIGHT - 12,
+        backgroundColor: COLORS.pill,
+        borderRadius: 30,
+        zIndex: 0,
+    },
+    tabsContainer: {
         flexDirection: 'row',
         width: '100%',
-        height: 70,
-        borderRadius: 35,
-        backgroundColor: 'rgba(20, 20, 20, 0.85)', // Dark Glass
-        borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        overflow: 'hidden',
-        // Shadow for depth
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.5,
-        shadowRadius: 20,
-        elevation: 15,
-    },
-    activeIndicator: {
-        position: 'absolute',
-        left: 0,
-        top: 0,
         height: '100%',
-        width: TAB_WIDTH,
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: -1,
-    },
-    glow: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        backgroundColor: 'rgba(212, 175, 55, 0.15)', // Accent Gold Glow
+        zIndex: 1,
         position: 'absolute',
+        top: 0, left: 0,
     },
-    indicatorCore: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        backgroundColor: colors.accent,
-        position: 'absolute',
-        bottom: 15,
-    },
-    tabButton: {
+    tabBtn: {
         flex: 1,
-        height: '100%',
-        justifyContent: 'center',
         alignItems: 'center',
+        justifyContent: 'center',
+        paddingTop: 4,
     },
-    icon: {
+    iconStyle: {
         marginBottom: 2,
-    },
-    activeIcon: {
-        marginBottom: 5, // Lift up slightly
-        shadowColor: colors.accent,
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.8,
-        shadowRadius: 10,
     },
     label: {
         fontSize: 10,
-        color: colors.accent,
-        fontWeight: '600',
-        position: 'absolute',
-        bottom: 12,
+        letterSpacing: 0.2,
     },
+    topBorder: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 1,
+        opacity: 0.5,
+    }
 });
 
 export default LiquidGlassTabBar;

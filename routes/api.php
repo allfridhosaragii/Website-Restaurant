@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ApiCartController;
 use App\Http\Controllers\Api\ApiOrderController;
 use App\Http\Controllers\Api\ApiReservationController;
 use App\Http\Controllers\Api\ApiFavoriteController;
+use App\Http\Controllers\Api\ApiTableController;
 use App\Http\Controllers\Api\Admin\ApiAdminOrderController;
 use App\Http\Controllers\Api\Admin\ApiAdminReservationController;
 use App\Http\Controllers\Api\Admin\ApiAdminUserController;
@@ -71,6 +72,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [ApiReservationController::class, 'index']);
         Route::post('/', [ApiReservationController::class, 'store']);
         Route::get('/{id}', [ApiReservationController::class, 'show']);
+    });
+    
+    // Tables
+    Route::prefix('tables')->group(function () {
+        Route::get('/', [ApiTableController::class, 'index']);
+        Route::get('/{id}/availability', [ApiTableController::class, 'checkAvailability']);
     });
     
     // Favorites
