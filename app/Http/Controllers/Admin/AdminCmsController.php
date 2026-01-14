@@ -329,6 +329,7 @@ class AdminCmsController extends Controller
                 'date' => CmsSetting::get('active_apk_date', date('d M Y H:i')),
                 'url' => $publicUrl,
             ];
+        }
         
         $history = CmsSetting::get('apk_upload_history', []);
 

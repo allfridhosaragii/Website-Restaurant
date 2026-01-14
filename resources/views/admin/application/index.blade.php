@@ -210,7 +210,7 @@
                         <div class="p-3 rounded-circle" style="background: rgba(25, 135, 84, 0.1);">
                             <i class="bi bi-file-earmark-check" style="font-size: 2rem; color: #198754;"></i>
                         </div>
-                        <div class="flex-grow-1">
+                        <div class="grow">
                             <h6 class="mb-1 fw-bold">{{ $currentApk['name'] }}</h6>
                             <p class="mb-0 text-muted small">{{ $currentApk['size'] }} • Versi saat ini di-deploy pada {{ $currentApk['date'] }}</p>
                         </div>
