@@ -54,7 +54,7 @@ class ApiOrderController extends Controller
         ]);
         
         $user = $request->user();
-        $cartItems = \App\Models\Cart::where('user_id', $user->id)->with('menu')->get();
+        $cartItems = \App\Models\CartItem::where('user_id', $user->id)->with('menu')->get();
         
         if ($cartItems->isEmpty()) {
             return response()->json([
@@ -93,7 +93,7 @@ class ApiOrderController extends Controller
         }
         
         // Clear cart after order
-        \App\Models\Cart::where('user_id', $user->id)->delete();
+        \App\Models\CartItem::where('user_id', $user->id)->delete();
         
         return response()->json([
             'success' => true,
