@@ -86,7 +86,7 @@
             </li>
             @if(auth()->user()->hasAdminPermission('statistics'))
             <li class="sidebar-nav-item">
-                <a href="#" class="sidebar-nav-link">
+                <a href="{{ url('/admin/statistik') }}" class="sidebar-nav-link {{ request()->is('admin/statistik*') ? 'active' : '' }}">
                     <i class="bi bi-graph-up"></i>
                     <span>Statistik</span>
                 </a>
