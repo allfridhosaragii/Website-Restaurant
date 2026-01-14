@@ -272,7 +272,7 @@ const ReservationsScreen = () => {
         }
         else if (step === 2) {
             // Validate form first
-            if (!formData.name || !formData.phone || !formData.date || !formData.time) {
+            if (!formData.name || !formData.phone || !formData.email || !formData.date || !formData.time) {
                 Alert.alert("Mohon Lengkapi Data", "Semua kolom form harus diisi.");
                 return;
             }
