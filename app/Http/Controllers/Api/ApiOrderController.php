@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ApiOrderController extends Controller
 {
@@ -46,10 +48,6 @@ class ApiOrderController extends Controller
     /**
      * Create new order from cart
      */
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-
-    // ... (inside store method)
     public function store(Request $request)
     {
         try {
