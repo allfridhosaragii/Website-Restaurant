@@ -27,6 +27,7 @@
     border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 1.5rem;
     overflow: hidden;
+    margin-bottom: 1.5rem;
 }
 .app-card-header {
     padding: 1.5rem;
@@ -80,26 +81,73 @@
     box-shadow: 0 0 0 4px rgba(200, 155, 58, 0.15);
     outline: none;
 }
-.app-preview-box {
+.app-upload-zone {
+    border: 2px dashed rgba(12, 42, 54, 0.2);
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: rgba(12, 42, 54, 0.02);
+}
+.app-upload-zone:hover {
+    border-color: var(--accent);
+    background: rgba(200, 155, 58, 0.05);
+}
+.app-upload-zone.dragover {
+    border-color: var(--accent);
+    background: rgba(200, 155, 58, 0.1);
+}
+.app-upload-zone i {
+    font-size: 3rem;
+    color: var(--accent);
+    margin-bottom: 1rem;
+}
+.app-upload-zone h5 {
+    margin: 0 0 0.5rem;
+    color: var(--text-primary);
+}
+.app-upload-zone p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+.app-current-file {
     background: rgba(25, 135, 84, 0.1);
     border: 1px solid rgba(25, 135, 84, 0.2);
     border-radius: 0.75rem;
     padding: 1rem;
-    margin-top: 1rem;
-}
-.app-preview-box h6 {
-    margin: 0 0 0.5rem;
-    color: #198754;
-    font-weight: 600;
     display: flex;
     align-items: center;
+    gap: 1rem;
+}
+.app-current-file i {
+    font-size: 2.5rem;
+    color: #198754;
+}
+.app-current-file-info {
+    flex: 1;
+}
+.app-current-file-info h6 {
+    margin: 0 0 0.25rem;
+    font-weight: 600;
+}
+.app-current-file-info p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+.app-current-file-actions {
+    display: flex;
     gap: 0.5rem;
 }
-.app-preview-link {
-    font-family: monospace;
-    font-size: 0.9rem;
-    word-break: break-all;
-    color: #0d6efd;
+.app-save-bar {
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, rgba(25, 135, 84, 0.1) 0%, rgba(25, 135, 84, 0.05) 100%);
+    border-top: 1px solid rgba(25, 135, 84, 0.2);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
 }
 .app-info-box {
     background: rgba(13, 110, 253, 0.1);
@@ -115,21 +163,13 @@
     align-items: center;
     gap: 0.5rem;
 }
-.app-info-box ol {
+.app-info-box ul {
     margin: 0;
     padding-left: 1.25rem;
 }
 .app-info-box li {
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
-}
-.app-save-bar {
-    padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, rgba(25, 135, 84, 0.1) 0%, rgba(25, 135, 84, 0.05) 100%);
-    border-top: 1px solid rgba(25, 135, 84, 0.2);
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
 }
 [data-theme="dark"] .app-card {
     background: rgba(22, 37, 43, 0.9);
@@ -143,6 +183,10 @@
     background: rgba(22, 37, 43, 0.8);
     border-color: rgba(255, 255, 255, 0.1);
     color: var(--text-light);
+}
+[data-theme="dark"] .app-upload-zone {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.02);
 }
 </style>
 @endpush
@@ -158,39 +202,58 @@
 </div>
 @endif
 
+@if(session('error'))
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-circle me-2"></i>{{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
 <div class="row">
     <div class="col-lg-8">
-        <form action="{{ url('/admin/application') }}" method="POST">
+        <form action="{{ url('/admin/application') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="app-card">
                 <div class="app-card-header">
-                    <h3><i class="bi bi-google"></i> Link Download Google Drive</h3>
-                    <p>Masukkan link Google Drive untuk file APK aplikasi Anda</p>
+                    <h3><i class="bi bi-upload"></i> Upload File APK</h3>
+                    <p>Upload file APK langsung untuk download instan tanpa login</p>
                 </div>
                 <div class="app-card-body">
-                    <div class="app-form-group">
-                        <label class="app-form-label">Link Google Drive</label>
-                        <input type="url" 
-                               name="app_download_link" 
-                               class="app-form-input" 
-                               id="gdriveLink"
-                               value="{{ $appDownloadLink ?? '' }}"
-                               placeholder="https://drive.google.com/file/d/xxxxx/view?usp=sharing">
-                        <p class="app-form-help">
-                            Pastikan file memiliki akses "Anyone with the link can view"
-                        </p>
+                    @if($currentApk)
+                    <div class="app-current-file mb-3">
+                        <i class="bi bi-file-earmark-zip"></i>
+                        <div class="app-current-file-info">
+                            <h6>{{ $currentApk['name'] }}</h6>
+                            <p>{{ $currentApk['size'] }} • Diupload {{ $currentApk['date'] }}</p>
+                        </div>
+                        <div class="app-current-file-actions">
+                            <a href="{{ $currentApk['url'] }}" class="btn btn-sm btn-outline-success" target="_blank">
+                                <i class="bi bi-download"></i> Test Download
+                            </a>
+                        </div>
                     </div>
+                    @endif
                     
-                    <div class="app-preview-box" id="previewBox" style="{{ ($appDownloadLink ?? '') ? '' : 'display: none;' }}">
-                        <h6><i class="bi bi-check-circle-fill"></i> Direct Download URL</h6>
-                        <div class="app-preview-link" id="previewLink">
-                            {{ $directDownloadUrl ?? '' }}
+                    <div class="app-form-group">
+                        <label class="app-form-label">File APK Baru</label>
+                        <div class="app-upload-zone" id="uploadZone" onclick="document.getElementById('apkFile').click()">
+                            <i class="bi bi-cloud-arrow-up"></i>
+                            <h5>Klik atau drag file APK ke sini</h5>
+                            <p>Maksimal ukuran file: 100MB</p>
+                        </div>
+                        <input type="file" name="apk_file" id="apkFile" accept=".apk" style="display: none;">
+                        <div id="filePreview" style="display: none;" class="mt-3">
+                            <div class="alert alert-info mb-0">
+                                <i class="bi bi-file-earmark me-2"></i>
+                                <span id="fileName"></span>
+                                <span class="text-muted ms-2" id="fileSize"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="app-save-bar">
                     <button type="submit" class="btn btn-primary btn-lg">
-                        <i class="bi bi-check-lg me-2"></i>Simpan Pengaturan
+                        <i class="bi bi-cloud-upload me-2"></i>Upload & Simpan
                     </button>
                 </div>
             </div>
@@ -200,24 +263,23 @@
     <div class="col-lg-4">
         <div class="app-card">
             <div class="app-card-header">
-                <h3><i class="bi bi-info-circle"></i> Panduan</h3>
+                <h3><i class="bi bi-info-circle"></i> Informasi</h3>
             </div>
             <div class="app-card-body">
                 <div class="app-info-box">
-                    <h6><i class="bi bi-question-circle"></i> Cara Mendapatkan Link</h6>
-                    <ol>
-                        <li>Upload file APK ke Google Drive</li>
-                        <li>Klik kanan pada file → "Share"</li>
-                        <li>Ubah akses menjadi "Anyone with the link"</li>
-                        <li>Klik "Copy link"</li>
-                        <li>Paste link di form ini</li>
-                    </ol>
+                    <h6><i class="bi bi-lightning-charge"></i> Keunggulan Upload Langsung</h6>
+                    <ul>
+                        <li>Download langsung tanpa login</li>
+                        <li>Kecepatan download maksimal</li>
+                        <li>Tidak ada batasan dari Google</li>
+                        <li>100% kontrol Anda</li>
+                    </ul>
                 </div>
                 
                 <div class="mt-3">
                     <small class="text-muted">
-                        <i class="bi bi-lightbulb me-1"></i>
-                        Link akan otomatis dikonversi ke format direct download untuk kecepatan maksimal.
+                        <i class="bi bi-shield-check me-1"></i>
+                        File APK disimpan dengan aman di server Anda.
                     </small>
                 </div>
             </div>
@@ -228,22 +290,52 @@
 
 @push('scripts')
 <script>
-document.getElementById('gdriveLink').addEventListener('input', function(e) {
-    const link = e.target.value;
-    const previewBox = document.getElementById('previewBox');
-    const previewLink = document.getElementById('previewLink');
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('apkFile');
+const filePreview = document.getElementById('filePreview');
+const fileName = document.getElementById('fileName');
+const fileSize = document.getElementById('fileSize');
+
+// Drag and drop
+uploadZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadZone.classList.add('dragover');
+});
+
+uploadZone.addEventListener('dragleave', () => {
+    uploadZone.classList.remove('dragover');
+});
+
+uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('dragover');
     
-    // Extract file ID from Google Drive link
-    const match = link.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    
-    if (match && match[1]) {
-        const fileId = match[1];
-        const directUrl = 'https://drive.google.com/uc?export=download&id=' + fileId;
-        previewLink.textContent = directUrl;
-        previewBox.style.display = 'block';
+    const files = e.dataTransfer.files;
+    if (files.length > 0 && files[0].name.endsWith('.apk')) {
+        fileInput.files = files;
+        showFilePreview(files[0]);
     } else {
-        previewBox.style.display = 'none';
+        alert('Hanya file APK yang diperbolehkan');
     }
 });
+
+// File input change
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        showFilePreview(e.target.files[0]);
+    }
+});
+
+function showFilePreview(file) {
+    fileName.textContent = file.name;
+    fileSize.textContent = formatFileSize(file.size);
+    filePreview.style.display = 'block';
+}
+
+function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
 </script>
 @endpush

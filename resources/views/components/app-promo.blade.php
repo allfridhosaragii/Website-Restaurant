@@ -1,12 +1,3 @@
-@php
-    $appDownloadLink = \App\Models\CmsSetting::get('app_download_link', '');
-    $downloadUrl = '/downloads/culinaire-app.apk'; // Default fallback
-    
-    // Convert Google Drive link to direct download URL
-    if ($appDownloadLink && preg_match('/\/d\/([a-zA-Z0-9_-]+)/', $appDownloadLink, $matches)) {
-        $downloadUrl = 'https://drive.google.com/uc?export=download&id=' . $matches[1];
-    }
-@endphp
 {{-- App Promotion Floating Button --}}
 <div id="appPromoButtonContainer" class="app-promo-btn-container" style="display: none;">
     <button id="appPromoBtn" class="app-promo-btn" onclick="openAppPromoModal()">
@@ -22,86 +13,83 @@
         </span>
         <div class="app-promo-tooltip">
             <div class="app-promo-tooltip-title">📱 Download Aplikasi</div>
-            <div class="app-promo-tooltip-desc">Bonus 5.000 poin!</div>
+            <div class="app-promo-tooltip-desc">Dapatkan pengalaman eksklusif!</div>
         </div>
     </button>
 </div>
 
 {{-- App Promotion Modal --}}
-<div id="appPromoModal" class="app-modal-overlay">
+<div id="appPromoModal" class="app-modal">
     <div class="app-modal-backdrop" onclick="closeAppPromoModal()"></div>
-    <div class="app-modal-wrapper">
-        <div class="app-modal-card">
-            <div class="app-modal-header">
-                <div class="app-modal-circle-1"></div>
-                <div class="app-modal-circle-2"></div>
-                <button class="app-modal-close" onclick="closeAppPromoModal()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-                <div class="app-modal-icon-container">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
-                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
+    <div class="app-modal-card">
+        <button class="app-modal-close" onclick="closeAppPromoModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+        
+        <div class="app-modal-header">
+            <div class="app-modal-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                </svg>
+            </div>
+            <h2 class="app-modal-title">Culinaire App</h2>
+            <p class="app-modal-subtitle">Pengalaman Premium di Genggaman Anda</p>
+        </div>
+        
+        <div class="app-modal-content">
+            <div class="app-benefits-list">
+                <div class="app-benefit-card" style="animation-delay: 0.1s">
+                    <div class="app-benefit-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <path d="M2 17l10 5 10-5"></path>
+                            <path d="M2 12l10 5 10-5"></path>
+                        </svg>
+                    </div>
+                    <div class="app-benefit-text">
+                        <div class="app-benefit-title">Reservasi Lebih Mudah</div>
+                        <div class="app-benefit-desc">Pesan meja langsung dalam hitungan detik</div>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="app-benefit-check">
+                        <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
                 </div>
-                <h2 class="app-modal-title">Download Aplikasi Culinaire</h2>
-                <p class="app-modal-subtitle">Pengalaman Kuliner Premium di Genggaman Anda</p>
+                <div class="app-benefit-card" style="animation-delay: 0.2s">
+                    <div class="app-benefit-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
+                            <circle cx="12" cy="8" r="7"></circle>
+                            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                        </svg>
+                    </div>
+                    <div class="app-benefit-text">
+                        <div class="app-benefit-title">Poin & Rewards Eksklusif</div>
+                        <div class="app-benefit-desc">Dapatkan double points setiap pemesanan</div>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="app-benefit-check">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+                <div class="app-benefit-card" style="animation-delay: 0.3s">
+                    <div class="app-benefit-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="text-white">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </div>
+                    <div class="app-benefit-text">
+                        <div class="app-benefit-title">Notifikasi Promo Spesial</div>
+                        <div class="app-benefit-desc">Jadi yang pertama tahu promo terbaru</div>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="app-benefit-check">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
             </div>
             
-            <div class="app-modal-content">
-                <div class="app-modal-benefits">
-                    <div class="app-benefit-card" style="animation-delay: 0.1s">
-                        <div class="app-benefit-icon-wrapper">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
-                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                            </svg>
-                        </div>
-                        <div class="app-benefit-text">
-                            <div class="app-benefit-title">Pengalaman Lebih Cepat</div>
-                            <div class="app-benefit-desc">Akses menu dan pesan dalam hitungan detik</div>
-                        </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="app-benefit-check">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                    </div>
-                    <div class="app-benefit-card" style="animation-delay: 0.2s">
-                        <div class="app-benefit-icon-wrapper">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
-                                <polyline points="20 12 20 22 4 22 4 12"></polyline>
-                                <rect x="2" y="7" width="20" height="5"></rect>
-                                <line x1="12" y1="22" x2="12" y2="7"></line>
-                                <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
-                                <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
-                            </svg>
-                        </div>
-                        <div class="app-benefit-text">
-                            <div class="app-benefit-title">Poin & Rewards Eksklusif</div>
-                            <div class="app-benefit-desc">Dapatkan double points setiap pemesanan</div>
-                        </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="app-benefit-check">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                    </div>
-                    <div class="app-benefit-card" style="animation-delay: 0.3s">
-                        <div class="app-benefit-icon-wrapper">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="text-white">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                            </svg>
-                        </div>
-                        <div class="app-benefit-text">
-                            <div class="app-benefit-title">Notifikasi Promo Spesial</div>
-                            <div class="app-benefit-desc">Jadi yang pertama tahu promo terbaru</div>
-                        </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="app-benefit-check">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                    </div>
-                </div>
-                
-                <a href="{{ $downloadUrl }}" target="_blank" rel="noopener" class="app-download-btn">
+            <a href="/downloads/culinaire-app.apk" download="Culinaire-App.apk" class="app-download-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                         <polyline points="7 10 12 15 17 10"></polyline>

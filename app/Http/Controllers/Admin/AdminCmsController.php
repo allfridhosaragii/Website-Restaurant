@@ -312,27 +312,60 @@ class AdminCmsController extends Controller
     
     public function application()
     {
-        $appDownloadLink = CmsSetting::get('app_download_link', '');
-        $directDownloadUrl = '';
+        $currentApk = null;
+        $apkPath = public_path('downloads/culinaire-app.apk');
         
-        // Convert Google Drive link to direct download URL
-        if ($appDownloadLink) {
-            if (preg_match('/\/d\/([a-zA-Z0-9_-]+)/', $appDownloadLink, $matches)) {
-                $directDownloadUrl = 'https://drive.google.com/uc?export=download&id=' . $matches[1];
-            }
+        if (file_exists($apkPath)) {
+            $currentApk = [
+                'name' => 'culinaire-app.apk',
+                'size' => $this->formatFileSize(filesize($apkPath)),
+                'date' => date('d M Y H:i', filemtime($apkPath)),
+                'url' => url('/downloads/culinaire-app.apk'),
+            ];
         }
         
-        return view('admin.application.index', compact('appDownloadLink', 'directDownloadUrl'));
+        return view('admin.application.index', compact('currentApk'));
     }
     
     public function updateApplication(Request $request)
     {
         $request->validate([
-            'app_download_link' => 'nullable|url',
+            'apk_file' => 'nullable|file|max:102400', // 100MB max
         ]);
         
-        CmsSetting::set('app_download_link', $request->app_download_link);
+        if ($request->hasFile('apk_file')) {
+            $file = $request->file('apk_file');
+            
+            // Validate it's an APK file
+            if ($file->getClientOriginalExtension() !== 'apk') {
+                return redirect('/admin/application')->with('error', 'File harus berformat .apk');
+            }
+            
+            // Create downloads directory if not exists
+            $downloadPath = public_path('downloads');
+            if (!file_exists($downloadPath)) {
+                mkdir($downloadPath, 0755, true);
+            }
+            
+            // Delete old APK if exists
+            $oldApk = $downloadPath . '/culinaire-app.apk';
+            if (file_exists($oldApk)) {
+                unlink($oldApk);
+            }
+            
+            // Move new APK
+            $file->move($downloadPath, 'culinaire-app.apk');
+            
+            return redirect('/admin/application')->with('success', 'File APK berhasil diupload! Download sekarang langsung tanpa login.');
+        }
         
-        return redirect('/admin/application')->with('success', 'Link download aplikasi berhasil disimpan!');
+        return redirect('/admin/application')->with('error', 'Pilih file APK untuk diupload.');
+    }
+    
+    private function formatFileSize($bytes)
+    {
+        if ($bytes < 1024) return $bytes . ' B';
+        if ($bytes < 1024 * 1024) return round($bytes / 1024, 1) . ' KB';
+        return round($bytes / (1024 * 1024), 1) . ' MB';
     }
 }
