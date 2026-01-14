@@ -331,7 +331,9 @@ class AdminCmsController extends Controller
             ];
         }
         
-        return view('admin.application.index', compact('currentApk'));
+        $history = CmsSetting::get('apk_upload_history', []);
+        
+        return view('admin.application.index', compact('currentApk', 'history'));
     }
     
     public function updateApplication(Request $request)
@@ -454,9 +456,25 @@ class AdminCmsController extends Controller
 
         $fileDate = date('d M Y H:i');
 
+        // Update current active APK
         CmsSetting::set('active_apk_filename', $request->filename, 'application', 'text');
         CmsSetting::set('active_apk_size', $request->size, 'application', 'text');
         CmsSetting::set('active_apk_date', $fileDate, 'application', 'text');
+
+        // Update history
+        $history = CmsSetting::get('apk_upload_history', []);
+        
+        // Add newest to the top
+        array_unshift($history, [
+            'name' => $request->filename,
+            'size' => $request->size,
+            'date' => $fileDate
+        ]);
+
+        // Keep only top 100 entries to avoid DB bloat
+        $history = array_slice($history, 0, 100);
+
+        CmsSetting::set('apk_upload_history', $history, 'application', 'json');
 
         return response()->json(['success' => true]);
     }

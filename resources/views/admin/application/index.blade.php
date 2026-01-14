@@ -270,24 +270,33 @@
     <div class="col-lg-4">
         <div class="app-card">
             <div class="app-card-header">
-                <h3><i class="bi bi-info-circle"></i> Informasi</h3>
+                <h3><i class="bi bi-clock-history"></i> Riwayat Upload</h3>
+                <p>100 Upload terakhir</p>
             </div>
-            <div class="app-card-body">
-                <div class="app-info-box">
-                    <h6><i class="bi bi-lightning-charge"></i> Keunggulan Upload Langsung</h6>
-                    <ul>
-                        <li>Download langsung tanpa login</li>
-                        <li>Kecepatan download maksimal</li>
-                        <li>Tidak ada batasan dari Google</li>
-                        <li>100% kontrol Anda</li>
-                    </ul>
-                </div>
-                
-                <div class="mt-3">
-                    <small class="text-muted">
-                        <i class="bi bi-shield-check me-1"></i>
-                        File APK disimpan dengan aman di server Anda.
-                    </small>
+            <div class="app-card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" style="font-size: 0.85rem;">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-3">Nama File</th>
+                                <th>Ukuran</th>
+                                <th class="pe-3">Waktu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($history as $item)
+                            <tr>
+                                <td class="ps-3 fw-medium">{{ $item['name'] }}</td>
+                                <td>{{ $item['size'] }}</td>
+                                <td class="pe-3 text-muted">{{ $item['date'] }}</td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="3" class="text-center py-4 text-muted">Belum ada riwayat upload</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
