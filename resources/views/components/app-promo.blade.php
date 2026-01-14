@@ -124,21 +124,23 @@
         position: fixed;
         bottom: 28px;
         right: 28px;
-        z-index: 998;
-        animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) 2s forwards;
+        z-index: 9999; /* Ensure high z-index */
+        opacity: 0;
+        transform: translateX(100px) scale(0.8);
+        transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none; /* Initially not clickable */
+    }
+    
+    .app-promo-btn-container.is-visible {
         opacity: 1;
         transform: translateX(0) scale(1);
-        transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+        pointer-events: auto; /* Clickable when visible */
     }
     
     /* On menu page, position above cart button */
     body.menu-page .app-promo-btn-container {
-        bottom: 100px;
-    }
-    
-    @keyframes slideInRight {
-        from { opacity: 0; transform: translateX(100px) scale(0); }
-        to { opacity: 1; transform: translateX(0) scale(1); }
+        bottom: 150px; /* Increased to avoid cart */
     }
     
     .app-promo-btn {
@@ -154,6 +156,7 @@
         align-items: center;
         justify-content: center;
         transition: all 0.3s ease;
+        -webkit-tap-highlight-color: transparent; /* Fix mobile tap highlight */
     }
     
     .app-promo-btn.pulse-active {
@@ -261,13 +264,24 @@
     }
     
     /* Modal Styles */
+    .app-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        display: none;
+    }
+    
+    .app-modal.show {
+        display: block;
+    }
+    
+    /* Overlay fix */
     .app-modal-overlay {
         position: fixed;
         inset: 0;
         z-index: 9999;
         display: none;
     }
-    
     .app-modal-overlay.show {
         display: block;
     }
@@ -281,7 +295,7 @@
         transition: opacity 0.2s ease-out;
     }
     
-    .app-modal-overlay.show .app-modal-backdrop {
+    .app-modal.show .app-modal-backdrop {
         opacity: 1;
     }
     
@@ -293,7 +307,7 @@
         width: 100%;
         max-width: 448px;
         padding: 16px;
-        z-index: 10000;
+        z-index: 10001;
         pointer-events: none;
     }
     
@@ -306,13 +320,23 @@
         transform: translateY(20px) scale(0.95);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         pointer-events: auto;
+        
+        /* Center modal card */
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 90%;
+        max-width: 450px;
+        margin: 0;
+        margin-right: -50%;
     }
     
-    .app-modal-overlay.show .app-modal-card {
+    .app-modal.show .app-modal-card {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translate(-50%, -50%) scale(1);
     }
     
+    /* Header & Content styles same as before */
     .app-modal-header {
         background: linear-gradient(135deg, #8B1538 0%, #6B0F2A 50%, #4A0A1C 100%);
         padding: 32px 24px;
@@ -408,7 +432,7 @@
         transition: all 0.3s ease-out;
     }
     
-    .app-modal-overlay.show .app-benefit-card {
+    .app-modal.show .app-benefit-card {
         opacity: 1;
         transform: translateX(0);
     }
@@ -516,13 +540,10 @@
             right: 16px;
         }
         body.menu-page .app-promo-btn-container {
-            bottom: 150px;
+            bottom: 200px; /* Higher on mobile menu due to floating cart */
         }
         .app-promo-tooltip {
             display: none;
-        }
-        .app-modal-wrapper {
-            padding: 16px;
         }
     }
     
@@ -532,7 +553,7 @@
             right: 16px;
         }
         body.menu-page .app-promo-btn-container {
-            bottom: 80px;
+            bottom: 120px;
         }
         .app-promo-btn {
             width: 50px;
@@ -559,10 +580,9 @@
     
     /* Scroll hide/show animation */
     .app-promo-btn-container.scroll-hidden {
-        opacity: 0 !important;
-        transform: translateY(20px) scale(0.8) !important;
+        opacity: 0.2 !important; /* Keep somewhat visible so users know it's there */
+        transform: scale(0.8) !important;
         pointer-events: none;
-        visibility: hidden;
     }
 </style>
 
@@ -575,64 +595,86 @@
         
         if (!promoBtn || !mainBtn || !modal) return;
         
-        // Step 1: Show button after 2s
+        // Ensure display is block first (but invisible via opacity)
+        promoBtn.style.display = 'block';
+        
+        // Show button after 2s with nice transition
         setTimeout(() => {
-            promoBtn.style.display = 'block';
+            promoBtn.classList.add('is-visible');
             
             // Check session logic
             if (!sessionStorage.getItem('appPromoShown')) {
                 mainBtn.classList.add('pulse-active');
                 
-                // Step 2: Auto-show modal after 5s (total 7s)
+                // Auto-show modal after 5s
                 setTimeout(() => {
-                    openAppPromoModal();
+                    // Only auto-show if user hasn't interacted yet
+                    if (!sessionStorage.getItem('appPromoInteracted')) {
+                        openAppPromoModal();
+                    }
                 }, 5000);
             }
-            
-            // Scroll hide/show logic (only after button is visible)
-            let scrollTimeout = null;
-            
-            window.addEventListener('scroll', function() {
-                // Immediately hide button when scrolling starts
-                promoBtn.classList.add('scroll-hidden');
-                
-                // Clear any existing timeout
-                if (scrollTimeout) {
-                    clearTimeout(scrollTimeout);
-                }
-                
-                // Show button 500ms after scroll stops
-                scrollTimeout = setTimeout(function() {
-                    promoBtn.classList.remove('scroll-hidden');
-                }, 500);
-            }, { passive: true });
         }, 2000);
         
+        // Simplified scroll logic
+        let scrollTimeout = null;
+        
+        window.addEventListener('scroll', function() {
+            // Add scroll-hidden class
+            promoBtn.classList.add('scroll-hidden');
+            
+            // Clear existing timeout
+            if (scrollTimeout) {
+                clearTimeout(scrollTimeout);
+            }
+            
+            // Remove class after scroll stops
+            scrollTimeout = setTimeout(function() {
+                promoBtn.classList.remove('scroll-hidden');
+            }, 300); // Faster recovery
+        }, { passive: true });
+        
         window.openAppPromoModal = function() {
-            modal.classList.add('show');
-            document.body.style.overflow = 'hidden';
-            
-            // Stop pulse
-            mainBtn.classList.remove('pulse-active');
-            mainBtn.classList.add('pulse-stop');
-            
-            // Set session storage
-            sessionStorage.setItem('appPromoShown', 'true');
+            if (modal) {
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+                
+                // Stop pulse
+                mainBtn.classList.remove('pulse-active');
+                mainBtn.classList.add('pulse-stop');
+                
+                // Set interaction flag
+                sessionStorage.setItem('appPromoInteracted', 'true');
+            }
         };
         
         window.closeAppPromoModal = function() {
-            modal.querySelector('.app-modal-backdrop').style.opacity = '0';
-            modal.querySelector('.app-modal-card').style.opacity = '0';
-            modal.querySelector('.app-modal-card').style.transform = 'translateY(20px) scale(0.95)';
-            
-            setTimeout(() => {
-                modal.classList.remove('show');
-                // Reset styles for next open
-                modal.querySelector('.app-modal-backdrop').style.opacity = '';
-                modal.querySelector('.app-modal-card').style.opacity = '';
-                modal.querySelector('.app-modal-card').style.transform = '';
-                document.body.style.overflow = '';
-            }, 300);
+            if (modal) {
+                // Animate out
+                const backdrop = modal.querySelector('.app-modal-backdrop');
+                const card = modal.querySelector('.app-modal-card');
+                
+                if (backdrop) backdrop.style.opacity = '0';
+                if (card) {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translate(-50%, -50%) translateY(20px)';
+                }
+                
+                setTimeout(() => {
+                    modal.classList.remove('show');
+                    document.body.style.overflow = '';
+                    
+                    // Reset styles
+                    if (backdrop) backdrop.style.opacity = '';
+                    if (card) {
+                        card.style.opacity = '';
+                        card.style.transform = '';
+                    }
+                    
+                    // Set shown flag
+                    sessionStorage.setItem('appPromoShown', 'true');
+                }, 300);
+            }
         };
     });
 </script>
