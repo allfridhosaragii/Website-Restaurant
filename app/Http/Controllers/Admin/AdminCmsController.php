@@ -329,9 +329,18 @@ class AdminCmsController extends Controller
                 'date' => CmsSetting::get('active_apk_date', date('d M Y H:i')),
                 'url' => $publicUrl,
             ];
-        }
         
         $history = CmsSetting::get('apk_upload_history', []);
+
+        // SEED HISTORY: If history is empty but there is an active APK, add it to history
+        if (empty($history) && $activeApk) {
+            $history = [[
+                'name' => $activeApk,
+                'size' => CmsSetting::get('active_apk_size', '48 MB'),
+                'date' => CmsSetting::get('active_apk_date', date('d M Y H:i'))
+            ]];
+            CmsSetting::set('apk_upload_history', $history, 'application', 'json');
+        }
         
         return view('admin.application.index', compact('currentApk', 'history'));
     }
