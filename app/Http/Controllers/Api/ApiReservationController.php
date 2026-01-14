@@ -128,8 +128,47 @@ class ApiReservationController extends Controller
                 'phone' => $reservation->phone,
                 'notes' => $reservation->notes,
                 'status' => $reservation->status,
+                'deposit_amount' => $reservation->deposit_amount ?? 150000,
+                'deposit_status' => $reservation->deposit_status ?? 'pending',
                 'created_at' => $reservation->created_at,
             ],
+        ]);
+    }
+
+    /**
+     * Upload deposit proof for reservation
+     */
+    public function uploadProof(Request $request, $id)
+    {
+        $request->validate([
+            'deposit_proof' => 'required|image|max:5120', // 5MB max
+        ]);
+
+        $reservation = Reservation::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if (!$reservation) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Reservation not found',
+            ], 404);
+        }
+
+        // Store the image
+        $path = $request->file('deposit_proof')->store('deposit_proofs', 'public');
+
+        // Update reservation
+        $reservation->update([
+            'deposit_proof' => $path,
+            'deposit_status' => 'paid',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Deposit proof uploaded successfully',
+            'deposit_proof' => $path,
+            'deposit_status' => 'paid',
         ]);
     }
 }

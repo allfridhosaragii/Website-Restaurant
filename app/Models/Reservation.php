@@ -22,6 +22,9 @@ class Reservation extends Model
         'payment_proof',
         'status',
         'admin_notes',
+        'deposit_amount',
+        'deposit_status',
+        'deposit_proof',
     ];
 
     protected $casts = [

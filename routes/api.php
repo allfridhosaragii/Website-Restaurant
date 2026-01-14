@@ -75,6 +75,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [ApiReservationController::class, 'index']);
         Route::post('/', [ApiReservationController::class, 'store']);
         Route::get('/{id}', [ApiReservationController::class, 'show']);
+        Route::post('/{id}/upload-proof', [ApiReservationController::class, 'uploadProof']);
     });
     
     // Tables (availability check still requires auth)

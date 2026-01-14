@@ -11,7 +11,8 @@ import {
     Platform,
     StatusBar,
     Alert,
-    ActivityIndicator
+    ActivityIndicator,
+    Image
 } from 'react-native';
 import Animated, {
     useSharedValue,
@@ -27,6 +28,11 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { launchImageLibrary } from 'react-native-image-picker';
+
+// QRIS Image for deposit
+const QRIS_IMAGE = require('../../assets/qris_deposit.jpg');
+const DEPOSIT_AMOUNT = 150000;
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const BASE_URL = 'https://website-restaurant.up.railway.app/api';
@@ -213,6 +219,11 @@ const ReservationsScreen = () => {
     const [formData, setFormData] = useState({ name: '', phone: '', email: '', date: '', time: '' });
     const [showReceipt, setShowReceipt] = useState(false);
     const [receiptData, setReceiptData] = useState(null);
+    // Deposit Payment State
+    const [paymentProof, setPaymentProof] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [reservationId, setReservationId] = useState(null);
 
     // Fetch tables from API
     const fetchTables = useCallback(async (date) => {
@@ -256,16 +267,18 @@ const ReservationsScreen = () => {
             setFormData(prev => ({ ...prev, date: selectedDate }));
             setStep(2);
         }
-        else if (step === 2) handleSubmit();
+        else if (step === 2) {
+            // Validate form first
+            if (!formData.name || !formData.phone || !formData.date || !formData.time) {
+                Alert.alert("Mohon Lengkapi Data", "Semua kolom form harus diisi.");
+                return;
+            }
+            setStep(3); // Go to payment step
+        }
     };
 
-    const handleSubmit = async () => {
-        // Validation simple
-        if (!formData.name || !formData.phone || !formData.date || !formData.time) {
-            Alert.alert("Mohon Lengkapi Data", "Semua kolom form harus diisi.");
-            return;
-        }
-
+    // Create reservation (called at step 3 when confirming payment)
+    const createReservation = async () => {
         try {
             setSubmitting(true);
             const token = await AsyncStorage.getItem('userToken');
@@ -282,23 +295,108 @@ const ReservationsScreen = () => {
             });
 
             if (response.data.success) {
-                const receipt = {
-                    id: `RSV-${response.data.reservation.id}`,
-                    table: selectedTable.number,
-                    guests: selectedTable.capacity,
-                    date: formData.date,
-                    time: formData.time,
-                    name: formData.name
-                };
-                setReceiptData(receipt);
-                setShowReceipt(true);
+                return response.data.reservation.id;
             }
+            return null;
         } catch (error) {
             console.log('Reservation error:', error.response?.data || error.message);
             const msg = error.response?.data?.message || 'Gagal membuat reservasi';
             Alert.alert('Error', msg);
+            return null;
         } finally {
             setSubmitting(false);
+        }
+    };
+
+    // Pick payment proof image
+    const pickPaymentProof = () => {
+        launchImageLibrary({
+            mediaType: 'photo',
+            maxWidth: 1024,
+            maxHeight: 1024,
+            quality: 0.8,
+        }, (response) => {
+            if (response.didCancel) return;
+            if (response.errorCode) {
+                Alert.alert('Error', response.errorMessage || 'Gagal memilih gambar');
+                return;
+            }
+            if (response.assets && response.assets[0]) {
+                setPaymentProof(response.assets[0]);
+            }
+        });
+    };
+
+    // Confirm payment & upload proof
+    const handleConfirmPayment = async () => {
+        if (!paymentProof) {
+            Alert.alert('Upload Bukti', 'Silakan upload bukti pembayaran QRIS terlebih dahulu.');
+            return;
+        }
+
+        setIsUploading(true);
+        setUploadProgress(0);
+
+        // Create reservation first
+        const reservId = await createReservation();
+        if (!reservId) {
+            setIsUploading(false);
+            return;
+        }
+
+        // Simulate upload progress
+        const progressInterval = setInterval(() => {
+            setUploadProgress(prev => {
+                if (prev >= 90) {
+                    clearInterval(progressInterval);
+                    return 90;
+                }
+                return prev + 10;
+            });
+        }, 200);
+
+        try {
+            const token = await AsyncStorage.getItem('userToken');
+            const formDataUpload = new FormData();
+            formDataUpload.append('deposit_proof', {
+                uri: paymentProof.uri,
+                type: paymentProof.type || 'image/jpeg',
+                name: paymentProof.fileName || 'deposit_proof.jpg',
+            });
+
+            await axios.post(`${BASE_URL}/reservations/${reservId}/upload-proof`, formDataUpload, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                }
+            });
+
+            clearInterval(progressInterval);
+            setUploadProgress(100);
+
+            // Show receipt
+            const receipt = {
+                id: `RSV-${reservId}`,
+                table: selectedTable.number,
+                guests: selectedTable.capacity,
+                date: formData.date,
+                time: formData.time,
+                name: formData.name,
+                depositAmount: DEPOSIT_AMOUNT,
+                depositStatus: 'PAID',
+            };
+            setReceiptData(receipt);
+
+            setTimeout(() => {
+                setIsUploading(false);
+                setShowReceipt(true);
+            }, 500);
+
+        } catch (error) {
+            clearInterval(progressInterval);
+            console.log('Upload error:', error.response?.data || error.message);
+            Alert.alert('Error', 'Gagal mengupload bukti pembayaran');
+            setIsUploading(false);
         }
     };
 
@@ -307,6 +405,8 @@ const ReservationsScreen = () => {
         setStep(1);
         setSelectedTableId(null);
         setFormData({ name: '', phone: '', email: '', date: '', time: '' });
+        setPaymentProof(null);
+        setUploadProgress(0);
         // Refresh tables to show updated availability
         fetchTables(selectedDate);
     };
@@ -333,15 +433,19 @@ const ReservationsScreen = () => {
                     </View>
                 </View>
 
-                {/* Progress */}
+                {/* Progress - 3 Steps */}
                 <View style={styles.progressContainer}>
                     <View style={styles.progressItem}>
                         <View style={[styles.progressBar, { backgroundColor: COLORS.white }]} />
                         <Text style={[styles.progressLabel, { color: COLORS.white }]}>1. Pilih Meja</Text>
                     </View>
                     <View style={styles.progressItem}>
-                        <View style={[styles.progressBar, { backgroundColor: step === 2 ? COLORS.white : 'rgba(255,255,255,0.3)' }]} />
-                        <Text style={[styles.progressLabel, { opacity: step === 2 ? 1 : 0.7 }]}>2. Isi Data</Text>
+                        <View style={[styles.progressBar, { backgroundColor: step >= 2 ? COLORS.white : 'rgba(255,255,255,0.3)' }]} />
+                        <Text style={[styles.progressLabel, { opacity: step >= 2 ? 1 : 0.5 }]}>2. Isi Data</Text>
+                    </View>
+                    <View style={styles.progressItem}>
+                        <View style={[styles.progressBar, { backgroundColor: step >= 3 ? COLORS.white : 'rgba(255,255,255,0.3)' }]} />
+                        <Text style={[styles.progressLabel, { opacity: step >= 3 ? 1 : 0.5 }]}>3. Bayar</Text>
                     </View>
                 </View>
             </View>
@@ -500,7 +604,95 @@ const ReservationsScreen = () => {
                         start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
                         style={styles.submitGradient}
                     >
-                        <Text style={styles.submitText}>Konfirmasi Reservasi</Text>
+                        <Text style={styles.submitText}>Lanjut Pembayaran →</Text>
+                    </LinearGradient>
+                </TouchableOpacity>
+            </View>
+        </Animated.View>
+    );
+
+    // Step 3: Payment
+    const renderStep3 = () => (
+        <Animated.View entering={FadeIn} style={styles.formContainer}>
+            <Text style={styles.formTitle}>💳 Pembayaran Deposit</Text>
+
+            {/* Deposit Info Banner */}
+            <View style={styles.depositBanner}>
+                <Icon name="wallet-outline" size={24} color={COLORS.maroon} />
+                <View style={{ marginLeft: 12, flex: 1 }}>
+                    <Text style={styles.depositLabel}>Deposit Reservasi</Text>
+                    <Text style={styles.depositAmount}>Rp {DEPOSIT_AMOUNT.toLocaleString('id-ID')}</Text>
+                    <Text style={styles.depositNote}>✓ Deposit dikembalikan setelah check-in</Text>
+                </View>
+            </View>
+
+            {/* Selected Table Info */}
+            {selectedTable && (
+                <View style={styles.selectedTableInfo}>
+                    <Icon name="restaurant-outline" size={20} color={COLORS.blue} />
+                    <Text style={styles.selectedTableText}>
+                        Meja {selectedTable.number} • {selectedTable.capacity} Tamu • {formData.date} {formData.time}
+                    </Text>
+                </View>
+            )}
+
+            {/* QRIS Display */}
+            <View style={styles.qrisContainer}>
+                <Text style={styles.qrisTitle}>Scan QRIS untuk Pembayaran</Text>
+                <Image source={QRIS_IMAGE} style={styles.qrisImage} resizeMode="contain" />
+                <Text style={styles.qrisAmount}>Total: Rp {DEPOSIT_AMOUNT.toLocaleString('id-ID')}</Text>
+            </View>
+
+            {/* Upload Section */}
+            <View style={styles.uploadSection}>
+                <Text style={styles.uploadTitle}>📷 Upload Bukti Pembayaran</Text>
+
+                <TouchableOpacity style={styles.uploadButton} onPress={pickPaymentProof}>
+                    {paymentProof ? (
+                        <View style={styles.uploadPreview}>
+                            <Image source={{ uri: paymentProof.uri }} style={styles.previewImage} />
+                            <View style={styles.uploadCheckBadge}>
+                                <Icon name="checkmark" size={12} color="white" />
+                            </View>
+                        </View>
+                    ) : (
+                        <View style={styles.uploadPlaceholder}>
+                            <Icon name="cloud-upload-outline" size={40} color="#9CA3AF" />
+                            <Text style={styles.uploadPlaceholderText}>Klik untuk upload bukti</Text>
+                            <Text style={styles.uploadPlaceholderHint}>PNG, JPG (max 5MB)</Text>
+                        </View>
+                    )}
+                </TouchableOpacity>
+
+                {/* Progress Bar */}
+                {isUploading && (
+                    <View style={styles.progressBarContainer}>
+                        <View style={[styles.progressBarFill, { width: `${uploadProgress}%` }]} />
+                        <Text style={styles.progressText}>{uploadProgress}%</Text>
+                    </View>
+                )}
+            </View>
+
+            {/* Buttons */}
+            <View style={styles.buttonsRow}>
+                <TouchableOpacity style={styles.backBtn} onPress={() => setStep(2)}>
+                    <Icon name="arrow-back" size={20} color={COLORS.grayDark} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.submitBtn, (!paymentProof || isUploading) && { opacity: 0.6 }]}
+                    onPress={handleConfirmPayment}
+                    disabled={!paymentProof || isUploading}
+                >
+                    <LinearGradient
+                        colors={[COLORS.maroon, COLORS.maroonDark]}
+                        start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                        style={styles.submitGradient}
+                    >
+                        {isUploading ? (
+                            <ActivityIndicator color="white" />
+                        ) : (
+                            <Text style={styles.submitText}>✓ Konfirmasi Pembayaran</Text>
+                        )}
                     </LinearGradient>
                 </TouchableOpacity>
             </View>
@@ -514,14 +706,14 @@ const ReservationsScreen = () => {
                 {renderHeader()}
 
                 <View style={styles.content}>
-                    {step === 1 ? (
+                    {step === 1 && (
                         <Animated.View entering={FadeIn}>
                             {renderStats()}
                             {renderMap()}
                         </Animated.View>
-                    ) : (
-                        renderForm()
                     )}
+                    {step === 2 && renderForm()}
+                    {step === 3 && renderStep3()}
                 </View>
             </ScrollView>
 
@@ -548,6 +740,23 @@ const ReservationsScreen = () => {
                         <View style={styles.receiptRow}>
                             <Text style={styles.receiptLabel}>Waktu</Text>
                             <Text style={styles.receiptVal}>{receiptData?.date}, {receiptData?.time}</Text>
+                        </View>
+
+                        {/* Deposit Section */}
+                        <View style={styles.depositSection}>
+                            <Text style={styles.depositSectionTitle}>💰 Deposit Information</Text>
+                            <View style={styles.depositSectionRow}>
+                                <Text style={styles.depositSectionLabel}>Deposit Paid</Text>
+                                <Text style={styles.depositSectionValue}>Rp {(receiptData?.depositAmount || 150000).toLocaleString('id-ID')}</Text>
+                            </View>
+                            <View style={styles.depositSectionRow}>
+                                <Text style={styles.depositSectionLabel}>Status</Text>
+                                <Text style={[styles.depositSectionValue, { color: '#10B981' }]}>✓ {receiptData?.depositStatus || 'PAID'}</Text>
+                            </View>
+                            <View style={styles.depositSectionRow}>
+                                <Text style={styles.depositSectionLabel}>Refund</Text>
+                                <Text style={styles.depositSectionValue}>After Check-in</Text>
+                            </View>
                         </View>
 
                         <TouchableOpacity style={styles.closeReceiptBtn} onPress={closeReceipt}>
@@ -627,7 +836,37 @@ const styles = StyleSheet.create({
     receiptLabel: { color: '#6B7280' },
     receiptVal: { fontWeight: 'bold', color: COLORS.grayDark },
     closeReceiptBtn: { marginTop: 24, width: '100%', backgroundColor: COLORS.grayLight, padding: 16, borderRadius: 12, alignItems: 'center' },
-    closeReceiptText: { fontWeight: 'bold', color: COLORS.grayDark }
+    closeReceiptText: { fontWeight: 'bold', color: COLORS.grayDark },
+
+    // Step 3 Styles (Deposit Payment)
+    depositBanner: { flexDirection: 'row', backgroundColor: '#FEF3C7', padding: 16, borderRadius: 16, marginBottom: 20, alignItems: 'flex-start' },
+    depositLabel: { fontSize: 14, fontWeight: '600', color: COLORS.grayDark },
+    depositAmount: { fontSize: 28, fontWeight: 'bold', color: COLORS.maroon, marginVertical: 4 },
+    depositNote: { fontSize: 12, color: '#10B981' },
+    selectedTableInfo: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#EFF6FF', padding: 12, borderRadius: 12, marginBottom: 20 },
+    selectedTableText: { fontSize: 13, color: '#1E40AF', fontWeight: '500' },
+    qrisContainer: { backgroundColor: '#F9FAFB', padding: 20, borderRadius: 16, alignItems: 'center', marginBottom: 20, borderWidth: 1, borderColor: '#E5E7EB' },
+    qrisTitle: { fontSize: 14, fontWeight: '600', color: COLORS.grayDark, marginBottom: 16 },
+    qrisImage: { width: SCREEN_WIDTH - 100, height: SCREEN_WIDTH - 80, borderRadius: 12, backgroundColor: '#FFF' },
+    qrisAmount: { fontSize: 16, fontWeight: 'bold', color: COLORS.maroon, marginTop: 16 },
+    uploadSection: { marginBottom: 20 },
+    uploadTitle: { fontSize: 14, fontWeight: '600', color: COLORS.grayDark, marginBottom: 12 },
+    uploadButton: { width: '100%', minHeight: 120, borderWidth: 2, borderStyle: 'dashed', borderColor: '#D1D5DB', borderRadius: 16, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+    uploadPreview: { width: '100%', height: 200, position: 'relative' },
+    previewImage: { width: '100%', height: '100%', borderRadius: 14 },
+    uploadCheckBadge: { position: 'absolute', top: 8, right: 8, width: 24, height: 24, borderRadius: 12, backgroundColor: COLORS.green, alignItems: 'center', justifyContent: 'center' },
+    uploadPlaceholder: { alignItems: 'center', padding: 20 },
+    uploadPlaceholderText: { fontSize: 14, color: '#6B7280', marginTop: 8 },
+    uploadPlaceholderHint: { fontSize: 12, color: '#9CA3AF', marginTop: 4 },
+    progressBarContainer: { marginTop: 12, height: 20, backgroundColor: '#E5E7EB', borderRadius: 10, overflow: 'hidden', position: 'relative' },
+    progressBarFill: { position: 'absolute', top: 0, left: 0, height: '100%', backgroundColor: COLORS.blue, borderRadius: 10 },
+    progressText: { position: 'absolute', width: '100%', textAlign: 'center', lineHeight: 20, fontSize: 12, fontWeight: 'bold', color: 'white' },
+    // Receipt deposit section
+    depositSection: { width: '100%', backgroundColor: '#F0FDF4', padding: 16, borderRadius: 12, marginTop: 16, marginBottom: 8 },
+    depositSectionTitle: { fontSize: 14, fontWeight: '600', color: '#065F46', marginBottom: 8 },
+    depositSectionRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
+    depositSectionLabel: { fontSize: 13, color: '#047857' },
+    depositSectionValue: { fontSize: 13, fontWeight: '600', color: '#065F46' },
 });
 
 export default ReservationsScreen;
