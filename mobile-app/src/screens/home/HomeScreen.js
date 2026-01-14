@@ -146,12 +146,12 @@ const HomeScreen = ({ navigation }) => {
                             <Text style={styles.platinumText}>PLATINUM MEMBER</Text>
                         </View>
                         <View style={styles.memberRow}>
-                            <View>
+                            <TouchableOpacity onPress={() => navigation.navigate('Points')}>
                                 <Text style={styles.memberName}>{user?.name || 'Tamu Culinaire'}</Text>
                                 <Text style={styles.memberPoints}>{(dashboardStats.points || 0).toLocaleString()}</Text>
                                 <Text style={styles.memberPointsLabel}>Poin Available</Text>
-                            </View>
-                            <TouchableOpacity style={styles.redeemBtn}>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.redeemBtn} onPress={() => navigation.navigate('Points')}>
                                 <Text style={styles.redeemBtnText}>Tukar Poin</Text>
                             </TouchableOpacity>
                         </View>
