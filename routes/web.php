@@ -496,6 +496,14 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::post('/application/generate-upload-url', [\App\Http\Controllers\Admin\AdminCmsController::class, 'generateUploadUrl']);
     Route::post('/application/finalize-upload', [\App\Http\Controllers\Admin\AdminCmsController::class, 'finalizeUpload']);
 
+    // Statistics & Monitoring (Super Admin Only)
+    Route::middleware([\App\Http\Middleware\SuperAdminMiddleware::class])->group(function () {
+        Route::get('/statistik', [\App\Http\Controllers\Admin\AdminStatisticsController::class, 'index'])->name('admin.statistics.index');
+        Route::get('/statistik/api/activities', [\App\Http\Controllers\Admin\AdminStatisticsController::class, 'getActivities']);
+        Route::get('/statistik/api/errors', [\App\Http\Controllers\Admin\AdminStatisticsController::class, 'getErrors']);
+        Route::post('/statistik/api/errors/{id}/resolve', [\App\Http\Controllers\Admin\AdminStatisticsController::class, 'resolveError']);
+        Route::get('/statistik/api/live-visitors', [\App\Http\Controllers\Admin\AdminStatisticsController::class, 'getLiveVisitors']);
+    });
     // Admin Access Management (Super Admin Only)
     Route::middleware([\App\Http\Middleware\SuperAdminMiddleware::class])->group(function () {
         Route::get('/access', [\App\Http\Controllers\Admin\AdminAccessController::class, 'index'])->name('admin.access.index');

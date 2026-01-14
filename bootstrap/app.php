@@ -28,6 +28,25 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // Automatically log all exceptions to the database
+        $exceptions->report(function (\Throwable $e) {
+            // Skip common/expected exceptions
+            $skipTypes = [
+                \Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class,
+                \Illuminate\Session\TokenMismatchException::class,
+                \Illuminate\Auth\AuthenticationException::class,
+                \Illuminate\Validation\ValidationException::class,
+            ];
+            
+            if (!in_array(get_class($e), $skipTypes)) {
+                try {
+                    \App\Models\ErrorLog::logException($e, request());
+                } catch (\Exception $logError) {
+                    // Fail silently
+                }
+            }
+        });
+
         // Redirect 404 pages to landing page (only for web requests, not API)
         $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, $request) {
             if ($request->expectsJson() || $request->is('api/*')) {
