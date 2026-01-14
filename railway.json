@@ -5,7 +5,7 @@
         "buildCommand": "npm install && npm run build"
     },
     "deploy": {
-        "startCommand": "php artisan view:clear && php artisan config:clear && php artisan cache:clear && php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=$PORT",
+        "startCommand": "php artisan view:clear && php artisan config:clear && php artisan cache:clear && php artisan migrate --force && php artisan db:seed --force && php -c php.ini artisan serve --host=0.0.0.0 --port=$PORT",
         "restartPolicyType": "ON_FAILURE",
         "restartPolicyMaxRetries": 10
     }
