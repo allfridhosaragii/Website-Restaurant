@@ -114,21 +114,35 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Bukti Transfer</h5>
+                        <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Bukti Transfer / Deposit</h5>
                     </div>
                     <div class="card-body">
-                        @if($reservation->payment_proof)
-                            <a href="{{ $reservation->payment_proof }}" target="_blank">
-                                <img src="{{ $reservation->payment_proof }}" 
+                        @php
+                            $proofImage = $reservation->deposit_proof ?: $reservation->payment_proof;
+                        @endphp
+                        @if($proofImage)
+                            <a href="{{ $proofImage }}" target="_blank">
+                                <img src="{{ $proofImage }}" 
                                      alt="Bukti Transfer" 
                                      class="img-fluid rounded mb-3"
                                      style="cursor: zoom-in;">
                             </a>
+                            <div class="d-flex gap-2 mb-2">
+                                @if($reservation->deposit_status)
+                                    <span class="badge {{ $reservation->deposit_status === 'paid' ? 'bg-success' : ($reservation->deposit_status === 'refunded' ? 'bg-info' : 'bg-warning') }}">
+                                        Deposit: {{ ucfirst($reservation->deposit_status) }}
+                                    </span>
+                                @endif
+                                @if($reservation->deposit_amount)
+                                    <span class="badge bg-secondary">
+                                        Rp {{ number_format($reservation->deposit_amount, 0, ',', '.') }}
+                                    </span>
+                                @endif
+                            </div>
                             <div class="d-grid">
-                                <a href="{{ $reservation->payment_proof }}" target="_blank" class="btn btn-outline-primary">
+                                <a href="{{ $proofImage }}" target="_blank" class="btn btn-outline-primary">
                                     <i class="bi bi-box-arrow-up-right me-2"></i>Buka Ukuran Penuh
                                 </a>
                             </div>

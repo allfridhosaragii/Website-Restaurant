@@ -30,6 +30,9 @@ class ApiReservationController extends Controller
                     'phone' => $reservation->phone,
                     'notes' => $reservation->notes,
                     'status' => $reservation->status,
+                    'deposit_amount' => $reservation->deposit_amount ?? 150000,
+                    'deposit_status' => $reservation->deposit_status ?? 'pending',
+                    'deposit_proof' => $reservation->deposit_proof,
                     'created_at' => $reservation->created_at,
                 ];
             }),
@@ -130,13 +133,14 @@ class ApiReservationController extends Controller
                 'status' => $reservation->status,
                 'deposit_amount' => $reservation->deposit_amount ?? 150000,
                 'deposit_status' => $reservation->deposit_status ?? 'pending',
+                'deposit_proof' => $reservation->deposit_proof,
                 'created_at' => $reservation->created_at,
             ],
         ]);
     }
 
     /**
-     * Upload deposit proof for reservation
+     * Upload deposit proof for reservation - Using Cloudinary
      */
     public function uploadProof(Request $request, $id)
     {
@@ -155,20 +159,93 @@ class ApiReservationController extends Controller
             ], 404);
         }
 
-        // Store the image
-        $path = $request->file('deposit_proof')->store('deposit_proofs', 'public');
+        // Upload to Cloudinary
+        $file = $request->file('deposit_proof');
+        $cloudinaryUrl = $this->uploadToCloudinary($file, 'deposit_proofs');
+
+        if (!$cloudinaryUrl) {
+            // Fallback to local storage if Cloudinary fails
+            $path = $file->store('deposit_proofs', 'public');
+            $cloudinaryUrl = asset('storage/' . $path);
+        }
 
         // Update reservation
         $reservation->update([
-            'deposit_proof' => $path,
+            'deposit_proof' => $cloudinaryUrl,
             'deposit_status' => 'paid',
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Deposit proof uploaded successfully',
-            'deposit_proof' => $path,
+            'deposit_proof' => $cloudinaryUrl,
             'deposit_status' => 'paid',
         ]);
+    }
+
+    /**
+     * Upload file to Cloudinary using cURL
+     */
+    private function uploadToCloudinary($file, $folder = 'uploads')
+    {
+        $cloudinaryUrl = env('CLOUDINARY_URL');
+        if (!$cloudinaryUrl) {
+            return null;
+        }
+
+        // Parse CLOUDINARY_URL: cloudinary://API_KEY:API_SECRET@CLOUD_NAME
+        preg_match('/cloudinary:\/\/([^:]+):([^@]+)@(.+)/', $cloudinaryUrl, $matches);
+        if (count($matches) < 4) {
+            return null;
+        }
+
+        $apiKey = $matches[1];
+        $apiSecret = $matches[2];
+        $cloudName = $matches[3];
+
+        $timestamp = time();
+        $params = [
+            'folder' => $folder,
+            'timestamp' => $timestamp,
+        ];
+
+        // Generate signature
+        ksort($params);
+        $signatureString = '';
+        foreach ($params as $key => $value) {
+            $signatureString .= $key . '=' . $value . '&';
+        }
+        $signatureString = rtrim($signatureString, '&') . $apiSecret;
+        $signature = sha1($signatureString);
+
+        // Prepare cURL
+        $uploadUrl = "https://api.cloudinary.com/v1_1/{$cloudName}/image/upload";
+
+        $postData = [
+            'file' => new \CURLFile($file->getPathname(), $file->getMimeType(), $file->getClientOriginalName()),
+            'api_key' => $apiKey,
+            'timestamp' => $timestamp,
+            'folder' => $folder,
+            'signature' => $signature,
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $uploadUrl);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode === 200) {
+            $result = json_decode($response, true);
+            return $result['secure_url'] ?? null;
+        }
+
+        \Log::error('Cloudinary upload failed', ['response' => $response, 'httpCode' => $httpCode]);
+        return null;
     }
 }

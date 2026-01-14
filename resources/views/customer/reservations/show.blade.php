@@ -100,12 +100,27 @@
                         <h5 class="mb-0"><i class="bi bi-receipt me-2"></i><span data-i18n="payment_proof_title">{{ __('messages.payment_proof_title') }}</span></h5>
                     </div>
                     <div class="card-body">
-                        @if($reservation->payment_proof)
-                            <img src="{{ $reservation->payment_proof }}" 
+                        @php
+                            $proofImage = $reservation->deposit_proof ?: $reservation->payment_proof;
+                        @endphp
+                        @if($proofImage)
+                            <img src="{{ $proofImage }}" 
                                  alt="{{ __('messages.payment_proof_title') }}" 
                                  class="img-fluid rounded"
                                  style="cursor: pointer;"
-                                 onclick="window.open('{{ $reservation->payment_proof }}', '_blank')">
+                                 onclick="window.open('{{ $proofImage }}', '_blank')">
+                            @if($reservation->deposit_status)
+                                <div class="mt-2 text-center">
+                                    <span class="badge {{ $reservation->deposit_status === 'paid' ? 'bg-success' : ($reservation->deposit_status === 'refunded' ? 'bg-info' : 'bg-warning') }}">
+                                        Deposit: {{ ucfirst($reservation->deposit_status) }}
+                                    </span>
+                                    @if($reservation->deposit_amount)
+                                        <span class="badge bg-secondary ms-1">
+                                            Rp {{ number_format($reservation->deposit_amount, 0, ',', '.') }}
+                                        </span>
+                                    @endif
+                                </div>
+                            @endif
                             <p class="text-muted small mt-2 mb-0 text-center">
                                 <i class="bi bi-zoom-in me-1"></i><span data-i18n="click_to_zoom">{{ __('messages.click_to_zoom') }}</span>
                             </p>
