@@ -129,6 +129,7 @@
         right: 28px;
         z-index: 998;
         animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) 2s both;
+        transition: opacity 0.3s ease, transform 0.3s ease;
     }
     
     /* On menu page, position above cart button */
