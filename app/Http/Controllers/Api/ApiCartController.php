@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Cart;
+use App\Models\CartItem;
 use Illuminate\Http\Request;
 
 class ApiCartController extends Controller
@@ -13,7 +13,7 @@ class ApiCartController extends Controller
      */
     public function index(Request $request)
     {
-        $cartItems = Cart::where('user_id', $request->user()->id)
+        $cartItems = CartItem::where('user_id', $request->user()->id)
             ->with('menu')
             ->get();
         
@@ -49,7 +49,7 @@ class ApiCartController extends Controller
             'quantity' => 'required|integer|min:1|max:99',
         ]);
         
-        $existingItem = Cart::where('user_id', $request->user()->id)
+        $existingItem = CartItem::where('user_id', $request->user()->id)
             ->where('menu_id', $request->menu_id)
             ->first();
         
@@ -58,7 +58,7 @@ class ApiCartController extends Controller
             $existingItem->save();
             $cartItem = $existingItem;
         } else {
-            $cartItem = Cart::create([
+            $cartItem = CartItem::create([
                 'user_id' => $request->user()->id,
                 'menu_id' => $request->menu_id,
                 'quantity' => $request->quantity,
@@ -88,7 +88,7 @@ class ApiCartController extends Controller
             'quantity' => 'required|integer|min:1|max:99',
         ]);
         
-        $cartItem = Cart::where('user_id', $request->user()->id)
+        $cartItem = CartItem::where('user_id', $request->user()->id)
             ->where('id', $id)
             ->first();
         
@@ -117,7 +117,7 @@ class ApiCartController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $cartItem = Cart::where('user_id', $request->user()->id)
+        $cartItem = CartItem::where('user_id', $request->user()->id)
             ->where('id', $id)
             ->first();
         
@@ -141,7 +141,7 @@ class ApiCartController extends Controller
      */
     public function clear(Request $request)
     {
-        Cart::where('user_id', $request->user()->id)->delete();
+        CartItem::where('user_id', $request->user()->id)->delete();
         
         return response()->json([
             'success' => true,
