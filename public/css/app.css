@@ -71,6 +71,7 @@
 }
 
 [data-theme="dark"] {
+    color-scheme: dark;
     --bg-primary: #0B0E10;
     --bg-secondary: #0f1315;
     --surface: #16252B;
@@ -713,6 +714,35 @@ a:hover {
 .form-select:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(200, 155, 58, 0.15);
+}
+
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+    background-color: var(--surface-light);
+    border-color: var(--border-medium);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus {
+    background-color: var(--surface-lighter);
+    border-color: var(--accent);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-control::placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+[data-theme="dark"] .form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%239AAEB3' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+
+/* Ensure background of dropdown list in dark mode */
+[data-theme="dark"] select option {
+    background-color: var(--surface-light);
+    color: var(--text-primary);
 }
 
 .form-label {
