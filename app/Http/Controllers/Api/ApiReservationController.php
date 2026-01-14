@@ -44,7 +44,7 @@ class ApiReservationController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate request data including email - Last Update: 2026-01-14 16:26
+        // Validate request data including email - Last Update: 2026-01-14 16:43
         $request->validate([
             'date' => 'required|date|after_or_equal:today',
             'time' => 'required|string',
