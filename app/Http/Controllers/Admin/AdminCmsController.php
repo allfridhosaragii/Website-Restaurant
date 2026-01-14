@@ -326,9 +326,6 @@ class AdminCmsController extends Controller
             $latestFile = $files[0];
             $filename = basename($latestFile);
             
-            // Ensure timezone is correct for display
-            date_default_timezone_set('Asia/Jakarta');
-            
             $currentApk = [
                 'name' => $filename,
                 'size' => $this->formatFileSize(filesize($latestFile)),
@@ -371,8 +368,6 @@ class AdminCmsController extends Controller
             // Move new file
             // Use timestamp to prevent caching issues and keep history if needed
             // But we clean up old files anyway as per the logic above
-            // Set timezone for filename generation
-            date_default_timezone_set('Asia/Jakarta');
             $timestamp = date('dmy-Hi');
             $newFilename = 'Culinaire-' . $timestamp . '.apk';
             $file->move($downloadPath, $newFilename);
