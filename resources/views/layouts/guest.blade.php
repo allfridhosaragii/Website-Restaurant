@@ -365,5 +365,7 @@
             });
         }
     </script>
+
+    @include('components.app-promo')
 </body>
 </html>
