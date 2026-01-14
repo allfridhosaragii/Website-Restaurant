@@ -357,6 +357,20 @@ class AdminCmsController extends Controller
             $supabaseUrl = env('SUPABASE_URL');
             $serviceRole = env('SUPABASE_SERVICE_ROLE_KEY');
             $bucket = env('SUPABASE_BUCKET');
+
+            // --- AUTO-CLEANUP LOGIC ---
+            // 1. Get current active filename from database
+            $oldFilename = CmsSetting::get('active_apk_filename');
+            
+            // 2. If old file exists, delete it from Supabase Storage
+            if ($oldFilename) {
+                Http::withHeaders([
+                    'Authorization' => "Bearer {$serviceRole}",
+                ])->delete("{$supabaseUrl}/storage/v1/object/{$bucket}/apks/{$oldFilename}");
+                
+                // Note: We don't block upload if delete fails (e.g. file already gone manually)
+            }
+            // --------------------------
             
             $response = Http::withHeaders([
                 'Authorization' => "Bearer {$serviceRole}",
