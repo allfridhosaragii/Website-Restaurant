@@ -1,0 +1,11 @@
+<resources>
+
+    <!-- Base application theme -->
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- Status bar color matching brand -->
+        <item name="android:statusBarColor">#0C2A36</item>
+        <item name="android:windowBackground">#0B0E10</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+</resources>

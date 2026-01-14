@@ -6,6 +6,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="{{ __('messages.meta_desc') }}">
     <meta name="keywords" content="restaurant, culinary, Indonesian food, fine dining, reservasi, kuliner">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0C2A36">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Culinaire">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <link rel="apple-touch-icon" href="{{ asset('icons/icon-192x192.png') }}">
+    
     <title>@hasSection('title') @yield('title') - @endif{{ config('app.name', __('messages.premium_restaurant')) }}</title>
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -345,5 +354,16 @@
         })();
     </script>
     @endif
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('[PWA] Service Worker registered:', reg.scope))
+                    .catch(err => console.log('[PWA] SW registration failed:', err));
+            });
+        }
+    </script>
 </body>
 </html>

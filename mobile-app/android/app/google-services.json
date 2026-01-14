@@ -1,0 +1,92 @@
+{
+    "project_info": {
+        "project_number": "55427073142",
+        "project_id": "culinairemobile",
+        "storage_bucket": "culinairemobile.firebasestorage.app"
+    },
+    "client": [
+        {
+            "client_info": {
+                "mobilesdk_app_id": "1:55427073142:android:65eb8d568d9070eea6cb57",
+                "android_client_info": {
+                    "package_name": "com.culinaireapp"
+                }
+            },
+            "oauth_client": [
+                {
+                    "client_id": "55427073142-egcae3igbmov4prmv4jlqjmdf15vlh7b.apps.googleusercontent.com",
+                    "client_type": 1,
+                    "android_info": {
+                        "package_name": "com.culinaireapp",
+                        "certificate_hash": "b6e79332e44547be40608408c610ba0c56e65f28"
+                    }
+                },
+                {
+                    "client_id": "55427073142-rqrngtmp46btf3ncv4bg46p5lhsed7na.apps.googleusercontent.com",
+                    "client_type": 1,
+                    "android_info": {
+                        "package_name": "com.culinaireapp",
+                        "certificate_hash": "61ced4991c11ed234159a4cdb593139d3a3e331f"
+                    }
+                },
+                {
+                    "client_id": "55427073142-6kdkbkd1qn47g7dds339pca6u1duj44f.apps.googleusercontent.com",
+                    "client_type": 3
+                }
+            ],
+            "api_key": [
+                {
+                    "current_key": "AIzaSyBA3bEMwelCWpWvihzTPmGgBWPBzrffwkU"
+                }
+            ],
+            "services": {
+                "appinvite_service": {
+                    "other_platform_oauth_client": [
+                        {
+                            "client_id": "55427073142-6kdkbkd1qn47g7dds339pca6u1duj44f.apps.googleusercontent.com",
+                            "client_type": 3
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "client_info": {
+                "mobilesdk_app_id": "1:55427073142:android:2fe03d3d2bcc7763a6cb57",
+                "android_client_info": {
+                    "package_name": "com.culinaireapp.admin"
+                }
+            },
+            "oauth_client": [
+                {
+                    "client_id": "55427073142-r6h5g7buvaem8eo83q3e3ii3fkpc576d.apps.googleusercontent.com",
+                    "client_type": 1,
+                    "android_info": {
+                        "package_name": "com.culinaireapp.admin",
+                        "certificate_hash": "61ced4991c11ed234159a4cdb593139d3a3e331f"
+                    }
+                },
+                {
+                    "client_id": "55427073142-6kdkbkd1qn47g7dds339pca6u1duj44f.apps.googleusercontent.com",
+                    "client_type": 3
+                }
+            ],
+            "api_key": [
+                {
+                    "current_key": "AIzaSyBA3bEMwelCWpWvihzTPmGgBWPBzrffwkU"
+                }
+            ],
+            "services": {
+                "appinvite_service": {
+                    "other_platform_oauth_client": [
+                        {
+                            "client_id": "55427073142-6kdkbkd1qn47g7dds339pca6u1duj44f.apps.googleusercontent.com",
+                            "client_type": 3
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "configuration_version": "1"
+}

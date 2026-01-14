@@ -1,0 +1,21 @@
+node_modules/
+.expo/
+dist/
+web-build/
+.idea/
+*.apk
+*.aab
+*.keystore
+bundle_log.txt
+
+# Android
+android/app/build/
+android/.gradle/
+android/local.properties
+android/.idea/
+
+# iOS
+ios/Pods/
+ios/build/
+ios/*.xcworkspace
+ios/Podfile.lock
