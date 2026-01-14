@@ -115,7 +115,8 @@ const LiquidGlassTabBar = ({ state, descriptors, navigation }) => {
             Home: { icon: 'home', label: 'Beranda' },
             Menu: { icon: 'fast-food', label: 'Menu' },
             Reservations: { icon: 'calendar', label: 'Reservasi' },
-            Orders: { icon: 'time', label: 'Histori' },
+            Reservations: { icon: 'calendar', label: 'Reservasi' },
+            Points: { icon: 'gift', label: 'Points' },
             Profile: { icon: 'person', label: 'Profil' },
         };
         const cfg = configs[routeName];

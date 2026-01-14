@@ -93,13 +93,12 @@ Route::middleware('auth:sanctum')->group(function () {
             'total_orders' => \DB::table('orders')->where('user_id', $user->id)->count(),
             'total_reservations' => \DB::table('reservations')->where('user_id', $user->id)->count(),
             'total_favorites' => \App\Models\Favorite::where('user_id', $user->id)->count(),
-            'points' => \DB::table('orders')->where('user_id', $user->id)->count() * 1000 
-                      + \DB::table('reservations')
-                            ->where('user_id', $user->id)
-                            ->whereIn('status', ['accepted', 'completed'])
-                            ->count() * 10000,
+            'points' => $user->points, // Use real points from database
         ]);
     });
+
+    // Points & Rewards
+    Route::get('/points', [ApiPointController::class, 'index']);
 
     // ---------------------------------------------------
     // SUPER APP ADMIN API ROUTES

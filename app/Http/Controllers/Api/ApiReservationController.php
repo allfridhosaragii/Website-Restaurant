@@ -76,6 +76,17 @@ class ApiReservationController extends Controller
             'status' => 'pending',
         ]);
         
+        // Add Points (+10000 for reservation)
+        $points = 10000;
+        $request->user()->increment('points', $points);
+        
+        \App\Models\PointTransaction::create([
+            'user_id' => $request->user()->id,
+            'points' => $points,
+            'type' => 'reservation',
+            'description' => 'Reservasi Meja (Table ' . $request->table_id . ')',
+        ]);
+        
         return response()->json([
             'success' => true,
             'message' => 'Reservation created successfully',

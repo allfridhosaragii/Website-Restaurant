@@ -19,7 +19,13 @@ class User extends Authenticatable
         'status',
         'role',
         'profile_photo_path',
+        'points',
     ];
+
+    public function transactions()
+    {
+        return $this->hasMany(PointTransaction::class);
+    }
     protected $hidden = [
         'password',
         'remember_token',

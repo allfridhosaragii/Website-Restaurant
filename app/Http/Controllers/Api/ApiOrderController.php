@@ -106,6 +106,17 @@ class ApiOrderController extends Controller
             // Clear cart after order
             \App\Models\CartItem::where('user_id', $user->id)->delete();
             
+            // Add Points (+1000 for every order)
+            $points = 1000;
+            $user->increment('points', $points);
+            
+            \App\Models\PointTransaction::create([
+                'user_id' => $user->id,
+                'points' => $points,
+                'type' => 'order',
+                'description' => 'Pembelian Menu (' . $orderNumber . ')',
+            ]);
+            
             DB::commit();
             
             return response()->json([

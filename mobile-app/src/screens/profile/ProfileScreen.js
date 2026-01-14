@@ -70,58 +70,63 @@ const ProfileScreen = ({ navigation }) => {
                 <Text style={styles.headerTitle}>Profile</Text>
 
                 {/* Profile Card */}
-                <LinearGradient
-                    colors={['rgba(255,255,255,0.15)', 'rgba(255,255,255,0.05)']}
-                    style={styles.profileCard}
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('Points')}
+                    activeOpacity={0.9}
                 >
-                    <View style={styles.profileHeader}>
-                        <View style={styles.avatarContainer}>
-                            <View style={styles.avatar}>
-                                {user?.avatar_url ? (
-                                    <Image source={{ uri: user.avatar_url }} style={styles.avatarImage} />
-                                ) : (
-                                    <Icon name="person-outline" size={40} color="#FFF" />
-                                )}
+                    <LinearGradient
+                        colors={['rgba(255,255,255,0.15)', 'rgba(255,255,255,0.05)']}
+                        style={styles.profileCard}
+                    >
+                        <View style={styles.profileHeader}>
+                            <View style={styles.avatarContainer}>
+                                <View style={styles.avatar}>
+                                    {user?.avatar_url ? (
+                                        <Image source={{ uri: user.avatar_url }} style={styles.avatarImage} />
+                                    ) : (
+                                        <Icon name="person-outline" size={40} color="#FFF" />
+                                    )}
+                                </View>
+                                <View style={styles.crownBadge}>
+                                    <MaterialIcon name="crown" size={12} color="#FFF" />
+                                </View>
                             </View>
-                            <View style={styles.crownBadge}>
-                                <MaterialIcon name="crown" size={12} color="#FFF" />
+
+                            <View style={styles.userInfo}>
+                                <Text style={styles.userName}>{user?.name || 'Pengguna Culinaire'}</Text>
+                                <Text style={styles.userEmail}>{user?.email || 'email@culinaire.com'}</Text>
+                                <View style={styles.platinumBadge}>
+                                    <Icon name="star" size={10} color="#FFD700" />
+                                    <Text style={styles.platinumText}>PLATINUM MEMBER</Text>
+                                </View>
                             </View>
+
+                            <TouchableOpacity
+                                style={styles.editButton}
+                                onPress={() => navigation.navigate('EditProfile')}
+                            >
+                                <Icon name="create-outline" size={20} color="#FFF" />
+                            </TouchableOpacity>
                         </View>
 
-                        <View style={styles.userInfo}>
-                            <Text style={styles.userName}>{user?.name || 'Pengguna Culinaire'}</Text>
-                            <Text style={styles.userEmail}>{user?.email || 'email@culinaire.com'}</Text>
-                            <View style={styles.platinumBadge}>
-                                <Icon name="star" size={10} color="#FFD700" />
-                                <Text style={styles.platinumText}>PLATINUM MEMBER</Text>
+                        <View style={styles.statsRow}>
+                            <View style={styles.statItem}>
+                                <Text style={styles.statValue}>{(stats.points || 0).toLocaleString()}</Text>
+                                <Text style={styles.statLabel}>Poin</Text>
+                            </View>
+                            <View style={styles.statDivider} />
+                            <View style={styles.statItem}>
+                                <Text style={styles.statValue}>{stats.total_orders || 0}</Text>
+                                <Text style={styles.statLabel}>Pesanan</Text>
+                            </View>
+                            <View style={styles.statDivider} />
+                            <View style={styles.statItem}>
+                                <Text style={styles.statValue}>{stats.total_favorites || 0}</Text>
+                                <Text style={styles.statLabel}>Favorit</Text>
                             </View>
                         </View>
-
-                        <TouchableOpacity
-                            style={styles.editButton}
-                            onPress={() => navigation.navigate('EditProfile')}
-                        >
-                            <Icon name="create-outline" size={20} color="#FFF" />
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.statsRow}>
-                        <View style={styles.statItem}>
-                            <Text style={styles.statValue}>{(stats.points || 0).toLocaleString()}</Text>
-                            <Text style={styles.statLabel}>Poin</Text>
-                        </View>
-                        <View style={styles.statDivider} />
-                        <View style={styles.statItem}>
-                            <Text style={styles.statValue}>{stats.total_orders || 0}</Text>
-                            <Text style={styles.statLabel}>Pesanan</Text>
-                        </View>
-                        <View style={styles.statDivider} />
-                        <View style={styles.statItem}>
-                            <Text style={styles.statValue}>{stats.total_favorites || 0}</Text>
-                            <Text style={styles.statLabel}>Favorit</Text>
-                        </View>
-                    </View>
-                </LinearGradient>
+                    </LinearGradient>
+                </TouchableOpacity>
 
                 {/* Quick Actions */}
                 <View style={styles.quickActionsRow}>
