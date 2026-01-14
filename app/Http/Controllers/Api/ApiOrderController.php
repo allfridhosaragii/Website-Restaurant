@@ -46,65 +46,87 @@ class ApiOrderController extends Controller
     /**
      * Create new order from cart
      */
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
+    // ... (inside store method)
     public function store(Request $request)
     {
-        $request->validate([
-            'payment_method' => 'required|in:cash,transfer,qris',
-            'notes' => 'nullable|string|max:500',
-        ]);
-        
-        $user = $request->user();
-        $cartItems = \App\Models\CartItem::where('user_id', $user->id)->with('menu')->get();
-        
-        if ($cartItems->isEmpty()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cart is empty',
-            ], 400);
-        }
-        
-        $total = $cartItems->sum(function ($item) {
-            return $item->menu ? $item->quantity * $item->menu->price : 0;
-        });
-        
-        $orderId = (string) Str::uuid();
-        
-        \DB::table('orders')->insert([
-            'id' => $orderId,
-            'user_id' => $user->id,
-            'total' => $total,
-            'status' => 'pending',
-            'payment_method' => $request->payment_method,
-            'notes' => $request->notes,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        
-        foreach ($cartItems as $item) {
-            \DB::table('order_items')->insert([
-                'id' => (string) Str::uuid(),
-                'order_id' => $orderId,
-                'menu_id' => $item->menu_id,
-                'quantity' => $item->quantity,
-                'price' => $item->menu->price,
-                'created_at' => now(),
-                'updated_at' => now(),
+        try {
+            $request->validate([
+                'payment_method' => 'required|in:cash,transfer,qris',
+                'notes' => 'nullable|string|max:500',
             ]);
-        }
-        
-        // Clear cart after order
-        \App\Models\CartItem::where('user_id', $user->id)->delete();
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Order created successfully',
-            'order' => [
+            
+            $user = $request->user();
+            $cartItems = \App\Models\CartItem::where('user_id', $user->id)->with('menu')->get();
+            
+            if ($cartItems->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cart is empty',
+                ], 400);
+            }
+            
+            // Calculate total safely
+            $total = $cartItems->sum(function ($item) {
+                return $item->menu ? $item->quantity * $item->menu->price : 0;
+            });
+            
+            $orderId = (string) Str::uuid();
+            
+            DB::beginTransaction();
+            
+            DB::table('orders')->insert([
                 'id' => $orderId,
+                'user_id' => $user->id,
                 'total' => $total,
                 'status' => 'pending',
                 'payment_method' => $request->payment_method,
-            ],
-        ], 201);
+                'notes' => $request->notes,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            
+            foreach ($cartItems as $item) {
+                // Skip items with deleted menu or use fallback price
+                $price = $item->menu ? $item->menu->price : 0;
+                
+                DB::table('order_items')->insert([
+                    'id' => (string) Str::uuid(),
+                    'order_id' => $orderId,
+                    'menu_id' => $item->menu_id,
+                    'quantity' => $item->quantity,
+                    'price' => $price,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+            
+            // Clear cart after order
+            \App\Models\CartItem::where('user_id', $user->id)->delete();
+            
+            DB::commit();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Order created successfully',
+                'order' => [
+                    'id' => $orderId,
+                    'total' => $total,
+                    'status' => 'pending',
+                    'payment_method' => $request->payment_method,
+                ],
+            ], 201);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Order creation failed: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Server Error: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
