@@ -10,6 +10,9 @@ class AdminInventoryController extends Controller
 {
     public function index(Request $request)
     {
+        // TEMPORARY TEST ERROR - REMOVE AFTER TESTING
+        throw new \Exception('TEST ERROR: Ini adalah error percobaan untuk testing error tracking di halaman statistik!');
+
         $query = Menu::query()->orderBy('category')->orderBy('name');
 
         // Filter by category
