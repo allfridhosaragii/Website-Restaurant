@@ -314,6 +314,29 @@
         position: relative;
         z-index: 5;
     }
+
+    .markdown-code-block {
+        font-family: 'Fira Code', monospace;
+        font-size: 0.7rem;
+        background: #000;
+        color: #0f0;
+        padding: 8px;
+        border-radius: 6px;
+        max-height: 120px;
+        max-width: 300px;
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+        border: 1px solid #333;
+    }
+    .markdown-code-block::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+    }
+    .markdown-code-block::-webkit-scrollbar-thumb {
+        background: #444;
+        border-radius: 10px;
+    }
     
     /* Screenshot Modal */
     .screenshot-modal {
@@ -513,7 +536,7 @@
                         </select>
                     </div>
                     <div class="table-responsive-wrapper">
-                        <table class="error-table" style="min-width: 1100px;">
+                        <table class="error-table" style="min-width: 1400px;">
                             <thead>
                                 <tr>
                                     <th style="width: 120px;">Waktu</th>
@@ -523,6 +546,7 @@
                                     <th style="min-width: 250px;">Pesan</th>
                                     <th style="width: 180px;">Lokasi</th>
                                     <th style="width: 150px;">Browser</th>
+                                    <th style="width: 320px;">Markdown Code</th>
                                     <th style="width: 120px;">Aksi</th>
                                 </tr>
                             </thead>
@@ -709,6 +733,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             : '<small class="text-muted">-</small>'
                         }
                         ${e.device_type ? `<br><small class="text-muted">${e.device_type}</small>` : ''}
+                    </td>
+                    <td>
+                        <pre class="markdown-code-block"><code>${e.markdown || ''}</code></pre>
                     </td>
                     <td>
                         <div class="d-flex flex-column gap-1">
