@@ -235,6 +235,31 @@
         cursor: not-allowed;
     }
     
+    .btn-copy-md {
+        padding: 4px 12px;
+        font-size: 0.75rem;
+        border-radius: 6px;
+        border: 1px solid var(--border-medium);
+        background: var(--surface);
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 5px;
+    }
+    .btn-copy-md:hover {
+        background: var(--surface-light);
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+    .btn-copy-md.copied {
+        background: #22c55e;
+        color: white;
+        border-color: #22c55e;
+    }
+    
     .screenshot-thumb {
         width: 60px;
         height: 40px;
@@ -667,12 +692,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         ${e.device_type ? `<br><small class="text-muted">${e.device_type}</small>` : ''}
                     </td>
                     <td>
-                        ${e.is_resolved 
-                            ? '<small class="text-success"><i class="bi bi-check-circle"></i> Fixed</small>'
-                            : `<button class="btn-resolve" onclick="resolveError(${e.id})">
-                                <i class="bi bi-check"></i> Resolve
-                               </button>`
-                        }
+                        <div class="d-flex flex-column gap-1">
+                            ${e.is_resolved 
+                                ? '<small class="text-success"><i class="bi bi-check-circle"></i> Fixed</small>'
+                                : `<button class="btn-resolve" onclick="resolveError(${e.id})">
+                                    <i class="bi bi-check"></i> Resolve
+                                   </button>`
+                            }
+                            <button class="btn-copy-md" onclick='copyErrorMarkdown(${JSON.stringify(e.id)}, this, ${JSON.stringify(e.markdown)})'>
+                                <i class="bi bi-markdown"></i> Copy MD
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `}).join('');
@@ -699,6 +729,28 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeScreenshotModal();
     });
+
+    // Copy Error as Markdown
+    window.copyErrorMarkdown = function(id, btn, markdown) {
+        if (!markdown) return;
+        
+        const el = document.createElement('textarea');
+        el.value = markdown;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        
+        // Visual feedback
+        const originalContent = btn.innerHTML;
+        btn.innerHTML = '<i class="bi bi-check"></i> Copied!';
+        btn.classList.add('copied');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalContent;
+            btn.classList.remove('copied');
+        }, 2000);
+    };
 
     // Load visitors
     async function loadVisitors() {

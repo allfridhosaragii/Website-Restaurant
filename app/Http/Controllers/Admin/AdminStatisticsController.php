@@ -106,7 +106,7 @@ class AdminStatisticsController extends Controller
     public function resolveError(Request $request, $id)
     {
         $error = ErrorLog::findOrFail($id);
-        $error->markAsResolved(auth()->id());
+        $error->resolve();
 
         return response()->json([
             'success' => true,
