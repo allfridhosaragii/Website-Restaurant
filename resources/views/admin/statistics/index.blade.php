@@ -92,6 +92,9 @@
         font-size: 0.7rem;
     }
     
+    .tab-content {
+        display: none;
+    }
     .tab-content.active {
         display: block;
     }
@@ -670,8 +673,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Store markdown in memory
                 window.errorStore[e.id] = e.markdown;
                 
-                // Sanitize message for JS attributes
-                const safeMessage = e.message ? e.message.replace(/'/g, "\\'").replace(/"/g, "&quot;") : '';
+                // Sanitize message for JS attributes (escape quotes and newlines)
+                const safeMessage = e.message 
+                    ? e.message.replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, "\\n").replace(/\r/g, "\\r")
+                    : '';
                 
                 return `
                 <tr>
