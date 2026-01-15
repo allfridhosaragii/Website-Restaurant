@@ -176,6 +176,37 @@
     box-shadow: 0 8px 25px rgba(200, 155, 58, 0.3);
     background: var(--accent-gradient);
 }
+    /* Live Activity Styles */
+    .live-dot {
+        width: 8px;
+        height: 8px;
+        background: #10B981;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+        box-shadow: 0 0 10px #10B981;
+        animation: livePulse 2s infinite;
+    }
+    @keyframes livePulse {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.5); opacity: 0.5; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    .user-tag {
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 4px;
+        background: rgba(200, 155, 58, 0.1);
+        color: var(--accent);
+        font-weight: 600;
+    }
+    .activity-row {
+        animation: slideIn 0.3s ease-out;
+    }
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 </style>
 @endpush
 @section('content')
@@ -301,6 +332,37 @@
                                 </td>
                             </tr>
                             @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="app-card mt-4">
+            <div class="app-card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-0"><span class="live-dot"></span> Real-time Downloads</h3>
+                    <p>Aktivitas pengunduhan saat ini</p>
+                </div>
+                <div id="downloadBadge" class="badge rounded-pill bg-accent-light text-accent">Checking...</div>
+            </div>
+            <div class="app-card-body p-0">
+                <div class="table-responsive">
+                    <table class="table history-table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Pengguna</th>
+                                <th>File / IP</th>
+                                <th class="text-end">Waktu</th>
+                            </tr>
+                        </thead>
+                        <tbody id="liveDownloadBody">
+                            <tr>
+                                <td colspan="3" class="text-center py-5">
+                                    <div class="spinner-border text-accent spinner-border-sm me-2"></div>
+                                    Memuat aktivitas terbaru...
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -451,5 +513,57 @@ btnUpload.addEventListener('click', async () => {
         uploadProgressContainer.style.display = 'none';
     }
 });
+
+// Live Tracking Logic
+function timeAgo(dateStr) {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000);
+    if (diff < 60) return diff + ' detik lalu';
+    if (diff < 3600) return Math.floor(diff / 60) + ' menit lalu';
+    if (diff < 86400) return Math.floor(diff / 3600) + ' jam lalu';
+    return Math.floor(diff / 86400) + ' hari lalu';
+}
+
+async function fetchLiveDownloads() {
+    try {
+        const res = await fetch('/admin/application/api/downloads');
+        const data = await res.json();
+        
+        if (data.success) {
+            const tbody = document.getElementById('liveDownloadBody');
+            const badge = document.getElementById('downloadBadge');
+            
+            badge.textContent = data.data.length + ' log';
+            
+            if (data.data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-5 text-muted">Belum ada aktivitas unduhan</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.data.map(a => `
+                <tr class="activity-row">
+                    <td>
+                        <div class="fw-bold">${a.user_name || 'Guest'}</div>
+                        <div class="small text-muted">${a.user_email || 'Tidak ada email'}</div>
+                    </td>
+                    <td>
+                        <div class="small fw-semibold">${a.description.replace('Mendownload file: ', '')}</div>
+                        <code class="small text-accent">${a.ip_address}</code>
+                    </td>
+                    <td class="text-end">
+                        <span class="text-muted small">${timeAgo(a.created_at)}</span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+    } catch (err) {
+        console.error('Failed to fetch live downloads:', err);
+    }
+}
+
+// Initial pull and interval
+fetchLiveDownloads();
+setInterval(fetchLiveDownloads, 5000);
 </script>
 @endpush

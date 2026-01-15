@@ -91,6 +91,23 @@ Route::post('/error-report', function (Request $request) {
     }
 });
 
+// APK Download Logic
+Route::post('/app-download-log', function (Request $request) {
+    try {
+        \DB::table('activity_logs')->insert([
+            'user_id' => auth('sanctum')->id() ?: (auth()->id() ?: null),
+            'action' => 'DOWNLOAD_APK',
+            'description' => 'Mendownload file: ' . ($request->filename ?? 'Culinaire.apk'),
+            'ip_address' => $request->ip(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        return response()->json(['success' => true]);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+    }
+});
+
 // Public Menu Routes
 Route::get('/menus', [ApiMenuController::class, 'index']);
 Route::get('/menus/{slug}', [ApiMenuController::class, 'show']);

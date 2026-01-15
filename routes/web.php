@@ -495,6 +495,7 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::post('/application', [\App\Http\Controllers\Admin\AdminCmsController::class, 'updateApplication']);
     Route::post('/application/generate-upload-url', [\App\Http\Controllers\Admin\AdminCmsController::class, 'generateUploadUrl']);
     Route::post('/application/finalize-upload', [\App\Http\Controllers\Admin\AdminCmsController::class, 'finalizeUpload']);
+    Route::get('/application/api/downloads', [\App\Http\Controllers\Admin\AdminCmsController::class, 'getDownloadActivities']);
 
     // Inventory Management
     Route::get('/inventory', [\App\Http\Controllers\Admin\AdminInventoryController::class, 'index'])->name('admin.inventory.index');

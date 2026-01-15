@@ -488,4 +488,28 @@ class AdminCmsController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function getDownloadActivities()
+    {
+        $activities = \DB::table('activity_logs')
+            ->leftJoin('users', 'activity_logs.user_id', '=', 'users.id')
+            ->where('activity_logs.action', 'DOWNLOAD_APK')
+            ->select(
+                'activity_logs.id',
+                'activity_logs.action',
+                'activity_logs.description',
+                'activity_logs.ip_address',
+                'activity_logs.created_at',
+                'users.name as user_name',
+                'users.email as user_email'
+            )
+            ->orderBy('activity_logs.created_at', 'desc')
+            ->limit(50)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $activities
+        ]);
+    }
 }
