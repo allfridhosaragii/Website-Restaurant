@@ -385,6 +385,101 @@
         max-width: 80%;
         text-align: center;
     }
+
+    /* History Modal Styles */
+    .history-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(5px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1050;
+    }
+    .history-modal.active {
+        display: flex;
+    }
+    .history-container {
+        background: var(--surface);
+        width: 100%;
+        max-width: 600px;
+        max-height: 80vh;
+        border-radius: 20px;
+        overflow: hidden;
+        display: flex;
+        flex-column: column;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        border: 1px solid var(--border-light);
+    }
+    .history-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border-light);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--surface-light);
+    }
+    .history-body {
+        padding: 24px;
+        overflow-y: auto;
+        flex-grow: 1;
+    }
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 10px;
+        top: 5px;
+        bottom: 5px;
+        width: 2px;
+        background: var(--border-light);
+    }
+    .timeline-item {
+        position: relative;
+        margin-bottom: 24px;
+    }
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -24px;
+        top: 6px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--accent);
+        border: 2px solid var(--surface);
+        z-index: 2;
+    }
+    .timeline-item.visit::before {
+        background: var(--success);
+    }
+    .timeline-time {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+    }
+    .timeline-content {
+        background: var(--surface-light);
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--border-light);
+    }
+    .timeline-action {
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 2px;
+    }
+    .timeline-desc {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
 </style>
 @endpush
 
@@ -595,6 +690,22 @@
         <img id="screenshotImage" src="" alt="Error Screenshot">
         <div class="error-details" id="screenshotDetails"></div>
     </div>
+
+    <!-- History Modal -->
+    <div class="history-modal" id="historyModal" onclick="closeHistoryModal()">
+        <div class="history-container" onclick="event.stopPropagation()">
+            <div class="history-header">
+                <div>
+                    <h5 class="mb-0" id="historyTitle">User History</h5>
+                    <small class="text-muted" id="historySubtitle"></small>
+                </div>
+                <button class="btn-close" onclick="closeHistoryModal()"></button>
+            </div>
+            <div class="history-body" id="historyBody">
+                <!-- Timeline will be injected here -->
+            </div>
+        </div>
+    </div>
 </section>
 @endsection
 
@@ -653,7 +764,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <tr>
                     <td><small class="text-muted">${timeAgo(a.created_at)}</small></td>
                     <td>
-                        <span class="user-badge ${a.is_admin ? 'admin' : (a.user_name ? 'customer' : 'guest')}">
+                        <span class="user-badge ${a.is_admin ? 'admin' : (a.user_name ? 'customer' : 'guest')}"
+                              onclick="showUserHistory('${a.user_id || ''}', '${a.ip_address || ''}', '${a.user_name || 'Guest'}')">
                             <i class="bi bi-${a.is_admin ? 'shield-check' : (a.user_name ? 'person' : 'person-dash')}"></i>
                             ${a.user_name || 'Guest'}
                         </span>
@@ -797,6 +909,49 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.innerHTML = originalContent;
             btn.classList.remove('copied');
         }, 2000);
+    };
+
+    // User History Functions
+    window.showUserHistory = async function(userId, ip, name) {
+        const title = document.getElementById('historyTitle');
+        const subtitle = document.getElementById('historySubtitle');
+        const body = document.getElementById('historyBody');
+        const modal = document.getElementById('historyModal');
+
+        title.textContent = `Riwayat: ${name}`;
+        subtitle.textContent = ip ? `IP: ${ip}` : `User ID: ${userId}`;
+        body.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary"></div><p class="mt-2">Mengambil riwayat...</p></div>';
+        modal.classList.add('active');
+
+        try {
+            const res = await fetch(`/admin/statistik/api/user-history?user_id=${userId}&ip=${ip}`);
+            const result = await res.json();
+
+            if (result.success && result.data.length > 0) {
+                body.innerHTML = `
+                    <div class="timeline">
+                        ${result.data.map(item => `
+                            <div class="timeline-item ${item.type}">
+                                <div class="timeline-time">${formatTime(item.time)}</div>
+                                <div class="timeline-content">
+                                    <div class="timeline-action">${item.action}</div>
+                                    <div class="timeline-desc">${item.description || '-'}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                body.innerHTML = '<div class="text-center py-5"><i class="bi bi-info-circle fs-1 text-muted"></i><p class="mt-2">Tidak ada riwayat ditemukan.</p></div>';
+            }
+        } catch (e) {
+            console.error('Failed to load history:', e);
+            body.innerHTML = '<div class="text-center py-5 text-danger"><p>Gagal memuat riwayat.</p></div>';
+        }
+    };
+
+    window.closeHistoryModal = function() {
+        document.getElementById('historyModal').classList.remove('active');
     };
 
     // Load visitors

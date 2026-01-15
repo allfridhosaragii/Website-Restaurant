@@ -510,6 +510,7 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
         Route::get('/statistik/api/errors', [\App\Http\Controllers\Admin\AdminStatisticsController::class, 'getErrors']);
         Route::post('/statistik/api/errors/{id}/resolve', [\App\Http\Controllers\Admin\AdminStatisticsController::class, 'resolveError']);
         Route::get('/statistik/api/live-visitors', [\App\Http\Controllers\Admin\AdminStatisticsController::class, 'getLiveVisitors']);
+        Route::get('/statistik/api/user-history', [\App\Http\Controllers\Admin\AdminStatisticsController::class, 'getUserHistory']);
     });
     // Admin Access Management (Super Admin Only)
     Route::middleware([\App\Http\Middleware\SuperAdminMiddleware::class])->group(function () {

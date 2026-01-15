@@ -127,4 +127,40 @@ class AdminStatisticsController extends Controller
             'count' => $visitors->count()
         ]);
     }
+
+    public function getUserHistory(Request $request)
+    {
+        $userId = $request->user_id;
+        $ip = $request->ip;
+
+        if (!$userId && !$ip) {
+            return response()->json(['success' => false, 'message' => 'User ID or IP is required'], 400);
+        }
+
+        // Get activity logs
+        $activities = DB::table('activity_logs')
+            ->where(function ($q) use ($userId, $ip) {
+                if ($userId) $q->where('user_id', $userId);
+                if ($ip) $q->orWhere('ip_address', $ip);
+            })
+            ->select('action', 'description', 'created_at as time', DB::raw("'activity' as type"))
+            ->get();
+
+        // Get site visitors (page views)
+        $visits = DB::table('site_visitors')
+            ->where(function ($q) use ($userId, $ip) {
+                if ($userId) $q->where('user_id', $userId);
+                if ($ip) $q->orWhere('ip_address', $ip);
+            })
+            ->select(DB::raw("CONCAT('Membuka halaman: ', page_title) as action"), 'page_url as description', 'entry_time as time', DB::raw("'visit' as type"))
+            ->get();
+
+        // Combine and sort
+        $history = $activities->concat($visits)->sortByDesc('time')->values();
+
+        return response()->json([
+            'success' => true,
+            'data' => $history
+        ]);
+    }
 }
