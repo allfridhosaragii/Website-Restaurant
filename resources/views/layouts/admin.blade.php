@@ -62,7 +62,7 @@
                 <button class="btn btn-link d-lg-none p-0 me-3" id="sidebarToggle">
                     <i class="bi bi-list fs-4"></i>
                 </button>
-                <div class="d-none d-md-flex flex-grow-1" style="max-width: 400px;">
+                <div class="d-none d-md-flex grow" style="max-width: 400px;">
                     <div class="input-group">
                         <span class="input-group-text bg-light border-0">
                             <i class="bi bi-search text-muted"></i>

@@ -166,10 +166,14 @@
         background: var(--bg-secondary);
         padding: 8px 12px;
         border-radius: 6px;
-        max-width: 400px;
+        max-width: 500px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
         overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        white-space: normal;
+        word-break: break-all;
+        line-height: 1.4;
     }
     
     .filter-bar {
@@ -265,13 +269,17 @@
         color: #8b5cf6;
         cursor: pointer;
         display: inline-block;
-        max-width: 150px;
+        max-width: 200px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        transition: all 0.2s;
     }
     .file-location:hover {
         background: rgba(139, 92, 246, 0.2);
+        max-width: none;
+        position: relative;
+        z-index: 5;
     }
     
     /* Screenshot Modal */
@@ -472,17 +480,17 @@
                         </select>
                     </div>
                     <div class="table-responsive">
-                        <table class="error-table">
+                        <table class="error-table" style="min-width: 1000px;">
                             <thead>
                                 <tr>
-                                    <th>Waktu</th>
-                                    <th>Screenshot</th>
-                                    <th>Status</th>
-                                    <th>Tipe</th>
-                                    <th>Pesan</th>
-                                    <th>Lokasi</th>
-                                    <th>Browser</th>
-                                    <th>Aksi</th>
+                                    <th style="width: 120px;">Waktu</th>
+                                    <th style="width: 80px;">Screenshot</th>
+                                    <th style="width: 100px;">Status</th>
+                                    <th style="width: 120px;">Tipe</th>
+                                    <th style="min-width: 250px;">Pesan</th>
+                                    <th style="width: 180px;">Lokasi</th>
+                                    <th style="width: 150px;">Browser</th>
+                                    <th style="width: 100px;">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="errorTableBody">
