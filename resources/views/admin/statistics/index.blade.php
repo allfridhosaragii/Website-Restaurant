@@ -92,11 +92,16 @@
         font-size: 0.7rem;
     }
     
-    .tab-content {
-        display: none;
-    }
     .tab-content.active {
         display: block;
+    }
+
+    .table-responsive-wrapper {
+        border-radius: 12px;
+        border: 1px solid var(--border-light);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        background: var(--surface);
     }
     
     .activity-table, .error-table {
@@ -467,15 +472,15 @@
                             <option value="week">7 Hari Terakhir</option>
                         </select>
                     </div>
-                    <div class="table-responsive">
-                        <table class="activity-table">
+                    <div class="table-responsive-wrapper">
+                        <table class="activity-table" style="min-width: 800px;">
                             <thead>
                                 <tr>
-                                    <th>Waktu</th>
-                                    <th>User</th>
-                                    <th>Aksi</th>
+                                    <th style="width: 120px;">Waktu</th>
+                                    <th style="width: 150px;">User</th>
+                                    <th style="width: 150px;">Aksi</th>
                                     <th>Detail</th>
-                                    <th>IP</th>
+                                    <th style="width: 120px;">IP</th>
                                 </tr>
                             </thead>
                             <tbody id="activityTableBody">
@@ -504,8 +509,8 @@
                             <option value="week">7 Hari Terakhir</option>
                         </select>
                     </div>
-                    <div class="table-responsive">
-                        <table class="error-table" style="min-width: 1000px;">
+                    <div class="table-responsive-wrapper">
+                        <table class="error-table" style="min-width: 1100px;">
                             <thead>
                                 <tr>
                                     <th style="width: 120px;">Waktu</th>
@@ -515,7 +520,7 @@
                                     <th style="min-width: 250px;">Pesan</th>
                                     <th style="width: 180px;">Lokasi</th>
                                     <th style="width: 150px;">Browser</th>
-                                    <th style="width: 100px;">Aksi</th>
+                                    <th style="width: 120px;">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="errorTableBody">
@@ -532,14 +537,14 @@
 
                 {{-- Visitors Tab --}}
                 <div class="tab-content" id="tab-visitors">
-                    <div class="table-responsive">
-                        <table class="activity-table">
+                    <div class="table-responsive-wrapper">
+                        <table class="activity-table" style="min-width: 800px;">
                             <thead>
                                 <tr>
                                     <th>Halaman</th>
-                                    <th>Browser</th>
-                                    <th>Device</th>
-                                    <th>Masuk Sejak</th>
+                                    <th style="width: 150px;">Browser</th>
+                                    <th style="width: 150px;">Device</th>
+                                    <th style="width: 150px;">Masuk Sejak</th>
                                 </tr>
                             </thead>
                             <tbody id="visitorTableBody">
@@ -636,6 +641,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Global store for error data to avoid quote issues in HTML attributes
+    window.errorStore = {};
+
     // Load errors
     async function loadErrors() {
         const status = document.getElementById('filterErrorStatus').value;
@@ -659,13 +667,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 const fileName = e.file ? e.file.split('/').pop().split('\\').pop() : '-';
                 const fileLocation = `${fileName}:${e.line || '?'}`;
                 
+                // Store markdown in memory
+                window.errorStore[e.id] = e.markdown;
+                
+                // Sanitize message for JS attributes
+                const safeMessage = e.message ? e.message.replace(/'/g, "\\'").replace(/"/g, "&quot;") : '';
+                
                 return `
                 <tr>
                     <td><small class="text-muted">${timeAgo(e.created_at)}</small></td>
                     <td>
                         ${e.screenshot_url 
                             ? `<img src="${e.screenshot_url}" class="screenshot-thumb" 
-                                   onclick="showScreenshot('${e.screenshot_url}', '${e.message.replace(/'/g, "\\'")}', '${fileLocation}')"
+                                   onclick="showScreenshot('${e.screenshot_url}', '${safeMessage}', '${fileLocation}')"
                                    alt="Screenshot">`
                             : '<small class="text-muted">-</small>'
                         }
@@ -677,7 +691,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </td>
                     <td><code class="small">${e.type ? e.type.split('\\').pop() : 'Error'}</code></td>
                     <td>
-                        <div class="error-message" title="${e.message}">${e.message}</div>
+                        <div class="error-message" title="${safeMessage}">${e.message}</div>
                     </td>
                     <td>
                         <span class="file-location" title="${e.file || 'Unknown'}:${e.line || '?'}">
@@ -699,7 +713,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <i class="bi bi-check"></i> Resolve
                                    </button>`
                             }
-                            <button class="btn-copy-md" onclick='copyErrorMarkdown(${JSON.stringify(e.id)}, this, ${JSON.stringify(e.markdown)})'>
+                            <button class="btn-copy-md" onclick='copyErrorMarkdown(${e.id}, this)'>
                                 <i class="bi bi-markdown"></i> Copy MD
                             </button>
                         </div>
@@ -731,7 +745,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Copy Error as Markdown
-    window.copyErrorMarkdown = function(id, btn, markdown) {
+    window.copyErrorMarkdown = function(id, btn) {
+        const markdown = window.errorStore[id];
         if (!markdown) return;
         
         const el = document.createElement('textarea');
