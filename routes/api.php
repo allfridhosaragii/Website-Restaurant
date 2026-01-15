@@ -37,6 +37,60 @@ Route::prefix('auth')->group(function () {
 // Payment Notification (DOKU Callback)
 Route::post('/payment/notification', [\App\Http\Controllers\PaymentController::class, 'callback']);
 
+// Client-Side Error Report (with Screenshot)
+Route::post('/error-report', function (Request $request) {
+    try {
+        $data = [
+            'type' => $request->type ?? 'JavaScript Error',
+            'message' => $request->message ?? 'Unknown error',
+            'file' => $request->file,
+            'line' => $request->line,
+            'trace' => $request->stack,
+            'url' => $request->url,
+            'method' => 'GET',
+            'ip_address' => $request->ip(),
+            'user_id' => auth()->id(),
+            'user_agent' => $request->userAgent(),
+            'browser' => $request->browser,
+            'device_type' => $request->deviceType,
+            'screen_size' => $request->screenSize,
+        ];
+
+        // Handle screenshot upload to Supabase
+        if ($request->screenshot) {
+            $supabaseUrl = env('SUPABASE_URL');
+            $supabaseKey = env('SUPABASE_SERVICE_ROLE_KEY'); 
+            $bucket = env('SUPABASE_BUCKET');
+
+            if ($supabaseUrl && $supabaseKey && $bucket) {
+                // Decode base64 screenshot
+                $imageData = preg_replace('/^data:image\/\w+;base64,/', '', $request->screenshot);
+                $imageData = base64_decode($imageData);
+                
+                $filename = 'error-screenshots/' . date('Y-m-d') . '/error_' . time() . '_' . uniqid() . '.png';
+                
+                // Upload to Supabase
+                $response = \Illuminate\Support\Facades\Http::withHeaders([
+                    'Authorization' => 'Bearer ' . $supabaseKey,
+                    'Content-Type' => 'image/png',
+                ])->withBody($imageData, 'image/png')
+                  ->post("{$supabaseUrl}/storage/v1/object/{$bucket}/{$filename}");
+
+                if ($response->successful()) {
+                    $data['screenshot_url'] = "{$supabaseUrl}/storage/v1/object/public/{$bucket}/{$filename}";
+                }
+            }
+        }
+
+        \App\Models\ErrorLog::create($data);
+
+        return response()->json(['success' => true]);
+    } catch (\Exception $e) {
+        \Log::error('Error report failed: ' . $e->getMessage());
+        return response()->json(['success' => false], 500);
+    }
+});
+
 // Public Menu Routes
 Route::get('/menus', [ApiMenuController::class, 'index']);
 Route::get('/menus/{slug}', [ApiMenuController::class, 'show']);

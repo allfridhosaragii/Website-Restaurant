@@ -230,6 +230,97 @@
         opacity: 0.5;
         cursor: not-allowed;
     }
+    
+    .screenshot-thumb {
+        width: 60px;
+        height: 40px;
+        border-radius: 6px;
+        object-fit: cover;
+        cursor: pointer;
+        border: 2px solid var(--border-medium);
+        transition: all 0.2s;
+    }
+    .screenshot-thumb:hover {
+        transform: scale(1.1);
+        border-color: var(--accent);
+    }
+    
+    .browser-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+    }
+    
+    .file-location {
+        font-family: 'Fira Code', monospace;
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        border-radius: 4px;
+        background: rgba(139, 92, 246, 0.1);
+        color: #8b5cf6;
+        cursor: pointer;
+        display: inline-block;
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .file-location:hover {
+        background: rgba(139, 92, 246, 0.2);
+    }
+    
+    /* Screenshot Modal */
+    .screenshot-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.85);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+    .screenshot-modal.active {
+        display: flex;
+    }
+    .screenshot-modal img {
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 12px;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    }
+    .screenshot-modal .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        font-size: 2rem;
+        color: white;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .screenshot-modal .close-btn:hover {
+        transform: scale(1.2);
+    }
+    .screenshot-modal .error-details {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0,0,0,0.8);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        max-width: 80%;
+        text-align: center;
+    }
 </style>
 @endpush
 
@@ -385,16 +476,18 @@
                             <thead>
                                 <tr>
                                     <th>Waktu</th>
+                                    <th>Screenshot</th>
                                     <th>Status</th>
                                     <th>Tipe</th>
                                     <th>Pesan</th>
-                                    <th>File</th>
+                                    <th>Lokasi</th>
+                                    <th>Browser</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="errorTableBody">
                                 <tr>
-                                    <td colspan="6" class="empty-state">
+                                    <td colspan="8" class="empty-state">
                                         <i class="bi bi-hourglass-split d-block"></i>
                                         Memuat data...
                                     </td>
@@ -429,6 +522,13 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Screenshot Modal -->
+    <div class="screenshot-modal" id="screenshotModal" onclick="closeScreenshotModal()">
+        <span class="close-btn" onclick="closeScreenshotModal()">&times;</span>
+        <img id="screenshotImage" src="" alt="Error Screenshot">
+        <div class="error-details" id="screenshotDetails"></div>
     </div>
 </section>
 @endsection
@@ -517,14 +617,26 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('statUnresolvedErrors').textContent = data.data.filter(e => !e.is_resolved).length;
             
             if (data.data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="empty-state">
+                tbody.innerHTML = `<tr><td colspan="8" class="empty-state">
                     <i class="bi bi-check-circle d-block text-success"></i>Tidak ada error tercatat. Bagus!</td></tr>`;
                 return;
             }
             
-            tbody.innerHTML = data.data.map(e => `
+            tbody.innerHTML = data.data.map(e => {
+                const fileName = e.file ? e.file.split('/').pop().split('\\').pop() : '-';
+                const fileLocation = `${fileName}:${e.line || '?'}`;
+                
+                return `
                 <tr>
                     <td><small class="text-muted">${timeAgo(e.created_at)}</small></td>
+                    <td>
+                        ${e.screenshot_url 
+                            ? `<img src="${e.screenshot_url}" class="screenshot-thumb" 
+                                   onclick="showScreenshot('${e.screenshot_url}', '${e.message.replace(/'/g, "\\'")}', '${fileLocation}')"
+                                   alt="Screenshot">`
+                            : '<small class="text-muted">-</small>'
+                        }
+                    </td>
                     <td>
                         <span class="error-severity ${e.is_resolved ? 'resolved' : 'critical'}">
                             ${e.is_resolved ? 'Resolved' : 'Open'}
@@ -534,7 +646,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>
                         <div class="error-message" title="${e.message}">${e.message}</div>
                     </td>
-                    <td><small>${e.file ? e.file.split('/').pop() : '-'}:${e.line || ''}</small></td>
+                    <td>
+                        <span class="file-location" title="${e.file || 'Unknown'}:${e.line || '?'}">
+                            ${fileLocation}
+                        </span>
+                    </td>
+                    <td>
+                        ${e.browser 
+                            ? `<span class="browser-badge"><i class="bi bi-globe"></i>${e.browser}</span>`
+                            : '<small class="text-muted">-</small>'
+                        }
+                        ${e.device_type ? `<br><small class="text-muted">${e.device_type}</small>` : ''}
+                    </td>
                     <td>
                         ${e.is_resolved 
                             ? '<small class="text-success"><i class="bi bi-check-circle"></i> Fixed</small>'
@@ -544,11 +667,30 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     </td>
                 </tr>
-            `).join('');
+            `}).join('');
         } catch (e) {
             console.error('Failed to load errors:', e);
         }
     }
+
+    // Screenshot Modal Functions
+    window.showScreenshot = function(url, message, location) {
+        document.getElementById('screenshotImage').src = url;
+        document.getElementById('screenshotDetails').innerHTML = `
+            <strong>${location}</strong><br>
+            <small>${message}</small>
+        `;
+        document.getElementById('screenshotModal').classList.add('active');
+    };
+
+    window.closeScreenshotModal = function() {
+        document.getElementById('screenshotModal').classList.remove('active');
+    };
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeScreenshotModal();
+    });
 
     // Load visitors
     async function loadVisitors() {

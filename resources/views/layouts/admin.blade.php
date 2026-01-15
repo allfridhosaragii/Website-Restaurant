@@ -235,6 +235,9 @@
         })();
     </script>
 
+    <!-- Error Tracker with Screenshot -->
+    <script src="{{ asset('js/error-tracker.js') }}" defer></script>
+
     <!-- PWA Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
