@@ -128,6 +128,7 @@
     color: var(--text-primary);
 }
 /* Downloads table - wider with scroll */
+/* Downloads table */
 .downloads-table-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -135,21 +136,16 @@
     border-radius: 0.5rem;
 }
 .downloads-table {
-    min-width: 800px; /* Reduced min-width */
+    min-width: 800px;
     width: 100%;
 }
 .downloads-table th,
 .downloads-table td {
     white-space: nowrap;
-    padding: 0.8rem 1rem; /* More compact padding */
+    padding: 0.75rem 1rem !important; /* Force compact padding */
     vertical-align: middle;
-    font-size: 0.9rem; /* Slightly smaller font */
+    font-size: 0.85rem; /* Force smaller font */
 }
-/* Column widths */
-.col-user { width: 20%; min-width: 160px; }
-.col-file { width: 25%; min-width: 200px; }
-.col-device { width: 40%; min-width: 240px; }
-.col-time { width: 15%; min-width: 120px; text-align: right; }
 
 .empty-history {
     padding: 4rem 2rem;
@@ -362,10 +358,10 @@
             <table class="table history-table downloads-table mb-0">
                 <thead>
                     <tr>
-                        <th class="col-user">Pengguna</th>
-                        <th class="col-file">File / IP</th>
-                        <th class="col-device">Perangkat</th>
-                        <th class="col-time">Waktu</th>
+                        <th style="width: 20%; min-width: 160px;">Pengguna</th>
+                        <th style="width: 25%; min-width: 200px;">File / IP</th>
+                        <th style="width: 40%; min-width: 240px;">Perangkat</th>
+                        <th style="width: 15%; min-width: 120px;" class="text-end">Waktu</th>
                     </tr>
                 </thead>
                 <tbody id="liveDownloadBody">
@@ -539,19 +535,19 @@ async function fetchLiveDownloads() {
             tbody.innerHTML = data.data.map(a => `
                 <tr class="activity-row">
                     <td>
-                        <div class="fw-bold">${a.user_name || 'Guest'}</div>
-                        <div class="small text-muted">${a.user_email || 'Tidak ada email'}</div>
+                        <div class="fw-bold text-truncate" style="max-width: 150px;">${a.user_name && a.user_name !== 'null' ? a.user_name : 'Guest'}</div>
+                        <div class="small text-muted text-truncate" style="max-width: 150px;">${a.user_email && a.user_email !== 'null' ? a.user_email : 'Tidak ada email'}</div>
                     </td>
                     <td>
-                        <div class="small fw-semibold">${a.description.replace('Mendownload file: ', '')}</div>
+                        <div class="small fw-semibold text-truncate" style="max-width: 250px;">${a.description.replace('Mendownload file: ', '')}</div>
                         <code class="small text-accent">${a.ip_address}</code>
                     </td>
                     <td>
-                        <div class="small">
+                        <div class="small text-truncate" style="max-width: 300px;">
                             <i class="bi ${getDeviceIcon(a.device_type)} me-1"></i>
                             ${a.device_name || 'Unknown'}
                         </div>
-                        <div class="small text-muted">${a.browser || ''} ${a.os ? '• ' + a.os : ''}</div>
+                        <div class="small text-muted text-truncate" style="max-width: 300px;">${a.browser || ''} ${a.os ? '• ' + a.os : ''}</div>
                     </td>
                     <td class="text-end">
                         <span class="text-muted small">${timeAgo(a.created_at)}</span>
