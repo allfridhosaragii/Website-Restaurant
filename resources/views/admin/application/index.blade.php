@@ -127,23 +127,29 @@
     font-weight: 600;
     color: var(--text-primary);
 }
-.history-item-meta {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
 /* Downloads table - wider with scroll */
 .downloads-table-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    margin: 0 -1.5rem; /* Negative margin to span full width of card body */
+    padding: 0 1.5rem;
 }
 .downloads-table {
-    min-width: 700px;
+    min-width: 900px; /* Ensure enough width for 4 columns */
     width: 100%;
 }
 .downloads-table th,
 .downloads-table td {
     white-space: nowrap;
+    padding: 1rem 1.5rem;
+    vertical-align: middle;
 }
+/* Column widths */
+.col-user { width: 20%; min-width: 200px; }
+.col-file { width: 25%; min-width: 250px; }
+.col-device { width: 40%; min-width: 300px; }
+.col-time { width: 15%; min-width: 150px; text-align: right; }
+
 .empty-history {
     padding: 4rem 2rem;
     text-align: center;
@@ -350,10 +356,10 @@
             <table class="table history-table downloads-table mb-0">
                 <thead>
                     <tr>
-                        <th style="min-width: 150px;">Pengguna</th>
-                        <th style="min-width: 180px;">File / IP</th>
-                        <th style="min-width: 180px;">Perangkat</th>
-                        <th style="min-width: 100px;" class="text-end">Waktu</th>
+                        <th class="col-user">Pengguna</th>
+                        <th class="col-file">File / IP</th>
+                        <th class="col-device">Perangkat</th>
+                        <th class="col-time">Waktu</th>
                     </tr>
                 </thead>
                 <tbody id="liveDownloadBody">
@@ -513,14 +519,14 @@ async function fetchLiveDownloads() {
                 return;
             }
             
-            function getDeviceIcon(type) {
+            const getDeviceIcon = (type) => {
                 switch(type?.toLowerCase()) {
                     case 'mobile': return 'bi-phone';
                     case 'tablet': return 'bi-tablet';
                     case 'desktop': return 'bi-laptop';
                     default: return 'bi-device-hdd';
                 }
-            }
+            };
             
             tbody.innerHTML = data.data.map(a => `
                 <tr class="activity-row">
