@@ -343,14 +343,19 @@
 </div>
 
 <!-- Real-time Downloads - Full Width Section -->
-<div class="app-card mt-4">
-    <div class="app-card-header d-flex justify-content-between align-items-center">
-        <div>
-            <h3 class="mb-0"><span class="live-dot"></span> Real-time Downloads</h3>
-            <p>Aktivitas pengunduhan saat ini</p>
-        </div>
-        <div id="downloadBadge" class="badge rounded-pill bg-accent-light text-accent">Checking...</div>
-    </div>
+</div>
+
+<!-- Real-time Downloads - Full Width Section -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="app-card">
+            <div class="app-card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-0"><span class="live-dot"></span> Real-time Downloads</h3>
+                    <p>Aktivitas pengunduhan saat ini</p>
+                </div>
+                <div id="downloadBadge" class="badge rounded-pill bg-accent-light text-accent">Checking...</div>
+            </div>
     <div class="app-card-body p-0">
         <div class="downloads-table-wrapper">
             <table class="table history-table downloads-table mb-0">
@@ -372,6 +377,8 @@
                 </tbody>
             </table>
         </div>
+    </div>
+</div>
     </div>
 </div>
 @endsection
