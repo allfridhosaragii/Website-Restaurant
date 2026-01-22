@@ -217,7 +217,7 @@
 @endpush
 @section('content')
 <div class="app-settings-header">
-    <h1><i class="bi bi-phone"></i> Pengaturan Aplikasi</h1>
+    <h1><i class="bi bi-phone"></i> Pengaturan Aplikasi <span class="badge bg-primary rounded-pill fs-6 ms-2" style="font-size: 0.5em !important; vertical-align: middle;">v2.2</span></h1>
 </div>
 @if(session('success'))
 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -345,6 +345,7 @@
                 <div>
                     <h3 class="mb-0"><span class="live-dot"></span> Real-time Downloads</h3>
                     <p>Aktivitas pengunduhan saat ini</p>
+                    <p class="d-md-none text-muted small mt-1 mb-0"><i class="bi bi-arrow-left-right me-1"></i> Geser tabel untuk detail lengkap</p>
                 </div>
                 <div id="downloadBadge" class="badge rounded-pill bg-accent-light text-accent">Checking...</div>
             </div>
