@@ -131,24 +131,25 @@
 .downloads-table-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    margin: 0 -1.5rem; /* Negative margin to span full width of card body */
-    padding: 0 1.5rem;
+    width: 100%;
+    border-radius: 0.5rem;
 }
 .downloads-table {
-    min-width: 900px; /* Ensure enough width for 4 columns */
+    min-width: 800px; /* Reduced min-width */
     width: 100%;
 }
 .downloads-table th,
 .downloads-table td {
     white-space: nowrap;
-    padding: 1rem 1.5rem;
+    padding: 0.8rem 1rem; /* More compact padding */
     vertical-align: middle;
+    font-size: 0.9rem; /* Slightly smaller font */
 }
 /* Column widths */
-.col-user { width: 20%; min-width: 200px; }
-.col-file { width: 25%; min-width: 250px; }
-.col-device { width: 40%; min-width: 300px; }
-.col-time { width: 15%; min-width: 150px; text-align: right; }
+.col-user { width: 20%; min-width: 160px; }
+.col-file { width: 25%; min-width: 200px; }
+.col-device { width: 40%; min-width: 240px; }
+.col-time { width: 15%; min-width: 120px; text-align: right; }
 
 .empty-history {
     padding: 4rem 2rem;
