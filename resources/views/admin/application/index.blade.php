@@ -107,6 +107,7 @@
     font-weight: 700;
     color: var(--text-muted);
     padding: 1rem 1.5rem;
+    white-space: nowrap;
 }
 .history-table tbody tr {
     transition: all 0.2s ease;
@@ -129,6 +130,19 @@
 .history-item-meta {
     font-size: 0.8rem;
     color: var(--text-muted);
+}
+/* Downloads table - wider with scroll */
+.downloads-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.downloads-table {
+    min-width: 700px;
+    width: 100%;
+}
+.downloads-table th,
+.downloads-table td {
+    white-space: nowrap;
 }
 .empty-history {
     padding: 4rem 2rem;
@@ -319,36 +333,38 @@
                 </div>
             </div>
         </div>
-        <div class="app-card mt-4">
-            <div class="app-card-header d-flex justify-content-between align-items-center">
-                <div>
-                    <h3 class="mb-0"><span class="live-dot"></span> Real-time Downloads</h3>
-                    <p>Aktivitas pengunduhan saat ini</p>
-                </div>
-                <div id="downloadBadge" class="badge rounded-pill bg-accent-light text-accent">Checking...</div>
-            </div>
-            <div class="app-card-body p-0">
-                <div class="table-responsive">
-                    <table class="table history-table mb-0">
-                        <thead>
-                            <tr>
-                                <th>Pengguna</th>
-                                <th>File / IP</th>
-                                <th>Perangkat</th>
-                                <th class="text-end">Waktu</th>
-                            </tr>
-                        </thead>
-                        <tbody id="liveDownloadBody">
-                            <tr>
-                                <td colspan="4" class="text-center py-5">
-                                    <div class="spinner-border text-accent spinner-border-sm me-2"></div>
-                                    Memuat aktivitas terbaru...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+    </div>
+</div>
+
+<!-- Real-time Downloads - Full Width Section -->
+<div class="app-card mt-4">
+    <div class="app-card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h3 class="mb-0"><span class="live-dot"></span> Real-time Downloads</h3>
+            <p>Aktivitas pengunduhan saat ini</p>
+        </div>
+        <div id="downloadBadge" class="badge rounded-pill bg-accent-light text-accent">Checking...</div>
+    </div>
+    <div class="app-card-body p-0">
+        <div class="downloads-table-wrapper">
+            <table class="table history-table downloads-table mb-0">
+                <thead>
+                    <tr>
+                        <th style="min-width: 150px;">Pengguna</th>
+                        <th style="min-width: 180px;">File / IP</th>
+                        <th style="min-width: 180px;">Perangkat</th>
+                        <th style="min-width: 100px;" class="text-end">Waktu</th>
+                    </tr>
+                </thead>
+                <tbody id="liveDownloadBody">
+                    <tr>
+                        <td colspan="4" class="text-center py-5">
+                            <div class="spinner-border text-accent spinner-border-sm me-2"></div>
+                            Memuat aktivitas terbaru...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
