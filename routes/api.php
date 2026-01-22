@@ -79,38 +79,42 @@ Route::post('/app-download-log', function (Request $request) {
             $deviceType = 'Tablet';
         }
         
-        // Detect specific device name
+        // Detect specifics
         if (preg_match('/iPhone/', $userAgent)) {
             $deviceName = 'iPhone';
-            if (preg_match('/iPhone OS (\d+)/', $userAgent, $m)) {
-                $deviceName = 'iPhone (iOS ' . $m[1] . ')';
-            }
+            // iPhone usually doesn't expose model in UA, but we can try
+            if (preg_match('/iPhone\d+,\d+/', $userAgent, $m)) {
+                $deviceName = $m[0]; // e.g. iPhone13,3
+            }    
         } elseif (preg_match('/iPad/', $userAgent)) {
             $deviceName = 'iPad';
-        } elseif (preg_match('/SM-[A-Z]\d+|Samsung|Galaxy/i', $userAgent)) {
-            $deviceName = 'Samsung Galaxy';
-        } elseif (preg_match('/Xiaomi|Redmi|POCO|Mi \d/i', $userAgent)) {
-            $deviceName = 'Xiaomi/Redmi';
-        } elseif (preg_match('/OPPO|CPH\d/i', $userAgent)) {
-            $deviceName = 'OPPO';
-        } elseif (preg_match('/Realme|RMX\d/i', $userAgent)) {
-            $deviceName = 'Realme';
-        } elseif (preg_match('/vivo/i', $userAgent)) {
-            $deviceName = 'Vivo';
-        } elseif (preg_match('/Huawei|Honor/i', $userAgent)) {
-            $deviceName = 'Huawei/Honor';
-        } elseif (preg_match('/OnePlus/i', $userAgent)) {
-            $deviceName = 'OnePlus';
-        } elseif (preg_match('/Pixel/i', $userAgent)) {
-            $deviceName = 'Google Pixel';
-        } elseif (preg_match('/Macintosh/', $userAgent)) {
-            $deviceName = 'Mac';
-        } elseif (preg_match('/Windows/', $userAgent)) {
-            $deviceName = 'Windows PC';
-        } elseif (preg_match('/Linux/', $userAgent) && !preg_match('/Android/', $userAgent)) {
-            $deviceName = 'Linux PC';
-        } elseif (preg_match('/Android/', $userAgent)) {
-            $deviceName = 'Android Device';
+        } elseif (preg_match('/(Samsung|SM-[A-Z0-9]+)/i', $userAgent, $m)) {
+            $model = $m[0];
+            // Generic Samsung Mapping (Simple regex for common flagships)
+            if (preg_match('/SM-S928/i', $userAgent)) $deviceName = 'Samsung S24 Ultra';
+            elseif (preg_match('/SM-S921/i', $userAgent)) $deviceName = 'Samsung S24';
+            elseif (preg_match('/SM-S918/i', $userAgent)) $deviceName = 'Samsung S23 Ultra';
+            elseif (preg_match('/SM-S911/i', $userAgent)) $deviceName = 'Samsung S23';
+            elseif (preg_match('/SM-S908/i', $userAgent)) $deviceName = 'Samsung S22 Ultra';
+            elseif (preg_match('/SM-A5../i', $userAgent)) $deviceName = 'Samsung Galaxy A5x';
+            elseif (preg_match('/SM-A3../i', $userAgent)) $deviceName = 'Samsung Galaxy A3x';
+            else $deviceName = 'Samsung Device (' . $model . ')';
+        } elseif (preg_match('/Pixel (\d+)/i', $userAgent, $m)) {
+            $deviceName = 'Google Pixel ' . $m[1];
+        } elseif (preg_match('/(Xiaomi|Redmi|POCO)\s?([A-Za-z0-9\s]+)/i', $userAgent, $m)) {
+            $deviceName = $m[1] . ' ' . $m[2];
+        } elseif (preg_match('/Build\/([A-Za-z0-9]+)/i', $userAgent, $m)) {
+            // Fallback: use Build ID as hint, often contains model
+            $possibleModel = $m[1];
+            if (strlen($possibleModel) > 3 && !preg_match('/(KTU|MRA|NRD|OPM|PPR)/', $possibleModel)) {
+                 $deviceName = 'Android (' . $possibleModel . ')';
+            }
+        }
+        
+        // Desktop handling
+        if ($deviceType === 'Desktop') {
+            if (preg_match('/Windows/', $userAgent)) $deviceName = 'Windows PC';
+            if (preg_match('/Macintosh/', $userAgent)) $deviceName = 'MacBook / iMac';
         }
         
         // Detect browser
