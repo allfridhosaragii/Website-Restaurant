@@ -337,10 +337,6 @@
             </div>
         </div>
     </div>
-</div>
-
-<!-- Real-time Downloads - Full Width Section -->
-</div>
 
 <!-- Real-time Downloads - Full Width Section -->
 <div class="mt-4">
