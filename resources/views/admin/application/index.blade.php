@@ -216,159 +216,181 @@
 </style>
 @endpush
 @section('content')
-<div class="app-settings-header">
-    <h1><i class="bi bi-phone"></i> Pengaturan Aplikasi <span class="badge bg-primary rounded-pill fs-6 ms-2" style="font-size: 0.5em !important; vertical-align: middle;">v2.2</span></h1>
-</div>
-@if(session('success'))
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-    <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-</div>
-@endif
-@if(session('error'))
-<div class="alert alert-danger alert-dismissible fade show" role="alert">
-    <i class="bi bi-exclamation-circle me-2"></i>{{ session('error') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-</div>
-@endif
-    <div class="col-lg-8">
-        <div class="app-card">
-            <div class="app-card-header">
-                <h3><i class="bi bi-cloud-upload"></i> APK Deployment Center</h3>
-                <p>Deploy pembaruan APK langsung ke CDN dengan akses instan 🚀</p>
-            </div>
-            <div class="app-card-body">
-                @if($currentApk)
-                <div class="app-current-file mb-4" style="background: rgba(25, 135, 84, 0.05); border: 1px solid rgba(25, 135, 84, 0.15);">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="p-3 rounded-circle" style="background: rgba(25, 135, 84, 0.1);">
-                            <i class="bi bi-file-earmark-check" style="font-size: 2rem; color: #198754;"></i>
+<style>
+    /* LOCAL OVERRIDE: Allow horizontal scroll on this page specifically */
+    html, body {
+        overflow-x: visible !important;
+    }
+    .main-content-admin {
+        overflow-x: visible !important;
+    }
+</style>
+
+<div class="container-fluid p-0">
+    <div class="app-settings-header">
+        <h1><i class="bi bi-phone"></i> Pengaturan Aplikasi <span class="badge bg-primary rounded-pill fs-6 ms-2" style="font-size: 0.5em !important; vertical-align: middle;">v2.3</span></h1>
+    </div>
+
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle me-2"></i>{{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
+
+    <!-- Top Section: Upload & History -->
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="app-card h-100">
+                <div class="app-card-header">
+                    <h3><i class="bi bi-cloud-upload"></i> APK Deployment Center</h3>
+                    <p>Deploy pembaruan APK langsung ke CDN dengan akses instan 🚀</p>
+                </div>
+                <div class="app-card-body">
+                    @if($currentApk)
+                    <div class="app-current-file mb-4" style="background: rgba(25, 135, 84, 0.05); border: 1px solid rgba(25, 135, 84, 0.15);">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="p-3 rounded-circle" style="background: rgba(25, 135, 84, 0.1);">
+                                <i class="bi bi-file-earmark-check" style="font-size: 2rem; color: #198754;"></i>
+                            </div>
+                            <div class="grow">
+                                <h6 class="mb-1 fw-bold">{{ $currentApk['name'] }}</h6>
+                                <p class="mb-0 text-muted small">{{ $currentApk['size'] }} • Versi saat ini di-deploy pada {{ $currentApk['date'] }}</p>
+                            </div>
+                            <a href="{{ $currentApk['url'] }}" class="btn btn-sm btn-outline-success px-3" target="_blank">
+                                <i class="bi bi-cloud-download me-1"></i> Verifikasi
+                            </a>
                         </div>
-                        <div class="grow">
-                            <h6 class="mb-1 fw-bold">{{ $currentApk['name'] }}</h6>
-                            <p class="mb-0 text-muted small">{{ $currentApk['size'] }} • Versi saat ini di-deploy pada {{ $currentApk['date'] }}</p>
+                    </div>
+                    @endif
+                    <div class="app-form-group">
+                        <label class="app-form-label mb-3">Pilar Utama Aplikasi (File APK)</label>
+                        <div class="app-upload-zone" id="uploadZone" onclick="document.getElementById('apkFile').click()">
+                            <div class="py-4">
+                                <i class="bi bi-cloud-arrow-up"></i>
+                                <h5 class="fw-bold">Unggah Versi Baru</h5>
+                                <p class="text-muted">Seret file APK ke sini atau klik untuk menjelajah</p>
+                                <span class="badge rounded-pill bg-light text-dark mt-3 px-3 py-2 border">Maksimal 200MB</span>
+                            </div>
                         </div>
-                        <a href="{{ $currentApk['url'] }}" class="btn btn-sm btn-outline-success px-3" target="_blank">
-                            <i class="bi bi-cloud-download me-1"></i> Verifikasi
-                        </a>
+                        <input type="file" name="apk_file" id="apkFile" accept=".apk" style="display: none;">
+                        <div id="filePreview" style="display: none;" class="mt-4">
+                            <div class="p-3 rounded-3 border d-flex align-items-center gap-3 bg-light bg-opacity-10">
+                                <i class="bi bi-file-earmark-zip fw-bold text-accent" style="font-size: 1.5rem;"></i>
+                                <div>
+                                    <div id="fileName" class="fw-bold"></div>
+                                    <div id="fileSize" class="small text-muted"></div>
+                                </div>
+                                <div class="ms-auto">
+                                    <span class="badge bg-success">Siap Upload</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="uploadProgressContainer" style="display: none;" class="mt-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="fw-bold" id="uploadStatusText">Mempersiapkan...</span>
+                                <span class="fw-extrabold text-accent" id="uploadPercentage">0%</span>
+                            </div>
+                            <div class="progress">
+                                <div id="uploadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                @endif
-                <div class="app-form-group">
-                    <label class="app-form-label mb-3">Pilar Utama Aplikasi (File APK)</label>
-                    <div class="app-upload-zone" id="uploadZone" onclick="document.getElementById('apkFile').click()">
-                        <div class="py-4">
-                            <i class="bi bi-cloud-arrow-up"></i>
-                            <h5 class="fw-bold">Unggah Versi Baru</h5>
-                            <p class="text-muted">Seret file APK ke sini atau klik untuk menjelajah</p>
-                            <span class="badge rounded-pill bg-light text-dark mt-3 px-3 py-2 border">Maksimal 200MB</span>
-                        </div>
-                    </div>
-                    <input type="file" name="apk_file" id="apkFile" accept=".apk" style="display: none;">
-                    <div id="filePreview" style="display: none;" class="mt-4">
-                        <div class="p-3 rounded-3 border d-flex align-items-center gap-3 bg-light bg-opacity-10">
-                            <i class="bi bi-file-earmark-zip fw-bold text-accent" style="font-size: 1.5rem;"></i>
-                            <div>
-                                <div id="fileName" class="fw-bold"></div>
-                                <div id="fileSize" class="small text-muted"></div>
-                            </div>
-                            <div class="ms-auto">
-                                <span class="badge bg-success">Siap Upload</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="uploadProgressContainer" style="display: none;" class="mt-4">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="fw-bold" id="uploadStatusText">Mempersiapkan...</span>
-                            <span class="fw-extrabold text-accent" id="uploadPercentage">0%</span>
-                        </div>
-                        <div class="progress">
-                            <div id="uploadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"></div>
-                        </div>
-                    </div>
+                <div class="app-save-bar border-0 bg-transparent px-4 pb-4 mt-auto">
+                    <button type="button" id="btnUpload" class="btn btn-primary btn-lg w-100 py-3 shadow-lg">
+                        <i class="bi bi-lightning-fill me-2"></i>Luncurkan Pembaruan
+                    </button>
                 </div>
-            </div>
-            <div class="app-save-bar border-0 bg-transparent px-4 pb-4">
-                <button type="button" id="btnUpload" class="btn btn-primary btn-lg w-100 py-3 shadow-lg">
-                    <i class="bi bi-lightning-fill me-2"></i>Luncurkan Pembaruan
-                </button>
             </div>
         </div>
-    </div>
-    <div class="col-lg-4">
-        <div class="app-card">
-            <div class="app-card-header">
-                <h3 class="mb-0">Riwayat Penempatan</h3>
-                <p>Log pembaruan sistem</p>
-            </div>
-            <div class="app-card-body p-0">
-                <div class="table-responsive">
-                    <table class="table history-table mb-0">
-                        <thead>
-                            <tr>
-                                <th>Arsip APK</th>
-                                <th class="text-end">Rincian</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($history as $item)
-                            <tr>
-                                <td>
-                                    <div class="history-item-name">{{ $item['name'] }}</div>
-                                    <div class="history-item-meta">{{ $item['date'] }}</div>
-                                </td>
-                                <td class="text-end">
-                                    <span class="badge rounded-pill bg-light text-dark border">{{ $item['size'] }}</span>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="2">
-                                    <div class="empty-history">
-                                        <i class="bi bi-journal-x"></i>
-                                        <p>Belum ada rekaman pembaruan</p>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+
+        <div class="col-lg-4">
+            <div class="app-card h-100">
+                <div class="app-card-header">
+                    <h3 class="mb-0">Riwayat Penempatan</h3>
+                    <p>Log pembaruan sistem</p>
+                </div>
+                <div class="app-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table history-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Arsip APK</th>
+                                    <th class="text-end">Rincian</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($history as $item)
+                                <tr>
+                                    <td>
+                                        <div class="history-item-name">{{ $item['name'] }}</div>
+                                        <div class="history-item-meta">{{ $item['date'] }}</div>
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="badge rounded-pill bg-light text-dark border">{{ $item['size'] }}</span>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="2">
+                                        <div class="empty-history">
+                                            <i class="bi bi-journal-x"></i>
+                                            <p>Belum ada rekaman pembaruan</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-<!-- Real-time Downloads - Full Width Section -->
-<div class="mt-4">
-    <div class="app-card">
-        <div class="app-card-header d-flex justify-content-between align-items-center">
-                <div>
-                    <h3 class="mb-0"><span class="live-dot"></span> Real-time Downloads</h3>
-                    <p>Aktivitas pengunduhan saat ini</p>
-                    <p class="d-md-none text-muted small mt-1 mb-0"><i class="bi bi-arrow-left-right me-1"></i> Geser tabel untuk detail lengkap</p>
+    <!-- Real-time Downloads Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="app-card">
+                <div class="app-card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-0"><span class="live-dot"></span> Real-time Downloads</h3>
+                        <p>Aktivitas pengunduhan saat ini</p>
+                        <p class="d-md-none text-muted small mt-1 mb-0"><i class="bi bi-arrow-left-right me-1"></i> Geser tabel ke kiri untuk detail lengkap</p>
+                    </div>
+                    <div id="downloadBadge" class="badge rounded-pill bg-accent-light text-accent">Checking...</div>
                 </div>
-                <div id="downloadBadge" class="badge rounded-pill bg-accent-light text-accent">Checking...</div>
+                <div class="app-card-body p-0">
+                    <div class="downloads-table-wrapper">
+                        <table class="table history-table downloads-table mb-0 w-100">
+                            <thead>
+                                <tr>
+                                    <th style="width: 150px; min-width: 150px;">Pengguna</th>
+                                    <th style="width: 250px; min-width: 250px;">File / IP</th>
+                                    <th style="width: 300px; min-width: 300px;">Perangkat</th>
+                                    <th style="width: 150px; min-width: 150px;" class="text-end">Waktu</th>
+                                </tr>
+                            </thead>
+                            <tbody id="liveDownloadBody">
+                                <tr>
+                                    <td colspan="4" class="text-center py-5">
+                                        <div class="spinner-border text-accent spinner-border-sm me-2"></div>
+                                        Memuat aktivitas terbaru...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-    <div class="app-card-body p-0">
-        <div class="downloads-table-wrapper">
-            <table class="table history-table downloads-table mb-0">
-                <thead>
-                    <tr>
-                        <th style="width: 150px; min-width: 150px;">Pengguna</th>
-                        <th style="width: 250px; min-width: 250px;">File / IP</th>
-                        <th style="width: 300px; min-width: 300px;">Perangkat</th>
-                        <th style="width: 150px; min-width: 150px;" class="text-end">Waktu</th>
-                    </tr>
-                </thead>
-                <tbody id="liveDownloadBody">
-                    <tr>
-                        <td colspan="4" class="text-center py-5">
-                            <div class="spinner-border text-accent spinner-border-sm me-2"></div>
-                            Memuat aktivitas terbaru...
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
     </div>
 </div>
