@@ -343,10 +343,9 @@
 </div>
 
 <!-- Real-time Downloads - Full Width Section -->
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="app-card">
-            <div class="app-card-header d-flex justify-content-between align-items-center">
+<div class="mt-4">
+    <div class="app-card">
+        <div class="app-card-header d-flex justify-content-between align-items-center">
                 <div>
                     <h3 class="mb-0"><span class="live-dot"></span> Real-time Downloads</h3>
                     <p>Aktivitas pengunduhan saat ini</p>
@@ -374,8 +373,6 @@
                 </tbody>
             </table>
         </div>
-    </div>
-</div>
     </div>
 </div>
 @endsection
