@@ -2,14 +2,9 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import axios from 'axios';
-
 const AuthContext = createContext(null);
-
 const BASE_URL = 'https://website-restaurant.up.railway.app/api';
-
-// Configure Google Sign-In
 const WEB_CLIENT_ID = '55427073142-6kdkbkd1qn47g7dds339pca6u1duj44f.apps.googleusercontent.com';
-
 const configureGoogleSignIn = () => {
     try {
         GoogleSignin.configure({
@@ -22,27 +17,21 @@ const configureGoogleSignIn = () => {
         console.error('Google Sign-In Config Error', e);
     }
 };
-
-// Initial config
 configureGoogleSignIn();
-
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isGuest, setIsGuest] = useState(false);
-
     useEffect(() => {
         configureGoogleSignIn();
         checkAuth();
     }, []);
-
     const checkAuth = async () => {
         try {
             const storedToken = await AsyncStorage.getItem('auth_token');
             const storedUser = await AsyncStorage.getItem('user');
-
             if (storedToken && storedUser) {
                 setToken(storedToken);
                 setUser(JSON.parse(storedUser));
@@ -53,16 +42,13 @@ export const AuthProvider = ({ children }) => {
             setLoading(false);
         }
     };
-
     const login = async (email, password) => {
         try {
             setError(null);
             setLoading(true);
             setIsGuest(false);
-
             console.log(`[Auth] Login attempt: ${email}`);
             console.log(`[Auth] Endpoint: ${BASE_URL}/auth/login`);
-
             const response = await axios.post(`${BASE_URL}/auth/login`, {
                 email: email,
                 password: password
@@ -72,21 +58,15 @@ export const AuthProvider = ({ children }) => {
                     'Content-Type': 'application/json'
                 }
             });
-
             console.log('[Auth] Login Success Response:', response.status);
-
             const { user: userData, token: authToken } = response.data;
-
             if (!authToken || !userData) {
                 throw new Error("Invalid response from server (Missing token/user)");
             }
-
             await AsyncStorage.setItem('auth_token', authToken);
             await AsyncStorage.setItem('user', JSON.stringify(userData));
-
             setUser(userData);
             setToken(authToken);
-
             return { success: true };
         } catch (e) {
             console.error('[Auth] Login Error:', e);
@@ -94,39 +74,30 @@ export const AuthProvider = ({ children }) => {
                 console.log('[Auth] Error Data:', e.response.data);
                 console.log('[Auth] Error Status:', e.response.status);
             }
-
             const message = e.response?.data?.message || 'Login gagal. Periksa email dan password.';
-
-            // Detailed validation error handling
             const errors = e.response?.data?.errors;
             let finalMessage = message;
             if (errors) {
                 if (errors.email) finalMessage = errors.email[0];
                 else if (errors.password) finalMessage = errors.password[0];
             }
-
             setError(finalMessage);
             return { success: false, error: finalMessage };
         } finally {
             setLoading(false);
         }
     };
-
     const guestLogin = () => {
         setIsGuest(true);
     };
-
     const googleLogin = async () => {
         try {
             setError(null);
             setLoading(true);
             setIsGuest(false);
-
             await GoogleSignin.hasPlayServices();
             const signInResult = await GoogleSignin.signIn();
-
             let idToken, googleUser;
-
             if (signInResult.data) {
                 idToken = signInResult.data.idToken;
                 googleUser = signInResult.data.user;
@@ -137,9 +108,7 @@ export const AuthProvider = ({ children }) => {
                 idToken = signInResult.idToken;
                 googleUser = signInResult.user;
             }
-
             if (!idToken) throw new Error("No ID Token from Google");
-
             const response = await axios.post(`${BASE_URL}/auth/google`, {
                 id_token: idToken,
                 email: googleUser.email,
@@ -152,15 +121,11 @@ export const AuthProvider = ({ children }) => {
                     'Content-Type': 'application/json'
                 }
             });
-
             const { user: userData, token: authToken } = response.data;
-
             await AsyncStorage.setItem('auth_token', authToken);
             await AsyncStorage.setItem('user', JSON.stringify(userData));
-
             setUser(userData);
             setToken(authToken);
-
             return { success: true };
         } catch (error) {
             console.error('[Auth] Google Login Error:', error);
@@ -176,28 +141,22 @@ export const AuthProvider = ({ children }) => {
             setLoading(false);
         }
     };
-
     const register = async (data) => {
         try {
             setError(null);
             setLoading(true);
             setIsGuest(false);
-
             const response = await axios.post(`${BASE_URL}/auth/register`, data, {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 }
             });
-
             const { user: userData, token: authToken } = response.data;
-
             await AsyncStorage.setItem('auth_token', authToken);
             await AsyncStorage.setItem('user', JSON.stringify(userData));
-
             setUser(userData);
             setToken(authToken);
-
             return { success: true };
         } catch (e) {
             console.error('[Auth] Register Error:', e);
@@ -208,7 +167,6 @@ export const AuthProvider = ({ children }) => {
             setLoading(false);
         }
     };
-
     const logout = async () => {
         try {
             if (!isGuest && token) {
@@ -225,25 +183,21 @@ export const AuthProvider = ({ children }) => {
         } finally {
             await AsyncStorage.removeItem('auth_token');
             await AsyncStorage.removeItem('user');
-
             try {
                 const isSignedIn = await GoogleSignin.isSignedIn();
                 if (isSignedIn) {
                     await GoogleSignin.signOut();
                 }
             } catch (err) { }
-
             setUser(null);
             setToken(null);
             setIsGuest(false);
         }
     };
-
     const updateProfile = async (data) => {
         try {
             setLoading(true);
             const currentToken = await AsyncStorage.getItem('auth_token');
-
             const formData = new FormData();
             if (data.name) formData.append('name', data.name);
             if (data.phone) formData.append('phone', data.phone);
@@ -255,9 +209,7 @@ export const AuthProvider = ({ children }) => {
                 });
             }
             formData.append('_method', 'PUT');
-
             console.log('[Auth] Updating Profile...');
-
             const response = await axios.post(`${BASE_URL}/auth/user`, formData, {
                 headers: {
                     'Authorization': `Bearer ${currentToken}`,
@@ -265,10 +217,8 @@ export const AuthProvider = ({ children }) => {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-
             const updatedUser = response.data.user || response.data;
             const newUserState = { ...user, ...updatedUser };
-
             setUser(newUserState);
             await AsyncStorage.setItem('user', JSON.stringify(newUserState));
             return { success: true };
@@ -280,7 +230,6 @@ export const AuthProvider = ({ children }) => {
             setLoading(false);
         }
     };
-
     const value = {
         user,
         token,
@@ -296,14 +245,12 @@ export const AuthProvider = ({ children }) => {
         checkAuth,
         updateProfile,
     };
-
     return (
         <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );
 };
-
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {
@@ -311,5 +258,4 @@ export const useAuth = () => {
     }
     return context;
 };
-
 export default AuthContext;

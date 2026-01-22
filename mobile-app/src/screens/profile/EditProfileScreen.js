@@ -15,32 +15,26 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSettings } from '../../context/SettingsContext';
 import { useAuth } from '../../context/AuthContext';
-
 const { width, height } = Dimensions.get('window');
-
 const EditProfileScreen = ({ navigation }) => {
     const { colors } = useSettings();
     const { user, updateProfile, loading } = useAuth();
-
     const [name, setName] = useState(user?.name || '');
     const [email, setEmail] = useState(user?.email || '');
     const [phone, setPhone] = useState(user?.phone || '');
     const [address, setAddress] = useState(user?.address || '');
     const [saving, setSaving] = useState(false);
-
     const handleSave = async () => {
         if (!name.trim()) {
             Alert.alert('Perhatian', 'Nama tidak boleh kosong');
             return;
         }
-
         setSaving(true);
         const result = await updateProfile({
             name: name.trim(),
             phone: phone.trim(),
         });
         setSaving(false);
-
         if (result.success) {
             Alert.alert('Berhasil', 'Profil berhasil diperbarui', [
                 { text: 'OK', onPress: () => navigation.goBack() }
@@ -49,12 +43,10 @@ const EditProfileScreen = ({ navigation }) => {
             Alert.alert('Gagal', result.error || 'Tidak dapat menyimpan perubahan');
         }
     };
-
     return (
         <View style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor="#8B1538" />
-
-            {/* Custom Header */}
+            {}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Icon name="arrow-back" size={24} color="#FFF" />
@@ -62,9 +54,8 @@ const EditProfileScreen = ({ navigation }) => {
                 <Text style={styles.headerTitle}>Edit Profile</Text>
                 <View style={{ width: 24 }} />
             </View>
-
             <ScrollView showsVerticalScrollIndicator={false}>
-                {/* Avatar Section */}
+                {}
                 <View style={styles.avatarSection}>
                     <View style={styles.avatarContainer}>
                         <View style={styles.avatar}>
@@ -80,11 +71,9 @@ const EditProfileScreen = ({ navigation }) => {
                     </View>
                     <Text style={styles.changePhotoText}>Klik untuk ubah foto</Text>
                 </View>
-
-                {/* Form Card */}
+                {}
                 <View style={styles.formCard}>
-
-                    {/* Name Input */}
+                    {}
                     <Text style={styles.label}>Nama Lengkap</Text>
                     <View style={styles.inputContainer}>
                         <Icon name="person-outline" size={20} color="#999" style={styles.inputIcon} />
@@ -96,8 +85,7 @@ const EditProfileScreen = ({ navigation }) => {
                             placeholderTextColor="#999"
                         />
                     </View>
-
-                    {/* Email Input (Read Only) */}
+                    {}
                     <Text style={styles.label}>Email</Text>
                     <View style={[styles.inputContainer, { backgroundColor: '#F5F5F5' }]}>
                         <Icon name="mail-outline" size={20} color="#999" style={styles.inputIcon} />
@@ -109,8 +97,7 @@ const EditProfileScreen = ({ navigation }) => {
                             placeholderTextColor="#999"
                         />
                     </View>
-
-                    {/* Phone Input */}
+                    {}
                     <Text style={styles.label}>Nomor Telepon</Text>
                     <View style={styles.inputContainer}>
                         <Icon name="call-outline" size={20} color="#999" style={styles.inputIcon} />
@@ -123,8 +110,7 @@ const EditProfileScreen = ({ navigation }) => {
                             keyboardType="phone-pad"
                         />
                     </View>
-
-                    {/* Address Input */}
+                    {}
                     <Text style={styles.label}>Alamat</Text>
                     <View style={[styles.inputContainer, styles.textAreaContainer]}>
                         <Icon name="location-outline" size={20} color="#999" style={[styles.inputIcon, { marginTop: 4 }]} />
@@ -138,8 +124,7 @@ const EditProfileScreen = ({ navigation }) => {
                             numberOfLines={3}
                         />
                     </View>
-
-                    {/* Action Buttons */}
+                    {}
                     <View style={styles.actionButtons}>
                         <TouchableOpacity
                             style={styles.cancelButton}
@@ -147,7 +132,6 @@ const EditProfileScreen = ({ navigation }) => {
                         >
                             <Text style={styles.cancelButtonText}>Batal</Text>
                         </TouchableOpacity>
-
                         <TouchableOpacity
                             style={[styles.saveButton, saving && { opacity: 0.7 }]}
                             onPress={handleSave}
@@ -160,14 +144,12 @@ const EditProfileScreen = ({ navigation }) => {
                             )}
                         </TouchableOpacity>
                     </View>
-
                     <View style={{ height: 50 }} />
                 </View>
             </ScrollView>
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -190,7 +172,6 @@ const styles = StyleSheet.create({
         color: '#FFF',
         fontFamily: 'serif',
     },
-    // Avatar
     avatarSection: {
         alignItems: 'center',
         paddingVertical: 30,
@@ -232,7 +213,6 @@ const styles = StyleSheet.create({
         color: '#666',
         marginTop: 4,
     },
-    // Form
     formCard: {
         backgroundColor: '#FFF',
         borderTopLeftRadius: 24,
@@ -281,7 +261,6 @@ const styles = StyleSheet.create({
         height: 60,
         textAlignVertical: 'top',
     },
-    // Buttons
     actionButtons: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -314,5 +293,4 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
 });
-
 export default EditProfileScreen;

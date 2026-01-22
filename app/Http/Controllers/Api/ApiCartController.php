@@ -1,26 +1,18 @@
 <?php
-
 namespace App\Http\Controllers\Api;
-
 use App\Http\Controllers\Controller;
 use App\Models\CartItem;
 use Illuminate\Http\Request;
-
 class ApiCartController extends Controller
 {
-    /**
-     * Get user's cart
-     */
     public function index(Request $request)
     {
         $cartItems = CartItem::where('user_id', $request->user()->id)
             ->with('menu')
             ->get();
-        
         $total = $cartItems->sum(function ($item) {
             return $item->menu ? $item->quantity * $item->menu->price : 0;
         });
-        
         return response()->json([
             'success' => true,
             'items' => $cartItems->map(function ($item) {
@@ -38,21 +30,15 @@ class ApiCartController extends Controller
             'item_count' => $cartItems->sum('quantity'),
         ]);
     }
-
-    /**
-     * Add item to cart
-     */
     public function store(Request $request)
     {
         $request->validate([
             'menu_id' => 'required|exists:menus,id',
             'quantity' => 'required|integer|min:1|max:99',
         ]);
-        
         $existingItem = CartItem::where('user_id', $request->user()->id)
             ->where('menu_id', $request->menu_id)
             ->first();
-        
         if ($existingItem) {
             $existingItem->quantity += $request->quantity;
             $existingItem->save();
@@ -64,9 +50,7 @@ class ApiCartController extends Controller
                 'quantity' => $request->quantity,
             ]);
         }
-        
         $cartItem->load('menu');
-        
         return response()->json([
             'success' => true,
             'message' => 'Item added to cart',
@@ -78,30 +62,22 @@ class ApiCartController extends Controller
             ],
         ], 201);
     }
-
-    /**
-     * Update cart item quantity
-     */
     public function update(Request $request, $id)
     {
         $request->validate([
             'quantity' => 'required|integer|min:1|max:99',
         ]);
-        
         $cartItem = CartItem::where('user_id', $request->user()->id)
             ->where('id', $id)
             ->first();
-        
         if (!$cartItem) {
             return response()->json([
                 'success' => false,
                 'message' => 'Cart item not found',
             ], 404);
         }
-        
         $cartItem->quantity = $request->quantity;
         $cartItem->save();
-        
         return response()->json([
             'success' => true,
             'message' => 'Cart updated',
@@ -111,38 +87,26 @@ class ApiCartController extends Controller
             ],
         ]);
     }
-
-    /**
-     * Remove item from cart
-     */
     public function destroy(Request $request, $id)
     {
         $cartItem = CartItem::where('user_id', $request->user()->id)
             ->where('id', $id)
             ->first();
-        
         if (!$cartItem) {
             return response()->json([
                 'success' => false,
                 'message' => 'Cart item not found',
             ], 404);
         }
-        
         $cartItem->delete();
-        
         return response()->json([
             'success' => true,
             'message' => 'Item removed from cart',
         ]);
     }
-
-    /**
-     * Clear entire cart
-     */
     public function clear(Request $request)
     {
         CartItem::where('user_id', $request->user()->id)->delete();
-        
         return response()->json([
             'success' => true,
             'message' => 'Cart cleared',

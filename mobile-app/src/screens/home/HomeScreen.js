@@ -19,33 +19,27 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import { useAuth } from '../../context/AuthContext';
-
 const { width } = Dimensions.get('window');
 const BASE_URL = 'https://website-restaurant.up.railway.app/api';
 const BASE_IMAGE_URL = 'https://website-restaurant.up.railway.app/storage/';
-
 const HomeScreen = ({ navigation }) => {
     const { user } = useAuth();
     const [refreshing, setRefreshing] = useState(false);
     const [popularMenus, setPopularMenus] = useState([]);
     const [loadingMenus, setLoadingMenus] = useState(true);
     const [dashboardStats, setDashboardStats] = useState({ points: 0, total_orders: 0, total_reservations: 0 });
-
     const onRefresh = useCallback(() => {
         setRefreshing(true);
         fetchPopularMenus().finally(() => setRefreshing(false));
     }, []);
-
     useEffect(() => {
         fetchPopularMenus();
         fetchDashboardStats();
     }, []);
-
     const fetchDashboardStats = async () => {
         try {
             const token = await AsyncStorage.getItem('auth_token');
             if (!token) return;
-
             const response = await axios.get(`${BASE_URL}/dashboard`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -57,7 +51,6 @@ const HomeScreen = ({ navigation }) => {
             console.log('Dashboard stats error:', error);
         }
     };
-
     const fetchPopularMenus = async () => {
         try {
             const token = await AsyncStorage.getItem('auth_token');
@@ -67,9 +60,7 @@ const HomeScreen = ({ navigation }) => {
             if (token) {
                 config.headers['Authorization'] = `Bearer ${token}`;
             }
-
             const response = await axios.get(`${BASE_URL}/menus`, config);
-
             let data = [];
             if (response.data && Array.isArray(response.data)) {
                 data = response.data;
@@ -78,18 +69,13 @@ const HomeScreen = ({ navigation }) => {
             } else if (response.data?.menus && Array.isArray(response.data.menus)) {
                 data = response.data.menus;
             }
-
-            // Ambil 5 menu pertama sebagai contoh "Populer"
-            // Idealnya backend punya endpoint /menus/popular
             setPopularMenus(data.slice(0, 5));
         } catch (error) {
             console.error('Fetch Home Menu Error:', error);
-            // Silent fail for home screen usually better, or user friendly toast
         } finally {
             setLoadingMenus(false);
         }
     };
-
     const getImageUrl = (imagePath) => {
         if (!imagePath) return null;
         if (imagePath.startsWith('http')) return imagePath;
@@ -97,20 +83,17 @@ const HomeScreen = ({ navigation }) => {
         cleanPath = cleanPath.startsWith('/') ? cleanPath.substring(1) : cleanPath;
         return `${BASE_IMAGE_URL}${cleanPath}`;
     };
-
     const formatPrice = (price) => {
         return `Rp ${parseInt(price).toLocaleString('id-ID')}`;
     };
-
     return (
         <View style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#8B1538']} />}
             >
-                {/* ===== HEADER ===== */}
+                { }
                 <View style={styles.header}>
                     <View>
                         <Text style={styles.logoText}>Culinaire.</Text>
@@ -120,8 +103,7 @@ const HomeScreen = ({ navigation }) => {
                         <Icon name="notifications-outline" size={24} color="#333" />
                     </TouchableOpacity>
                 </View>
-
-                {/* ===== SEARCH BAR ===== */}
+                { }
                 <View style={styles.searchContainer}>
                     <TouchableOpacity
                         style={styles.searchBar}
@@ -132,8 +114,7 @@ const HomeScreen = ({ navigation }) => {
                         <Text style={styles.searchPlaceholder}>Cari menu favorit...</Text>
                     </TouchableOpacity>
                 </View>
-
-                {/* ===== MEMBER CARD ===== */}
+                { }
                 <View style={styles.sectionPadding}>
                     <LinearGradient
                         colors={['#8B1538', '#5C0D24']}
@@ -157,8 +138,7 @@ const HomeScreen = ({ navigation }) => {
                         </View>
                     </LinearGradient>
                 </View>
-
-                {/* ===== PROMO BANNER ===== */}
+                { }
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
@@ -177,7 +157,6 @@ const HomeScreen = ({ navigation }) => {
                             style={styles.promoImage}
                         />
                     </LinearGradient>
-
                     <LinearGradient colors={['#1A1A1A', '#000']} style={styles.promoCard}>
                         <View style={styles.promoContent}>
                             <Text style={styles.promoTitle}>Makan Gratis!</Text>
@@ -188,8 +167,7 @@ const HomeScreen = ({ navigation }) => {
                         </View>
                     </LinearGradient>
                 </ScrollView>
-
-                {/* ===== LAYANAN CEPAT ===== */}
+                { }
                 <View style={styles.sectionPadding}>
                     <Text style={styles.sectionTitle}>Layanan Cepat</Text>
                     <View style={styles.quickGrid}>
@@ -199,21 +177,18 @@ const HomeScreen = ({ navigation }) => {
                             </View>
                             <Text style={styles.quickLabel}>Pesan Menu</Text>
                         </TouchableOpacity>
-
                         <TouchableOpacity style={styles.quickItem} onPress={() => navigation.navigate('Reservations')}>
                             <View style={[styles.quickIcon, { backgroundColor: '#FF8C42' }]}>
                                 <MaterialIcon name="calendar-clock" size={24} color="#FFF" />
                             </View>
                             <Text style={styles.quickLabel}>Reservasi</Text>
                         </TouchableOpacity>
-
                         <TouchableOpacity style={styles.quickItem} onPress={() => navigation.navigate('Menu')}>
                             <View style={[styles.quickIcon, { backgroundColor: '#9C27B0' }]}>
                                 <MaterialIcon name="percent" size={24} color="#FFF" />
                             </View>
                             <Text style={styles.quickLabel}>Promo</Text>
                         </TouchableOpacity>
-
                         <TouchableOpacity style={styles.quickItem}>
                             <View style={[styles.quickIcon, { backgroundColor: '#D4AF37' }]}>
                                 <MaterialIcon name="gift" size={24} color="#FFF" />
@@ -222,8 +197,7 @@ const HomeScreen = ({ navigation }) => {
                         </TouchableOpacity>
                     </View>
                 </View>
-
-                {/* ===== STATS ROW ===== */}
+                { }
                 <View style={styles.statsContainer}>
                     <View style={[styles.statCard, { backgroundColor: '#E8F5E9' }]}>
                         <Icon name="star" size={20} color="#4CAF50" />
@@ -241,8 +215,7 @@ const HomeScreen = ({ navigation }) => {
                         <Text style={styles.statValue}>Best</Text>
                     </View>
                 </View>
-
-                {/* ===== FLASH SALE BANNER ===== */}
+                { }
                 <View style={styles.sectionPadding}>
                     <LinearGradient
                         colors={['#FFD54F', '#FFC107']}
@@ -264,8 +237,7 @@ const HomeScreen = ({ navigation }) => {
                         <Text style={styles.fireEmoji}>🔥</Text>
                     </LinearGradient>
                 </View>
-
-                {/* ===== MENU PALING POPULER (REAL DATA) ===== */}
+                { }
                 <View style={styles.sectionPadding}>
                     <View style={styles.sectionHeader}>
                         <View>
@@ -277,7 +249,6 @@ const HomeScreen = ({ navigation }) => {
                         </TouchableOpacity>
                     </View>
                 </View>
-
                 {loadingMenus ? (
                     <View style={{ padding: 20, alignItems: 'center' }}>
                         <ActivityIndicator size="small" color="#8B1538" />
@@ -305,7 +276,7 @@ const HomeScreen = ({ navigation }) => {
                                                 <Icon name="restaurant" size={30} color="#CCC" />
                                             </View>
                                         )}
-                                        {/* Badge random atau based on logic */}
+                                        { }
                                         {index === 0 && (
                                             <View style={styles.bestSellerBadge}>
                                                 <Text style={styles.bestSellerText}>Best Seller</Text>
@@ -335,8 +306,7 @@ const HomeScreen = ({ navigation }) => {
                         )}
                     </ScrollView>
                 )}
-
-                {/* Dots indicator - Only show if menus exist */}
+                { }
                 {popularMenus.length > 0 && (
                     <View style={styles.dotsContainer}>
                         {popularMenus.slice(0, 3).map((_, i) => (
@@ -344,11 +314,9 @@ const HomeScreen = ({ navigation }) => {
                         ))}
                     </View>
                 )}
-
-                {/* ===== MENGAPA CULINAIRE ===== */}
+                { }
                 <View style={styles.sectionPadding}>
                     <Text style={styles.sectionTitle}>Mengapa Culinaire?</Text>
-
                     <View style={styles.featureRow}>
                         <View style={styles.featureCard}>
                             <MaterialIcon name="chef-hat" size={32} color="#8B1538" />
@@ -361,30 +329,25 @@ const HomeScreen = ({ navigation }) => {
                             <Text style={styles.featureSubtitle}>25+ Tahun</Text>
                         </View>
                     </View>
-
                     <View style={styles.experienceCard}>
                         <Icon name="star" size={24} color="#D4AF37" />
                         <Text style={styles.experienceTitle}>Pengalaman Kuliner Terbaik</Text>
                         <Text style={styles.experienceSubtitle}>Chef berpengalaman & bahan premium untuk kepuasan Anda</Text>
                     </View>
-
                     <TouchableOpacity style={styles.reserveBtn} onPress={() => navigation.navigate('Reservations')}>
                         <Text style={styles.reserveBtnText}>Reservasi Sekarang</Text>
                     </TouchableOpacity>
                 </View>
-
                 <View style={{ height: 100 }} />
             </ScrollView>
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFFFFF',
     },
-    // Header
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -403,7 +366,6 @@ const styles = StyleSheet.create({
         color: '#888',
         marginTop: 2,
     },
-    // Search
     searchContainer: {
         paddingHorizontal: 20,
         marginBottom: 16,
@@ -421,7 +383,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#999',
     },
-    // Section
     sectionPadding: {
         paddingHorizontal: 20,
     },
@@ -445,7 +406,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#8B1538',
     },
-    // Member Card
     memberCard: {
         borderRadius: 16,
         padding: 16,
@@ -497,7 +457,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: 'bold',
     },
-    // Promo
     promoContainer: {
         paddingLeft: 20,
         paddingRight: 10,
@@ -545,7 +504,6 @@ const styles = StyleSheet.create({
         fontSize: 11,
         fontWeight: '600',
     },
-    // Quick Menu
     quickGrid: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -569,7 +527,6 @@ const styles = StyleSheet.create({
         color: '#333',
         textAlign: 'center',
     },
-    // Stats
     statsContainer: {
         flexDirection: 'row',
         paddingHorizontal: 20,
@@ -593,7 +550,6 @@ const styles = StyleSheet.create({
         color: '#333',
         marginTop: 2,
     },
-    // Flash Sale
     flashSaleCard: {
         borderRadius: 16,
         padding: 16,
@@ -646,7 +602,6 @@ const styles = StyleSheet.create({
     fireEmoji: {
         fontSize: 48,
     },
-    // Menu Cards
     menuScrollContainer: {
         paddingLeft: 20,
         paddingRight: 10,
@@ -730,7 +685,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    // Dots
     dotsContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
@@ -746,7 +700,6 @@ const styles = StyleSheet.create({
     dotActive: {
         backgroundColor: '#8B1538',
     },
-    // Features
     featureRow: {
         flexDirection: 'row',
         marginTop: 16,
@@ -802,5 +755,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
-
 export default HomeScreen;

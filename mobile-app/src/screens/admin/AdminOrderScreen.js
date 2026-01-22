@@ -13,30 +13,25 @@ import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors, spacing, borderRadius, fontSize } from '../../theme/colors';
 import { adminAPI } from '../../api/client';
-
 const statusColors = {
     pending: '#FF9500',
     processing: '#007AFF',
     completed: '#4CD964',
     cancelled: '#FF3B30',
 };
-
 const AdminOrderScreen = ({ navigation }) => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [activeFilter, setActiveFilter] = useState('all');
-
     useFocusEffect(
         useCallback(() => {
             loadOrders();
         }, [])
     );
-
     const loadOrders = async () => {
         try {
             const response = await adminAPI.getOrders();
-            // Assuming response structure: { data: [...] }
             const data = response.data.data || response.data;
             setOrders(Array.isArray(data) ? data : []);
         } catch (error) {
@@ -47,7 +42,6 @@ const AdminOrderScreen = ({ navigation }) => {
             setRefreshing(false);
         }
     };
-
     const handleStatusUpdate = (orderId, newStatus) => {
         Alert.alert(
             'Update Status',
@@ -69,12 +63,10 @@ const AdminOrderScreen = ({ navigation }) => {
             ]
         );
     };
-
     const getFilteredOrders = () => {
         if (activeFilter === 'all') return orders;
         return orders.filter(o => o.status === activeFilter);
     };
-
     const renderFilterChip = (label, status) => (
         <TouchableOpacity
             style={[
@@ -89,7 +81,6 @@ const AdminOrderScreen = ({ navigation }) => {
             ]}>{label}</Text>
         </TouchableOpacity>
     );
-
     const renderItem = ({ item }) => (
         <View style={styles.card}>
             <View style={styles.cardHeader}>
@@ -103,9 +94,7 @@ const AdminOrderScreen = ({ navigation }) => {
                     </Text>
                 </View>
             </View>
-
             <View style={styles.divider} />
-
             <View style={styles.detailsRow}>
                 <View style={styles.detailItem}>
                     <Icon name="person-outline" size={16} color={colors.textSecondary} />
@@ -116,7 +105,6 @@ const AdminOrderScreen = ({ navigation }) => {
                     <Text style={styles.totalPrice}>Rp {parseInt(item.total_amount).toLocaleString('id-ID')}</Text>
                 </View>
             </View>
-
             {item.status !== 'completed' && item.status !== 'cancelled' && (
                 <View style={styles.actionRow}>
                     {item.status === 'pending' && (
@@ -145,10 +133,9 @@ const AdminOrderScreen = ({ navigation }) => {
             )}
         </View>
     );
-
     return (
         <View style={styles.container}>
-            {/* Header */}
+            {}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
                     <Icon name="arrow-back" size={24} color="#FFF" />
@@ -156,8 +143,7 @@ const AdminOrderScreen = ({ navigation }) => {
                 <Text style={styles.headerTitle}>Manage Orders</Text>
                 <View style={{ width: 24 }} />
             </View>
-
-            {/* Filters */}
+            {}
             <View style={styles.filterContainer}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     {renderFilterChip('All', 'all')}
@@ -167,7 +153,6 @@ const AdminOrderScreen = ({ navigation }) => {
                     {renderFilterChip('Cancelled', 'cancelled')}
                 </ScrollView>
             </View>
-
             <FlatList
                 data={getFilteredOrders()}
                 keyExtractor={(item) => item.id.toString()}
@@ -192,7 +177,6 @@ const AdminOrderScreen = ({ navigation }) => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -329,5 +313,4 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
 });
-
 export default AdminOrderScreen;

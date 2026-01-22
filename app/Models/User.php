@@ -5,10 +5,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Sanctum\HasApiTokens;
-
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens; // Sanctum enabled
+    use HasFactory, Notifiable, HasApiTokens; 
     protected $fillable = [
         'name',
         'email',
@@ -21,7 +20,6 @@ class User extends Authenticatable
         'profile_photo_path',
         'points',
     ];
-
     public function transactions()
     {
         return $this->hasMany(PointTransaction::class);
@@ -38,33 +36,23 @@ class User extends Authenticatable
             'is_admin' => 'boolean',
         ];
     }
-
     public function adminPermissions(): HasMany
     {
         return $this->hasMany(AdminPermission::class);
     }
-
     public function hasAdminPermission(string $key): bool
     {
-        // Super admin has all permissions
         if ($this->isSuperAdmin()) {
             return true;
         }
-
-        // Check if user has specific permission
         $permission = $this->adminPermissions()->where('permission_key', $key)->first();
-        
-        // If no permission record exists, default to true (backward compatibility)
         if (!$permission) {
             return true;
         }
-
         return $permission->is_enabled;
     }
-
     public function isAdmin(): bool
     {
-        // Super admin always has admin access
         if ($this->email === 'pedoprimasaragi@gmail.com') {
             return true;
         }
@@ -90,18 +78,15 @@ class User extends Authenticatable
     {
         return $this->email === 'pedoprimasaragi@gmail.com';
     }
-
     public function isOffline(): bool
     {
         return $this->status === 'offline';
     }
-
     public function getProfilePhotoUrlAttribute()
     {
         if ($this->profile_photo_path) {
             return $this->profile_photo_path;
         }
-
         $name = urlencode($this->name);
         return 'https://ui-avatars.com/api/?name='.$name.'&color=7F9CF5&background=EBF4FF';
     }

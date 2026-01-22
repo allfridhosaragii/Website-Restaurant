@@ -11,15 +11,12 @@ class AdminMiddleware
         if (!auth()->check() || (!auth()->user()->isAdmin() && !auth()->user()->isViewer())) {
             abort(403, 'Unauthorized. Admin access required.');
         }
-
-        // Auto-logout if admin is set to offline
         if (auth()->user()->isOffline()) {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
             return redirect('/login')->with('error', 'Akun admin Anda telah di-set offline oleh Super Admin.');
         }
-
         return $next($request);
     }
 }

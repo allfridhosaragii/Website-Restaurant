@@ -14,18 +14,15 @@ import LinearGradient from 'react-native-linear-gradient';
 import Animated, { FadeInUp, SlideInDown } from 'react-native-reanimated';
 import { colors, spacing, fontSize, borderRadius, shadows } from '../../theme/colors';
 import { cartAPI, orderAPI } from '../../api/client';
-
 const CheckoutScreen = ({ navigation }) => {
     const [cartItems, setCartItems] = useState([]);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(true);
     const [placing, setPlacing] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('cash');
-
     useEffect(() => {
         loadCart();
     }, []);
-
     const loadCart = async () => {
         try {
             const response = await cartAPI.get();
@@ -37,7 +34,6 @@ const CheckoutScreen = ({ navigation }) => {
             setLoading(false);
         }
     };
-
     const handlePlaceOrder = async () => {
         try {
             setPlacing(true);
@@ -53,7 +49,6 @@ const CheckoutScreen = ({ navigation }) => {
             setPlacing(false);
         }
     };
-
     const formatPrice = (price) => {
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
@@ -61,7 +56,6 @@ const CheckoutScreen = ({ navigation }) => {
             minimumFractionDigits: 0,
         }).format(price);
     };
-
     if (loading) {
         return (
             <View style={styles.loader}>
@@ -69,15 +63,12 @@ const CheckoutScreen = ({ navigation }) => {
             </View>
         );
     }
-
     return (
         <View style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor={colors.background} />
             <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-
                 <Text style={styles.screenTitle}>Checkout</Text>
-
-                {/* Order Summary */}
+                {}
                 <Animated.View entering={FadeInUp.delay(100).springify()} style={styles.section}>
                     <Text style={styles.sectionTitle}>Order Summary</Text>
                     <View style={styles.summaryCard}>
@@ -92,8 +83,7 @@ const CheckoutScreen = ({ navigation }) => {
                         ))}
                     </View>
                 </Animated.View>
-
-                {/* Payment Method */}
+                {}
                 <Animated.View entering={FadeInUp.delay(200).springify()} style={styles.section}>
                     <Text style={styles.sectionTitle}>Payment Method</Text>
                     <View style={styles.paymentContainer}>
@@ -132,7 +122,6 @@ const CheckoutScreen = ({ navigation }) => {
                                             {method === 'cash' ? 'Pay at cashier' : 'Instant verification'}
                                         </Text>
                                     </View>
-
                                     <View style={[styles.radioOuter, isActive && styles.radioActive]}>
                                         {isActive && <View style={styles.radioInner} />}
                                     </View>
@@ -141,8 +130,7 @@ const CheckoutScreen = ({ navigation }) => {
                         })}
                     </View>
                 </Animated.View>
-
-                {/* Total */}
+                {}
                 <Animated.View entering={FadeInUp.delay(300).springify()} style={styles.section}>
                     <View style={styles.totalCard}>
                         <View style={styles.totalRow}>
@@ -160,11 +148,9 @@ const CheckoutScreen = ({ navigation }) => {
                         </View>
                     </View>
                 </Animated.View>
-
                 <View style={{ height: 100 }} />
             </ScrollView>
-
-            {/* Place Order Button */}
+            {}
             <Animated.View entering={SlideInDown.springify()} style={styles.bottomBar}>
                 <TouchableOpacity
                     style={styles.placeOrderBtnWrapper}
@@ -191,7 +177,6 @@ const CheckoutScreen = ({ navigation }) => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -400,5 +385,4 @@ const styles = StyleSheet.create({
         letterSpacing: 1,
     },
 });
-
 export default CheckoutScreen;

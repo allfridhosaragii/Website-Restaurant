@@ -2,7 +2,7 @@ import os
 import re
 
 def remove_comments(content, file_extension):
-    if file_extension in ['.php', '.js', '.css', '.scss']:
+    if file_extension in ['.php', '.js', '.css', '.scss', '.swift']:
         # Remove single line comments // ... but NOT http://
         content = re.sub(r'(?<!:)\/\/.*', '', content)
         # Remove multi-line comments /* ... */
@@ -16,14 +16,12 @@ def remove_comments(content, file_extension):
         content = re.sub(r'\{\{--[\s\S]*?--\}\}', '', content, flags=re.DOTALL)
         # Remove HTML comments <!-- -->
         content = re.sub(r'<!--[\s\S]*?-->', '', content, flags=re.DOTALL)
-        # Also clean JS/CSS inside blade? Risky but requested "clean all".
-        # Let's keep it safe: basic HTML/Blade comments for Blade files.
 
     return content
 
 def clean_directory(root_dir):
-    extensions = ['.php', '.js', '.css', '.blade.php']
-    skip_dirs = ['vendor', 'node_modules', '.git', 'storage', 'tools']
+    extensions = ['.php', '.js', '.css', '.blade.php', '.swift']
+    skip_dirs = ['vendor', 'node_modules', '.git', 'storage', 'tools', 'Pods']
     
     for subdir, dirs, files in os.walk(root_dir):
         # Skip blacklisted directories
@@ -33,15 +31,15 @@ def clean_directory(root_dir):
             if any(file.endswith(ext) for ext in extensions):
                 file_path = os.path.join(subdir, file)
                 
-                # Special skip for this script itself if it ends up in a scanned dir
+                # Special skip for this script itself
                 if 'clean_project.py' in file_path:
                     continue
 
                 try:
-                    with open(file_path, 'r', encoding='utf-8') as f:
+                    with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                         content = f.read()
                     
-                    # Determine extension for logic
+                    # Determine extension
                     ext = ''
                     if file.endswith('.blade.php'):
                         ext = '.blade.php'
@@ -50,7 +48,7 @@ def clean_directory(root_dir):
                         
                     new_content = remove_comments(content, ext)
                     
-                    # Remove empty lines created by comment removal
+                    # Remove empty lines
                     lines = [line for line in new_content.splitlines() if line.strip()]
                     cleaned_content = '\n'.join(lines)
                     
@@ -62,14 +60,16 @@ def clean_directory(root_dir):
                     print(f"Skipped {file_path}: {e}")
 
 if __name__ == "__main__":
-    # Target specific folders to avoid cleaning vendor/framework files unnecessarily
+    # Target all project folders
     target_dirs = [
         'app',
         'config',
         'database',
         'public',
         'resources',
-        'routes'
+        'routes',
+        'Iphone',
+        'mobile-app/src'
     ]
     
     base_path = os.getcwd()

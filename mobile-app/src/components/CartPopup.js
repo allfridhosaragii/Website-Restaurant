@@ -13,15 +13,12 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 import { useCart } from '../context/CartContext';
-
 const { height } = Dimensions.get('window');
 const BASE_IMAGE_URL = 'https://website-restaurant.up.railway.app/storage/';
-
 const CartPopup = ({ visible, onClose, onCheckout }) => {
     const { cartItems, cartTotal, updateQuantity, removeItem } = useCart();
     const slideAnim = useRef(new Animated.Value(height)).current;
     const backdropAnim = useRef(new Animated.Value(0)).current;
-
     useEffect(() => {
         if (visible) {
             Animated.parallel([
@@ -52,18 +49,15 @@ const CartPopup = ({ visible, onClose, onCheckout }) => {
             ]).start();
         }
     }, [visible]);
-
     const getImageUrl = (imagePath) => {
         if (!imagePath) return 'https://via.placeholder.com/80';
         if (imagePath.startsWith('http')) return imagePath;
-        const cleanPath = imagePath.replace(/^public\//, '');
+        const cleanPath = imagePath.replace(/^public\
         return `${BASE_IMAGE_URL}${cleanPath}`;
     };
-
     const formatPrice = (price) => {
         return `Rp ${parseInt(price || 0).toLocaleString('id-ID')}`;
     };
-
     const renderCartItem = ({ item, index }) => (
         <Animated.View style={styles.cartItem}>
             <Image
@@ -73,8 +67,7 @@ const CartPopup = ({ visible, onClose, onCheckout }) => {
             <View style={styles.itemInfo}>
                 <Text style={styles.itemName} numberOfLines={1}>{item.menu_name}</Text>
                 <Text style={styles.itemPrice}>{formatPrice(item.price)}</Text>
-
-                {/* Quantity Controls */}
+                {}
                 <View style={styles.quantityControls}>
                     <TouchableOpacity
                         style={styles.qtyBtn}
@@ -91,8 +84,7 @@ const CartPopup = ({ visible, onClose, onCheckout }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-
-            {/* Remove Button */}
+            {}
             <TouchableOpacity
                 style={styles.removeBtn}
                 onPress={() => removeItem(item.id)}
@@ -101,33 +93,29 @@ const CartPopup = ({ visible, onClose, onCheckout }) => {
             </TouchableOpacity>
         </Animated.View>
     );
-
     const renderEmpty = () => (
         <View style={styles.emptyContainer}>
             <Text style={styles.emptyEmoji}>🛒</Text>
             <Text style={styles.emptyText}>Keranjang masih kosong</Text>
         </View>
     );
-
     if (!visible) return null;
-
     return (
         <Modal transparent visible={visible} animationType="none">
-            {/* Backdrop */}
+            {}
             <Animated.View
                 style={[styles.backdrop, { opacity: backdropAnim }]}
             >
                 <TouchableOpacity style={styles.backdropTouch} onPress={onClose} />
             </Animated.View>
-
-            {/* Bottom Sheet */}
+            {}
             <Animated.View
                 style={[
                     styles.container,
                     { transform: [{ translateY: slideAnim }] },
                 ]}
             >
-                {/* Header */}
+                {}
                 <View style={styles.header}>
                     <View style={styles.headerHandle} />
                     <View style={styles.headerRow}>
@@ -139,8 +127,7 @@ const CartPopup = ({ visible, onClose, onCheckout }) => {
                         </TouchableOpacity>
                     </View>
                 </View>
-
-                {/* Items List */}
+                {}
                 <FlatList
                     data={cartItems}
                     keyExtractor={(item) => item.id.toString()}
@@ -149,8 +136,7 @@ const CartPopup = ({ visible, onClose, onCheckout }) => {
                     contentContainerStyle={styles.listContent}
                     showsVerticalScrollIndicator={false}
                 />
-
-                {/* Footer with Total & Checkout */}
+                {}
                 {cartItems.length > 0 && (
                     <View style={styles.footer}>
                         <View style={styles.totalRow}>
@@ -174,7 +160,6 @@ const CartPopup = ({ visible, onClose, onCheckout }) => {
         </Modal>
     );
 };
-
 const styles = StyleSheet.create({
     backdrop: {
         ...StyleSheet.absoluteFillObject,
@@ -333,5 +318,4 @@ const styles = StyleSheet.create({
         marginLeft: 8,
     },
 });
-
 export default CartPopup;

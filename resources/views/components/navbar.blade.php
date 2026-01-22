@@ -5,9 +5,6 @@
                  alt="Culinaire Logo" 
                  style="height: 45px; width: auto; object-fit: contain;">
         </a>
-
-        
-        <!-- Mobile Controls: Lang Toggle, Theme Toggle, Hamburger -->
         <div class="navbar-mobile-controls d-lg-none">
             <div class="lang-toggle-3d" id="langToggle3DMobile" data-current="{{ app()->getLocale() }}">
                 <div class="lang-toggle-track">
@@ -30,7 +27,6 @@
                 <i class="bi bi-list fs-4"></i>
             </button>
         </div>
-
         <div class="collapse navbar-collapse" id="navbarNav">
             <button class="mobile-nav-close d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Close menu">
                 <i class="bi bi-x-lg"></i>
@@ -62,7 +58,6 @@
                     </a>
                 </li>
                 <li class="nav-item d-flex align-items-center gap-3 ms-lg-2">
-                    <!-- Desktop Only: Lang Toggle & Theme Toggle -->
                     <div class="lang-toggle-3d d-none d-lg-block" id="langToggle3D" data-current="{{ app()->getLocale() }}">
                         <div class="lang-toggle-track">
                             <span class="lang-label lang-en">ID</span>
@@ -102,7 +97,6 @@
                                     </a>
                                 </li>
                                 @endif
-
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item" href="{{ url('/customer/profile') }}">
@@ -489,7 +483,6 @@
         .mobile-nav-close:hover i {
             transform: scale(1.1);
         }
-
         .navbar-nav {
             position: absolute;
             top: 50%;
@@ -625,7 +618,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Language Toggle - Handle both desktop and mobile
     const langToggleDesktop = document.getElementById('langToggle3D');
     const langToggleMobile = document.getElementById('langToggle3DMobile');
-    
     function switchLanguage(newLang, source) {
         // Update desktop toggle
         if (langToggleDesktop) {
@@ -666,32 +658,26 @@ document.addEventListener('DOMContentLoaded', function() {
             fetch(langLink.href).catch(err => console.error('Language sync failed', err));
         }
     }
-    
     function setupLangToggle(toggleEl) {
         if (!toggleEl) return;
-        
         function toggle() {
             const currentLang = toggleEl.getAttribute('data-current');
             const newLang = currentLang === 'en' ? 'id' : 'en';
             switchLanguage(newLang, toggleEl.id);
         }
-        
         toggleEl.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
             toggle();
         });
-        
         toggleEl.addEventListener('touchend', function(e) {
             e.preventDefault();
             e.stopPropagation();
             toggle();
         }, { passive: false });
     }
-    
     setupLangToggle(langToggleDesktop);
     setupLangToggle(langToggleMobile);
-    
     // Profile Dropdown
     const dropdownBtn = document.getElementById('profileDropdownBtn');
     const dropdownMenu = document.getElementById('profileDropdownMenu');

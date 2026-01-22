@@ -15,25 +15,19 @@ import LinearGradient from 'react-native-linear-gradient';
 import { colors, spacing, fontSize, borderRadius } from '../../theme/colors';
 import { menuAPI, cartAPI, favoritesAPI } from '../../api/client';
 import { useSettings } from '../../context/SettingsContext';
-
 const { width, height } = Dimensions.get('window');
-
 const MenuDetailScreen = ({ route, navigation }) => {
     const slug = route?.params?.slug;
     const { isDarkMode, colors, t } = useSettings();
-
-    // Failsafe: Force hide header programmatically
     React.useLayoutEffect(() => {
         navigation.setOptions({ headerShown: false });
     }, [navigation]);
-
     const [menu, setMenu] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [addingToCart, setAddingToCart] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
-
     useEffect(() => {
         if (!slug) {
             setError('Invalid Item');
@@ -42,7 +36,6 @@ const MenuDetailScreen = ({ route, navigation }) => {
         }
         loadMenu();
     }, [slug]);
-
     const loadMenu = async () => {
         try {
             setLoading(true);
@@ -59,7 +52,6 @@ const MenuDetailScreen = ({ route, navigation }) => {
             setLoading(false);
         }
     };
-
     const handleAddToCart = async () => {
         if (!menu) return;
         try {
@@ -70,7 +62,6 @@ const MenuDetailScreen = ({ route, navigation }) => {
             setAddingToCart(false);
         }
     };
-
     const handleToggleFavorite = async () => {
         if (!menu) return;
         try {
@@ -78,7 +69,6 @@ const MenuDetailScreen = ({ route, navigation }) => {
             setIsFavorite(!isFavorite);
         } catch (err) { }
     };
-
     const formatPrice = (price) => {
         if (price == null) return 'Rp 0';
         return new Intl.NumberFormat('id-ID', {
@@ -87,7 +77,6 @@ const MenuDetailScreen = ({ route, navigation }) => {
             minimumFractionDigits: 0,
         }).format(price);
     };
-
     if (loading) {
         return (
             <View style={[styles.center, { backgroundColor: colors.background }]}>
@@ -96,7 +85,6 @@ const MenuDetailScreen = ({ route, navigation }) => {
             </View>
         );
     }
-
     if (error || !menu) {
         return (
             <View style={[styles.center, { backgroundColor: colors.background }]}>
@@ -108,12 +96,10 @@ const MenuDetailScreen = ({ route, navigation }) => {
             </View>
         );
     }
-
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
             <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-
-            {/* 1. Full Screen Image */}
+            {}
             <View style={styles.imageContainer}>
                 <Image
                     source={{ uri: menu.image_url || 'https://via.placeholder.com/800' }}
@@ -125,50 +111,40 @@ const MenuDetailScreen = ({ route, navigation }) => {
                     style={styles.gradientOverlay}
                 />
             </View>
-
-            {/* 2. Minimalist Floating Buttons (No Navbar Background) */}
+            {}
             <TouchableOpacity
                 style={[styles.floatingBtn, { top: 50, left: 20 }]}
                 onPress={() => navigation.goBack()}
             >
                 <Icon name="arrow-back" size={24} color={colors.white} />
             </TouchableOpacity>
-
             <TouchableOpacity
                 style={[styles.floatingBtn, { top: 50, right: 20 }]}
                 onPress={handleToggleFavorite}
             >
                 <Icon name={isFavorite ? "heart" : "heart-outline"} size={24} color={isFavorite ? colors.error : colors.white} />
             </TouchableOpacity>
-
-
-            {/* 3. Content Body */}
+            {}
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
             >
                 <View style={styles.contentSpacer} />
-
                 <View style={[styles.contentBody, { backgroundColor: colors.background }]}>
-                    {/* Glassmorphism Effect line */}
+                    {}
                     <View style={[styles.glassLine, { backgroundColor: isDarkMode ? '#333' : '#CCC' }]} />
-
                     <Text style={styles.category}>{menu.category || 'SIGNATURE'}</Text>
                     <Text style={[styles.title, { color: colors.text }]}>{menu.name}</Text>
                     <Text style={[styles.price, { color: colors.textSecondary }]}>{formatPrice(menu.price)}</Text>
-
                     <View style={[styles.separator, { backgroundColor: colors.border }]} />
-
                     <Text style={[styles.sectionHeader, { color: colors.textSecondary }]}>{t('description').toUpperCase()}</Text>
                     <Text style={[styles.description, { color: colors.text }]}>
                         {menu.description || 'A masterpiece of culinary art, prepared with passion and the finest ingredients to delight your senses.'}
                     </Text>
-
                     <View style={{ height: 100 }} />
                 </View>
             </ScrollView>
-
-            {/* 4. Bottom Floating Bar (Cleaned up) */}
+            {}
             <View style={styles.bottomBarContainer}>
                 <View style={[styles.bottomBarBlur, { backgroundColor: isDarkMode ? '#111' : '#FFF', borderColor: colors.border }]}>
                     <View style={styles.counterContainer}>
@@ -180,7 +156,6 @@ const MenuDetailScreen = ({ route, navigation }) => {
                             <Icon name="add-circle-outline" size={28} color={colors.text} />
                         </TouchableOpacity>
                     </View>
-
                     <TouchableOpacity
                         style={styles.addToCartBtn}
                         onPress={handleAddToCart}
@@ -197,7 +172,6 @@ const MenuDetailScreen = ({ route, navigation }) => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -214,7 +188,7 @@ const styles = StyleSheet.create({
         top: 0,
         left: 0,
         width: width,
-        height: height * 0.7, // Taller image
+        height: height * 0.7, 
     },
     image: {
         width: '100%',
@@ -232,7 +206,7 @@ const styles = StyleSheet.create({
         width: 44,
         height: 44,
         borderRadius: 22,
-        backgroundColor: 'rgba(0,0,0,0.3)', // Very subtle background
+        backgroundColor: 'rgba(0,0,0,0.3)', 
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 50,
@@ -269,7 +243,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 36,
         color: '#FFF',
-        fontFamily: 'serif', // Luxury font
+        fontFamily: 'serif', 
         marginBottom: 8,
     },
     price: {
@@ -338,5 +312,4 @@ const styles = StyleSheet.create({
         fontSize: 16,
     }
 });
-
 export default MenuDetailScreen;

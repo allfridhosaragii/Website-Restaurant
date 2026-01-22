@@ -1,10 +1,7 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
 class AdminPermission extends Model
 {
     protected $fillable = [
@@ -12,19 +9,13 @@ class AdminPermission extends Model
         'permission_key',
         'is_enabled',
     ];
-
     protected $casts = [
         'is_enabled' => 'boolean',
     ];
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
-
-    /**
-     * Get all available permission keys with labels
-     */
     public static function getAvailablePermissions(): array
     {
         return [
@@ -46,10 +37,6 @@ class AdminPermission extends Model
             'project' => 'Project',
         ];
     }
-
-    /**
-     * Create default permissions for a user
-     */
     public static function createDefaultPermissions(int $userId, bool $allEnabled = true): void
     {
         foreach (self::getAvailablePermissions() as $key => $label) {

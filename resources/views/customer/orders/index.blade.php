@@ -24,7 +24,6 @@
                 return $order->payment_status !== 'pending' || $order->status === 'cancelled';
             });
         @endphp
-
         <div class="card bg-transparent shadow-none border-0">
             <div class="card-header bg-transparent border-0 p-0 mb-3">
                 <ul class="nav nav-pills gap-2" id="orderTabs" role="tablist">
@@ -43,10 +42,8 @@
                     </li>
                 </ul>
             </div>
-            
             <div class="card-body p-0">
                 <div class="tab-content" id="orderTabsContent">
-                    <!-- Pending Orders Tab -->
                     <div class="tab-pane fade show active" id="pending" role="tabpanel" aria-labelledby="pending-tab">
                         <div class="list-group rounded-3 shadow-sm">
                             @forelse($pendingOrders as $order)
@@ -94,8 +91,6 @@
                             @endforelse
                         </div>
                     </div>
-
-                    <!-- History Orders Tab -->
                     <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
                         <div class="list-group rounded-3 shadow-sm">
                             @forelse($historyOrders as $order)

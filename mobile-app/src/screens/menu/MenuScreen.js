@@ -21,14 +21,11 @@ import { useCart } from '../../context/CartContext';
 import FloatingCartButton from '../../components/FloatingCartButton';
 import CartPopup from '../../components/CartPopup';
 import ReceiptModal from '../../components/ReceiptModal';
-
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48) / 2;
 const BASE_URL = 'https://website-restaurant.up.railway.app/api';
 const BASE_IMAGE_URL = 'https://website-restaurant.up.railway.app/storage/';
-
 const CATEGORIES = ['Semua', 'Nasi & Mie', 'Hidangan Utama', 'Minuman'];
-
 const MenuScreen = ({ navigation }) => {
     const { addToCart, openCart, isCartOpen, closeCart, checkout } = useCart();
     const [menus, setMenus] = useState([]);
@@ -39,45 +36,32 @@ const MenuScreen = ({ navigation }) => {
     const [filteredMenus, setFilteredMenus] = useState([]);
     const [showReceipt, setShowReceipt] = useState(false);
     const [receiptData, setReceiptData] = useState(null);
-
     useFocusEffect(
         useCallback(() => {
             loadMenus();
         }, [])
     );
-
     useEffect(() => {
         let result = menus;
-
         if (selectedCategory !== 'Semua') {
             result = result.filter(m => m.category === selectedCategory || m.category?.name === selectedCategory);
         }
-
         if (searchText) {
             result = result.filter(m => m.name.toLowerCase().includes(searchText.toLowerCase()));
         }
-
         setFilteredMenus(result);
     }, [menus, selectedCategory, searchText]);
-
     const loadMenus = async () => {
         try {
-            // Get Token if exists
             const token = await AsyncStorage.getItem('auth_token');
-
             const config = {
                 headers: { 'Accept': 'application/json' }
             };
-
             if (token) {
                 config.headers['Authorization'] = `Bearer ${token}`;
             }
-
-            // Direct Axios Call
             const response = await axios.get(`${BASE_URL}/menus`, config);
-
             console.log('API Response Status:', response.status);
-
             let data = [];
             if (response.data && Array.isArray(response.data)) {
                 data = response.data;
@@ -86,7 +70,6 @@ const MenuScreen = ({ navigation }) => {
             } else if (response.data?.menus && Array.isArray(response.data.menus)) {
                 data = response.data.menus;
             }
-
             setMenus(data);
         } catch (error) {
             console.error('Fetch Error:', error);
@@ -99,21 +82,16 @@ const MenuScreen = ({ navigation }) => {
             setRefreshing(false);
         }
     };
-
     const formatPrice = (price) => {
         return `Rp ${parseInt(price).toLocaleString('id-ID')}`;
     };
-
     const getImageUrl = (imagePath) => {
         if (!imagePath) return null;
         if (imagePath.startsWith('http')) return imagePath;
-        // Remove 'public/' prefix if exists
-        let cleanPath = imagePath.replace(/^public\//, '');
-        // Remove leading slash
+        let cleanPath = imagePath.replace(/^public\
         cleanPath = cleanPath.startsWith('/') ? cleanPath.substring(1) : cleanPath;
         return `${BASE_IMAGE_URL}${cleanPath}`;
     };
-
     const renderCategory = (category, index) => {
         const isSelected = selectedCategory === category;
         return (
@@ -128,7 +106,6 @@ const MenuScreen = ({ navigation }) => {
             </TouchableOpacity>
         );
     };
-
     const renderMenuItem = ({ item }) => (
         <TouchableOpacity
             style={styles.menuCard}
@@ -146,17 +123,14 @@ const MenuScreen = ({ navigation }) => {
                     </View>
                 )}
             </View>
-
             <View style={styles.menuInfo}>
                 <Text style={styles.menuName} numberOfLines={2}>{item.name}</Text>
-
                 {item.rating && (
                     <View style={styles.ratingRow}>
                         <Icon name="star" size={12} color="#FFD700" />
                         <Text style={styles.ratingText}>{item.rating}</Text>
                     </View>
                 )}
-
                 <View style={styles.priceRow}>
                     <Text style={styles.menuPrice}>{formatPrice(item.price)}</Text>
                     <TouchableOpacity
@@ -172,7 +146,6 @@ const MenuScreen = ({ navigation }) => {
             </View>
         </TouchableOpacity>
     );
-
     const renderEmpty = () => (
         <View style={styles.emptyContainer}>
             <Icon name="fast-food-outline" size={64} color="#CCC" />
@@ -182,7 +155,6 @@ const MenuScreen = ({ navigation }) => {
             </TouchableOpacity>
         </View>
     );
-
     if (loading && !refreshing) {
         return (
             <View style={styles.loadingContainer}>
@@ -191,7 +163,6 @@ const MenuScreen = ({ navigation }) => {
             </View>
         );
     }
-
     const handleCheckout = async () => {
         const result = await checkout();
         if (result.success) {
@@ -201,16 +172,13 @@ const MenuScreen = ({ navigation }) => {
             Alert.alert('Error', result.error || 'Checkout gagal');
         }
     };
-
     return (
         <View style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor="#8B1538" />
-
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Menu Kami</Text>
                 <Text style={styles.headerSubtitle}>Pilih menu favorit Anda</Text>
             </View>
-
             <View style={styles.searchRow}>
                 <View style={styles.searchBar}>
                     <Icon name="search-outline" size={18} color="#999" />
@@ -226,11 +194,9 @@ const MenuScreen = ({ navigation }) => {
                     <Icon name="options-outline" size={20} color="#8B1538" />
                 </TouchableOpacity>
             </View>
-
             <View style={styles.categoryRow}>
                 {CATEGORIES.map(renderCategory)}
             </View>
-
             <FlatList
                 data={filteredMenus}
                 keyExtractor={(item) => (item.id || Math.random()).toString()}
@@ -244,18 +210,15 @@ const MenuScreen = ({ navigation }) => {
                     <RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); loadMenus(); }} colors={['#8B1538']} />
                 }
             />
-
-            {/* Floating Cart Button */}
+            {}
             <FloatingCartButton onPress={openCart} />
-
-            {/* Cart Popup */}
+            {}
             <CartPopup
                 visible={isCartOpen}
                 onClose={closeCart}
                 onCheckout={handleCheckout}
             />
-
-            {/* Receipt Modal */}
+            {}
             <ReceiptModal
                 visible={showReceipt}
                 onClose={() => setShowReceipt(false)}
@@ -264,7 +227,6 @@ const MenuScreen = ({ navigation }) => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#FAF9F6' },
     loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FAF9F6' },
@@ -297,5 +259,4 @@ const styles = StyleSheet.create({
     retryBtn: { paddingHorizontal: 20, paddingVertical: 10, backgroundColor: '#8B1538', borderRadius: 8 },
     retryText: { color: 'white', fontWeight: 'bold' }
 });
-
 export default MenuScreen;

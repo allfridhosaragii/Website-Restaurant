@@ -1,9 +1,6 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
-
 class SiteVisitor extends Model
 {
     protected $fillable = [
@@ -24,19 +21,16 @@ class SiteVisitor extends Model
         'duration_seconds',
         'is_active',
     ];
-
     protected $casts = [
         'entry_time' => 'datetime',
         'exit_time' => 'datetime',
         'last_heartbeat' => 'datetime',
         'is_active' => 'boolean',
     ];
-
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-
     public static function getActiveVisitors()
     {
         return self::where('is_active', true)
@@ -44,14 +38,12 @@ class SiteVisitor extends Model
             ->orderBy('entry_time', 'desc')
             ->get();
     }
-
     public static function getTodayVisitors()
     {
         return self::whereDate('entry_time', today())
             ->orderBy('entry_time', 'desc')
             ->get();
     }
-
     public static function clearAllData()
     {
         return self::truncate();

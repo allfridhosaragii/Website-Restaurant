@@ -10,7 +10,6 @@ class AdminReservationController extends Controller
     {
         $filter = $request->get('filter', 'all');
         $query = Reservation::with('user')->orderBy('created_at', 'desc');
-        
         if ($filter === 'pending') {
             $query->where('status', 'pending');
         } elseif ($filter === 'accepted') {
@@ -20,13 +19,11 @@ class AdminReservationController extends Controller
         } elseif ($filter === 'today') {
             $query->whereDate('date', today());
         }
-        
         $reservations = $query->paginate(20);
         $pendingCount = Reservation::where('status', 'pending')->count();
         $acceptedCount = Reservation::where('status', 'accepted')->count();
         $rejectedCount = Reservation::where('status', 'rejected')->count();
         $todayCount = Reservation::whereDate('date', today())->count();
-        
         return view('admin.reservations.index', compact(
             'reservations', 'filter', 'pendingCount', 'acceptedCount', 'rejectedCount', 'todayCount'
         ));
@@ -42,19 +39,16 @@ class AdminReservationController extends Controller
             'status' => 'required|in:pending,accepted,rejected',
             'admin_notes' => 'nullable|string|max:500',
         ]);
-        
         $reservation = Reservation::findOrFail($id);
         $reservation->update([
             'status' => $request->status,
             'admin_notes' => $request->admin_notes,
         ]);
-        
         $statusLabels = [
             'pending' => 'Pending',
             'accepted' => 'Diterima',
             'rejected' => 'Ditolak',
         ];
-        
         return redirect('/admin/reservations')->with('success', "Status reservasi berhasil diperbarui menjadi {$statusLabels[$request->status]}");
     }
 }

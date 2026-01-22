@@ -17,17 +17,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, spacing, fontSize, borderRadius } from '../../theme/colors';
 import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
-
 const BASE_URL = 'https://website-restaurant.up.railway.app/api';
 const BASE_IMAGE_URL = 'https://website-restaurant.up.railway.app/storage/';
-
 const FavoritesScreen = ({ navigation }) => {
     const { user, isGuest } = useAuth();
     const { isDarkMode, colors, t } = useSettings();
     const [favorites, setFavorites] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
-
     const getAuthConfig = async () => {
         const token = await AsyncStorage.getItem('auth_token');
         return {
@@ -38,7 +35,6 @@ const FavoritesScreen = ({ navigation }) => {
             }
         };
     };
-
     const loadFavorites = useCallback(async () => {
         if (isGuest) {
             setLoading(false);
@@ -57,16 +53,13 @@ const FavoritesScreen = ({ navigation }) => {
             setRefreshing(false);
         }
     }, [isGuest]);
-
     useEffect(() => {
         loadFavorites();
     }, [loadFavorites]);
-
     const onRefresh = () => {
         setRefreshing(true);
         loadFavorites();
     };
-
     const removeFavorite = async (menuId) => {
         try {
             const config = await getAuthConfig();
@@ -77,18 +70,15 @@ const FavoritesScreen = ({ navigation }) => {
             Alert.alert('Error', 'Gagal menghapus favorit');
         }
     };
-
     const formatPrice = (price) => {
         return `Rp ${parseInt(price || 0).toLocaleString('id-ID')}`;
     };
-
     const getImageUrl = (imagePath) => {
         if (!imagePath) return 'https://via.placeholder.com/100';
         if (imagePath.startsWith('http')) return imagePath;
-        const cleanPath = imagePath.replace(/^public\//, '');
+        const cleanPath = imagePath.replace(/^public\
         return `${BASE_IMAGE_URL}${cleanPath}`;
     };
-
     if (isGuest) {
         return (
             <View style={[styles.emptyContainer, { backgroundColor: colors.background }]}>
@@ -105,7 +95,6 @@ const FavoritesScreen = ({ navigation }) => {
             </View>
         );
     }
-
     if (loading) {
         return (
             <View style={[styles.loader, { backgroundColor: colors.background }]}>
@@ -113,7 +102,6 @@ const FavoritesScreen = ({ navigation }) => {
             </View>
         );
     }
-
     const renderItem = ({ item }) => {
         const menu = item.menu || item;
         return (
@@ -136,7 +124,6 @@ const FavoritesScreen = ({ navigation }) => {
             </View>
         );
     };
-
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
             <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={colors.background} />
@@ -144,7 +131,6 @@ const FavoritesScreen = ({ navigation }) => {
                 <Text style={[styles.headerTitle, { color: colors.primary }]}>Favorit</Text>
                 <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>{favorites.length} menu</Text>
             </View>
-
             {favorites.length === 0 ? (
                 <View style={styles.emptyContainer}>
                     <Icon name="heart-outline" size={64} color={colors.textSecondary} />
@@ -171,7 +157,6 @@ const FavoritesScreen = ({ navigation }) => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -269,5 +254,4 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
 });
-
 export default FavoritesScreen;

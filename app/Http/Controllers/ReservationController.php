@@ -26,7 +26,6 @@ class ReservationController extends Controller
             'payment_proof.required' => 'Bukti transfer wajib diupload.',
             'payment_proof.url' => 'URL bukti transfer tidak valid.',
         ]);
-        
         Reservation::create([
             'user_id' => Auth::id(),
             'name' => $request->name,
@@ -40,7 +39,6 @@ class ReservationController extends Controller
             'payment_proof' => $request->payment_proof,
             'status' => 'pending',
         ]);
-        
         DB::table('activity_logs')->insert([
             'user_id' => Auth::id(),
             'action' => 'reservation_created',
@@ -63,7 +61,6 @@ class ReservationController extends Controller
         $reservation = Reservation::where('id', $id)
             ->where('user_id', Auth::id())
             ->firstOrFail();
-            
         return view('customer.reservations.show', compact('reservation'));
     }
 }

@@ -1,23 +1,17 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Order;
 use App\Models\Reservation;
 use Carbon\Carbon;
-
 class AdminReportController extends Controller
 {
     public function index(Request $request)
     {
-        // Get current month and year from request or default to current
         $month = $request->get('month', now()->month);
         $year = $request->get('year', now()->year);
-
-        // Get all orders for the selected month
         $orders = DB::table('orders')
             ->join('users', 'orders.user_id', '=', 'users.id')
             ->whereMonth('orders.created_at', $month)
@@ -29,8 +23,6 @@ class AdminReportController extends Controller
             )
             ->orderBy('orders.created_at', 'desc')
             ->get();
-
-        // Get order items for each order
         foreach ($orders as $order) {
             $order->items = DB::table('order_items')
                 ->join('menus', 'order_items.menu_id', '=', 'menus.id')
@@ -39,35 +31,22 @@ class AdminReportController extends Controller
                 ->get();
             $order->item_count = $order->items->sum('quantity');
         }
-
-        // Order Stats (Simplified: Berhasil/Gagal)
         $statusStats = [
             'success' => $orders->whereIn('status', ['completed', 'processing', 'pending'])->count(),
             'failed' => $orders->where('status', 'cancelled')->count()
         ];
-
-        // Reservation Stats
-        // Reservation Stats
         $reservations = Reservation::whereMonth('created_at', $month)
             ->whereYear('created_at', $year)
             ->get();
-
         $reservationStats = [
             'success' => $reservations->where('status', 'accepted')->count(),
             'pending' => $reservations->where('status', 'pending')->count(),
             'failed' => $reservations->where('status', 'rejected')->count()
         ];
-
-        // Monthly totals
-        // Specific counts for cards
         $completedCount = $orders->where('status', 'completed')->count();
         $inProcessCount = $orders->whereIn('status', ['processing', 'pending'])->count();
-
-        // Monthly totals
         $totalRevenue = $orders->where('payment_status', 'paid')->sum('total');
         $totalOrders = $orders->count();
-
-        // Generate month tabs (last 6 months)
         $monthTabs = [];
         for ($i = 11; $i >= 0; $i--) {
             $date = now()->subMonths($i);
@@ -78,7 +57,6 @@ class AdminReportController extends Controller
                 'active' => ($date->month == $month && $date->year == $year)
             ];
         }
-
         return view('admin.reports.index', compact(
             'orders',
             'statusStats',
@@ -92,13 +70,10 @@ class AdminReportController extends Controller
             'year'
         ));
     }
-
     public function api(Request $request)
     {
         $month = $request->get('month', now()->month);
         $year = $request->get('year', now()->year);
-
-        // Get all orders for the selected month
         $orders = DB::table('orders')
             ->join('users', 'orders.user_id', '=', 'users.id')
             ->whereMonth('orders.created_at', $month)
@@ -110,8 +85,6 @@ class AdminReportController extends Controller
             )
             ->orderBy('orders.created_at', 'desc')
             ->get();
-
-        // Get order items for each order
         foreach ($orders as $order) {
             $order->items = DB::table('order_items')
                 ->join('menus', 'order_items.menu_id', '=', 'menus.id')
@@ -122,40 +95,29 @@ class AdminReportController extends Controller
             $order->formatted_total = 'Rp ' . number_format($order->total, 0, ',', '.');
             $order->formatted_date = Carbon::parse($order->created_at)->translatedFormat('d M Y, H:i');
         }
-
-        // Statistics for chart
-        // Order Stats (Simplified: Berhasil/Gagal)
         $statusStats = [
             'success' => $orders->whereIn('status', ['completed', 'processing', 'pending'])->count(),
             'failed' => $orders->where('status', 'cancelled')->count()
         ];
-        
-        // Specific counts for cards/table
         $completedCount = $orders->where('status', 'completed')->count();
         $inProcessCount = $orders->whereIn('status', ['processing', 'pending'])->count();
-
-        // Reservation Stats
         $reservations = Reservation::whereMonth('created_at', $month)
             ->whereYear('created_at', $year)
             ->get();
-
         $reservationStats = [
             'success' => $reservations->where('status', 'accepted')->count(),
             'pending' => $reservations->where('status', 'pending')->count(),
             'failed' => $reservations->where('status', 'rejected')->count()
         ];
-
-        // Monthly totals
         $totalRevenue = $orders->where('payment_status', 'paid')->sum('total');
         $totalOrders = $orders->count();
-
         return response()->json([
             'orders' => $orders,
             'totalOrders' => $totalOrders,
             'totalRevenue' => $totalRevenue,
             'formattedRevenue' => 'Rp ' . number_format($totalRevenue, 0, ',', '.'),
             'inProcessCount' => $inProcessCount,
-            'completedCount' => $completedCount, // Send specific count for cards
+            'completedCount' => $completedCount, 
             'statusStats' => $statusStats,
             'reservationStats' => $reservationStats,
         ]);

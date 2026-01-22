@@ -1,9 +1,6 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
-
 class MaintenanceVisitor extends Model
 {
     protected $fillable = [
@@ -20,17 +17,12 @@ class MaintenanceVisitor extends Model
         'duration_seconds',
         'is_active',
     ];
-
     protected $casts = [
         'entry_time' => 'datetime',
         'exit_time' => 'datetime',
         'last_heartbeat' => 'datetime',
         'is_active' => 'boolean',
     ];
-
-    /**
-     * Get active visitors (within last 60 seconds heartbeat)
-     */
     public static function getActiveVisitors()
     {
         return self::where('is_active', true)
@@ -38,20 +30,12 @@ class MaintenanceVisitor extends Model
             ->orderBy('entry_time', 'desc')
             ->get();
     }
-
-    /**
-     * Get all visitors today
-     */
     public static function getTodayVisitors()
     {
         return self::whereDate('entry_time', today())
             ->orderBy('entry_time', 'desc')
             ->get();
     }
-
-    /**
-     * Calculate and update duration
-     */
     public function updateDuration(): void
     {
         if ($this->entry_time) {
@@ -60,17 +44,12 @@ class MaintenanceVisitor extends Model
             $this->save();
         }
     }
-
-    /**
-     * Format duration for display
-     */
     public function getFormattedDurationAttribute(): string
     {
         $seconds = $this->duration_seconds;
         $hours = floor($seconds / 3600);
         $minutes = floor(($seconds % 3600) / 60);
         $secs = $seconds % 60;
-
         if ($hours > 0) {
             return sprintf('%d jam %d menit %d detik', $hours, $minutes, $secs);
         } elseif ($minutes > 0) {

@@ -7,24 +7,21 @@ import {
     SafeAreaView,
 } from 'react-native';
 import { colors, spacing, fontSize, borderRadius } from '../../theme/colors';
-
 const AboutScreen = () => {
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false}>
-                {/* Hero Section */}
+                {}
                 <View style={styles.heroSection}>
                     <Text style={styles.heroTitle}>The Legacy</Text>
                     <View style={styles.separator} />
                     <Text style={styles.heroSubtitle}>OF CULINAIRE</Text>
                     <Text style={styles.scrollText}>SCROLL TO EXPLORE</Text>
                 </View>
-
-                {/* Chapter I: The Foundations */}
+                {}
                 <View style={styles.section}>
                     <Text style={styles.chapterLabel}>CHAPTER I</Text>
                     <Text style={styles.chapterTitle}>The Foundations</Text>
-
                     <TimelineItem
                         year="2009"
                         title="The Inception"
@@ -46,13 +43,11 @@ const AboutScreen = () => {
                         description="Featured in international food magazines, attracting visitors from around the globe."
                     />
                 </View>
-
-                {/* Chapter II: The Golden Era */}
+                {}
                 <View style={[styles.section, styles.darkerSection]}>
                     <Text style={styles.chapterLabel}>CHAPTER II</Text>
                     <Text style={styles.chapterTitle}>The Golden Era</Text>
                     <Text style={styles.sectionSubtitle}>A period of unprecedented growth and culinary innovation.</Text>
-
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
                         <YearCard year="2013" title="Michelin Star" desc="Received our first Michelin Star for exceptional cuisine." />
                         <YearCard year="2014" title="New Heights" desc="Launched our signature 12-course tasting menu." />
@@ -61,29 +56,24 @@ const AboutScreen = () => {
                         <YearCard year="2017" title="The Summit" desc="Voted Top 10 Restaurants in Indonesia." />
                     </ScrollView>
                 </View>
-
-                {/* Chapter III: Resilience */}
+                {}
                 <View style={styles.section}>
                     <Text style={styles.chapterLabel}>CHAPTER III</Text>
                     <Text style={styles.chapterTitle}>Resilience</Text>
-
                     <SpotlightItem year="2018" title="Reinvention" desc="Revamped our entire menu to focus on heritage recipes." />
                     <SpotlightItem year="2019" title="Community" desc="Launched charity programs to support local farmers." />
                     <SpotlightItem year="2020" title="Adaptation" desc="Thrived through global challenges with innovative delivery experiences." />
                     <SpotlightItem year="2021" title="Digital Leaps" desc="Integrated state-of-the-art tech for seamless dining." />
                 </View>
-
-                {/* Chapter IV: The Vision */}
+                {}
                 <View style={[styles.section, styles.darkerSection]}>
                     <Text style={styles.chapterLabel}>CHAPTER IV</Text>
                     <Text style={styles.chapterTitle}>The Vision</Text>
-
                     <VisionCard year="2022" title="New Horizons" desc="Expanding our footprint to Bali and Jakarta." />
                     <VisionCard year="2023" title="Tech & Taste" desc="AI-driven menu curation for personalized dining." />
                     <VisionCard year="2024" title="Global Brand" desc="Establishing Culinaire as a global luxury dining brand." />
                     <VisionCard year="2025" title="The Future" desc="Continuing to push the boundaries of culinary art." />
                 </View>
-
                 <View style={styles.footer}>
                     <Text style={styles.footerText}>EST. 2009 • CULINAIRE</Text>
                 </View>
@@ -91,7 +81,6 @@ const AboutScreen = () => {
         </SafeAreaView>
     );
 };
-
 const TimelineItem = ({ year, title, description }) => (
     <View style={styles.timelineItem}>
         <Text style={styles.yearLabel}>{year}</Text>
@@ -101,7 +90,6 @@ const TimelineItem = ({ year, title, description }) => (
         </View>
     </View>
 );
-
 const YearCard = ({ year, title, desc }) => (
     <View style={styles.yearCard}>
         <Text style={styles.cardYear}>{year}</Text>
@@ -109,7 +97,6 @@ const YearCard = ({ year, title, desc }) => (
         <Text style={styles.cardDesc}>{desc}</Text>
     </View>
 );
-
 const SpotlightItem = ({ year, title, desc }) => (
     <View style={styles.spotlightItem}>
         <Text style={styles.spotlightYear}>{year}</Text>
@@ -119,7 +106,6 @@ const SpotlightItem = ({ year, title, desc }) => (
         </View>
     </View>
 );
-
 const VisionCard = ({ year, title, desc }) => (
     <View style={styles.visionCard}>
         <Text style={styles.visionYear}>{year}</Text>
@@ -127,7 +113,6 @@ const VisionCard = ({ year, title, desc }) => (
         <Text style={styles.visionDesc}>{desc}</Text>
     </View>
 );
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -310,5 +295,4 @@ const styles = StyleSheet.create({
         letterSpacing: 2,
     },
 });
-
 export default AboutScreen;

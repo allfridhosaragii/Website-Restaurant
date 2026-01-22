@@ -1,6 +1,5 @@
 @extends('layouts.admin')
 @section('title', 'Statistik & Monitoring')
-
 @push('styles')
 <style>
     .stat-card {
@@ -32,7 +31,6 @@
         font-size: 0.85rem;
         opacity: 0.7;
     }
-    
     .live-badge {
         display: inline-flex;
         align-items: center;
@@ -55,7 +53,6 @@
         0%, 100% { opacity: 1; transform: scale(1); }
         50% { opacity: 0.5; transform: scale(1.2); }
     }
-    
     .tab-nav {
         display: flex;
         gap: 8px;
@@ -91,14 +88,12 @@
         margin-left: 8px;
         font-size: 0.7rem;
     }
-    
     .tab-content {
         display: none;
     }
     .tab-content.active {
         display: block;
     }
-
     .table-responsive-wrapper {
         border-radius: 12px;
         border: 1px solid var(--border-light);
@@ -106,7 +101,6 @@
         -webkit-overflow-scrolling: touch;
         background: var(--surface);
     }
-    
     .activity-table, .error-table {
         width: 100%;
         border-collapse: separate;
@@ -128,7 +122,6 @@
     .activity-table tbody tr:hover, .error-table tbody tr:hover {
         background: var(--surface-light);
     }
-    
     .user-badge {
         display: inline-flex;
         align-items: center;
@@ -150,7 +143,6 @@
         background: rgba(156, 163, 175, 0.15);
         color: #9ca3af;
     }
-    
     .error-severity {
         display: inline-block;
         padding: 4px 10px;
@@ -167,7 +159,6 @@
         background: rgba(34, 197, 94, 0.15);
         color: #22c55e;
     }
-    
     .error-message {
         font-family: 'Fira Code', monospace;
         font-size: 0.8rem;
@@ -183,7 +174,6 @@
         word-break: break-all;
         line-height: 1.4;
     }
-    
     .filter-bar {
         display: flex;
         gap: 12px;
@@ -198,7 +188,6 @@
         color: var(--text-primary);
         font-size: 0.85rem;
     }
-    
     .refresh-indicator {
         display: inline-flex;
         align-items: center;
@@ -213,7 +202,6 @@
         from { transform: rotate(0deg); }
         to { transform: rotate(360deg); }
     }
-    
     .empty-state {
         text-align: center;
         padding: 3rem;
@@ -224,7 +212,6 @@
         opacity: 0.3;
         margin-bottom: 1rem;
     }
-    
     .btn-resolve {
         padding: 4px 12px;
         font-size: 0.75rem;
@@ -242,7 +229,6 @@
         opacity: 0.5;
         cursor: not-allowed;
     }
-    
     .btn-copy-md {
         padding: 4px 12px;
         font-size: 0.75rem;
@@ -267,7 +253,6 @@
         color: white;
         border-color: #22c55e;
     }
-    
     .screenshot-thumb {
         width: 60px;
         height: 40px;
@@ -281,7 +266,6 @@
         transform: scale(1.1);
         border-color: var(--accent);
     }
-    
     .browser-badge {
         display: inline-flex;
         align-items: center;
@@ -292,7 +276,6 @@
         background: rgba(59, 130, 246, 0.1);
         color: #3b82f6;
     }
-    
     .file-location {
         font-family: 'Fira Code', monospace;
         font-size: 0.75rem;
@@ -314,7 +297,6 @@
         position: relative;
         z-index: 5;
     }
-
     .markdown-code-block {
         font-family: 'Fira Code', monospace;
         font-size: 0.7rem;
@@ -337,7 +319,6 @@
         background: #444;
         border-radius: 10px;
     }
-    
     /* Screenshot Modal */
     .screenshot-modal {
         display: none;
@@ -385,7 +366,6 @@
         max-width: 80%;
         text-align: center;
     }
-
     /* History Modal Styles */
     .history-modal {
         position: fixed;
@@ -482,7 +462,6 @@
     }
 </style>
 @endpush
-
 @section('content')
 <section class="section bg-cream">
     <div class="container-fluid">
@@ -498,8 +477,6 @@
                 <span>Auto-refresh aktif</span>
             </div>
         </div>
-
-        {{-- Stats Cards --}}
         <div class="row g-4 mb-4">
             <div class="col-md-3">
                 <div class="stat-card">
@@ -560,8 +537,6 @@
                 </div>
             </div>
         </div>
-
-        {{-- Tabs --}}
         <div class="card">
             <div class="card-body">
                 <div class="tab-nav">
@@ -578,8 +553,6 @@
                         <span class="badge bg-success" id="badgeVisitors">{{ $liveVisitors }}</span>
                     </button>
                 </div>
-
-                {{-- Activities Tab --}}
                 <div class="tab-content active" id="tab-activities">
                     <div class="filter-bar">
                         <select id="filterActivityType">
@@ -615,8 +588,6 @@
                         </table>
                     </div>
                 </div>
-
-                {{-- Errors Tab --}}
                 <div class="tab-content" id="tab-errors">
                     <div class="filter-bar">
                         <select id="filterErrorStatus">
@@ -656,8 +627,6 @@
                         </table>
                     </div>
                 </div>
-
-                {{-- Visitors Tab --}}
                 <div class="tab-content" id="tab-visitors">
                     <div class="table-responsive-wrapper">
                         <table class="activity-table" style="min-width: 800px;">
@@ -683,15 +652,11 @@
             </div>
         </div>
     </div>
-
-    <!-- Screenshot Modal -->
     <div class="screenshot-modal" id="screenshotModal" onclick="closeScreenshotModal()">
         <span class="close-btn" onclick="closeScreenshotModal()">&times;</span>
         <img id="screenshotImage" src="" alt="Error Screenshot">
         <div class="error-details" id="screenshotDetails"></div>
     </div>
-
-    <!-- History Modal -->
     <div class="history-modal" id="historyModal" onclick="closeHistoryModal()">
         <div class="history-container" onclick="event.stopPropagation()">
             <div class="history-header">
@@ -702,13 +667,11 @@
                 <button class="btn-close" onclick="closeHistoryModal()"></button>
             </div>
             <div class="history-body" id="historyBody">
-                <!-- Timeline will be injected here -->
             </div>
         </div>
     </div>
 </section>
 @endsection
-
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -721,7 +684,6 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('tab-' + this.dataset.tab).classList.add('active');
         });
     });
-
     // Format time
     function formatTime(dateStr) {
         const date = new Date(dateStr);
@@ -730,7 +692,6 @@ document.addEventListener('DOMContentLoaded', function() {
             hour: '2-digit', minute: '2-digit'
         });
     }
-
     // Format time ago
     function timeAgo(dateStr) {
         const date = new Date(dateStr);
@@ -741,25 +702,20 @@ document.addEventListener('DOMContentLoaded', function() {
         if (diff < 86400) return Math.floor(diff / 3600) + ' jam lalu';
         return Math.floor(diff / 86400) + ' hari lalu';
     }
-
     // Load activities
     async function loadActivities() {
         const type = document.getElementById('filterActivityType').value;
         const date = document.getElementById('filterActivityDate').value;
-        
         try {
             const res = await fetch(`/admin/statistik/api/activities?type=${type}&date=${date}`);
             const data = await res.json();
-            
             const tbody = document.getElementById('activityTableBody');
             document.getElementById('badgeActivities').textContent = data.count;
-            
             if (data.data.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" class="empty-state">
                     <i class="bi bi-inbox d-block"></i>Tidak ada aktivitas</td></tr>`;
                 return;
             }
-            
             tbody.innerHTML = data.data.map(a => `
                 <tr>
                     <td><small class="text-muted">${timeAgo(a.created_at)}</small></td>
@@ -779,41 +735,32 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Failed to load activities:', e);
         }
     }
-
     // Global store for error data to avoid quote issues in HTML attributes
     window.errorStore = {};
-
     // Load errors
     async function loadErrors() {
         const status = document.getElementById('filterErrorStatus').value;
         const date = document.getElementById('filterErrorDate').value;
-        
         try {
             const res = await fetch(`/admin/statistik/api/errors?status=${status}&date=${date}`);
             const data = await res.json();
-            
             const tbody = document.getElementById('errorTableBody');
             document.getElementById('badgeErrors').textContent = data.data.filter(e => !e.is_resolved).length;
             document.getElementById('statUnresolvedErrors').textContent = data.data.filter(e => !e.is_resolved).length;
-            
             if (data.data.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="8" class="empty-state">
                     <i class="bi bi-check-circle d-block text-success"></i>Tidak ada error tercatat. Bagus!</td></tr>`;
                 return;
             }
-            
             tbody.innerHTML = data.data.map(e => {
                 const fileName = e.file ? e.file.split('/').pop().split('\\').pop() : '-';
                 const fileLocation = `${fileName}:${e.line || '?'}`;
-                
                 // Store markdown in memory
                 window.errorStore[e.id] = e.markdown;
-                
                 // Sanitize message for JS attributes (escape quotes and newlines)
                 const safeMessage = e.message 
                     ? e.message.replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, "\\n").replace(/\r/g, "\\r")
                     : '';
-                
                 return `
                 <tr>
                     <td><small class="text-muted">${timeAgo(e.created_at)}</small></td>
@@ -868,7 +815,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Failed to load errors:', e);
         }
     }
-
     // Screenshot Modal Functions
     window.showScreenshot = function(url, message, location) {
         document.getElementById('screenshotImage').src = url;
@@ -878,55 +824,45 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         document.getElementById('screenshotModal').classList.add('active');
     };
-
     window.closeScreenshotModal = function() {
         document.getElementById('screenshotModal').classList.remove('active');
     };
-
     // Close modal on Escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeScreenshotModal();
     });
-
     // Copy Error as Markdown
     window.copyErrorMarkdown = function(id, btn) {
         const markdown = window.errorStore[id];
         if (!markdown) return;
-        
         const el = document.createElement('textarea');
         el.value = markdown;
         document.body.appendChild(el);
         el.select();
         document.execCommand('copy');
         document.body.removeChild(el);
-        
         // Visual feedback
         const originalContent = btn.innerHTML;
         btn.innerHTML = '<i class="bi bi-check"></i> Copied!';
         btn.classList.add('copied');
-        
         setTimeout(() => {
             btn.innerHTML = originalContent;
             btn.classList.remove('copied');
         }, 2000);
     };
-
     // User History Functions
     window.showUserHistory = async function(userId, ip, name) {
         const title = document.getElementById('historyTitle');
         const subtitle = document.getElementById('historySubtitle');
         const body = document.getElementById('historyBody');
         const modal = document.getElementById('historyModal');
-
         title.textContent = `Riwayat: ${name}`;
         subtitle.textContent = ip ? `IP: ${ip}` : `User ID: ${userId}`;
         body.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary"></div><p class="mt-2">Mengambil riwayat...</p></div>';
         modal.classList.add('active');
-
         try {
             const res = await fetch(`/admin/statistik/api/user-history?user_id=${userId}&ip=${ip}`);
             const result = await res.json();
-
             if (result.success && result.data.length > 0) {
                 body.innerHTML = `
                     <div class="timeline">
@@ -949,17 +885,14 @@ document.addEventListener('DOMContentLoaded', function() {
             body.innerHTML = '<div class="text-center py-5 text-danger"><p>Gagal memuat riwayat.</p></div>';
         }
     };
-
     window.closeHistoryModal = function() {
         document.getElementById('historyModal').classList.remove('active');
     };
-
     // Load visitors
     async function loadVisitors() {
         try {
             const res = await fetch('/admin/statistik/api/live-visitors');
             const data = await res.json();
-            
             const tbody = document.getElementById('visitorTableBody');
             document.getElementById('badgeVisitors').textContent = data.count;
             document.getElementById('statLiveVisitors').innerHTML = `
@@ -969,13 +902,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     LIVE
                 </span>
             `;
-            
             if (data.data.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="4" class="empty-state">
                     <i class="bi bi-person-slash d-block"></i>Tidak ada pengunjung aktif saat ini</td></tr>`;
                 return;
             }
-            
             tbody.innerHTML = data.data.map(v => `
                 <tr>
                     <td>
@@ -991,11 +922,9 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Failed to load visitors:', e);
         }
     }
-
     // Resolve error
     window.resolveError = async function(id) {
         if (!confirm('Tandai error ini sudah diperbaiki?')) return;
-        
         try {
             const res = await fetch(`/admin/statistik/api/errors/${id}/resolve`, {
                 method: 'POST',
@@ -1012,18 +941,15 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Failed to resolve error:', e);
         }
     };
-
     // Filter change handlers
     document.getElementById('filterActivityType').addEventListener('change', loadActivities);
     document.getElementById('filterActivityDate').addEventListener('change', loadActivities);
     document.getElementById('filterErrorStatus').addEventListener('change', loadErrors);
     document.getElementById('filterErrorDate').addEventListener('change', loadErrors);
-
     // Initial load
     loadActivities();
     loadErrors();
     loadVisitors();
-
     // Auto-refresh every 5 seconds
     setInterval(() => {
         loadActivities();

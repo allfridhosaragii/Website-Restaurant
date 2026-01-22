@@ -11,9 +11,7 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors, spacing, borderRadius, fontSize } from '../../theme/colors';
 import LinearGradient from 'react-native-linear-gradient';
-
 const { width } = Dimensions.get('window');
-
 const AdminDashboardScreen = ({ navigation }) => {
     const adminFeatures = [
         {
@@ -65,7 +63,6 @@ const AdminDashboardScreen = ({ navigation }) => {
             color: '#007AFF'
         }
     ];
-
     const renderFeatureCard = (item) => (
         <TouchableOpacity
             key={item.id}
@@ -83,12 +80,10 @@ const AdminDashboardScreen = ({ navigation }) => {
             <Icon name="chevron-forward" size={20} color={colors.textSecondary} />
         </TouchableOpacity>
     );
-
     return (
         <View style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor="#000" />
-
-            {/* Header */}
+            {}
             <View style={styles.header}>
                 <View>
                     <Text style={styles.headerTitle}>Admin Access</Text>
@@ -99,9 +94,8 @@ const AdminDashboardScreen = ({ navigation }) => {
                     <Text style={styles.adminBadgeText}>SUPER ADMIN</Text>
                 </View>
             </View>
-
             <ScrollView contentContainerStyle={styles.scrollContent}>
-                {/* Stats Overview (Mock Data for UI) */}
+                {}
                 <View style={styles.statsContainer}>
                     <LinearGradient
                         colors={['#D4AF37', '#B8860B']}
@@ -113,7 +107,6 @@ const AdminDashboardScreen = ({ navigation }) => {
                         <Text style={styles.statValue}>24</Text>
                         <Icon name="trending-up" size={20} color="#FFF" style={styles.statIcon} />
                     </LinearGradient>
-
                     <LinearGradient
                         colors={['#333', '#111']}
                         start={{ x: 0, y: 0 }}
@@ -125,8 +118,7 @@ const AdminDashboardScreen = ({ navigation }) => {
                         <Icon name="time" size={20} color="#D4AF37" style={styles.statIcon} />
                     </LinearGradient>
                 </View>
-
-                {/* Features Grid */}
+                {}
                 <Text style={styles.sectionTitle}>Management Tools</Text>
                 <View style={styles.grid}>
                     {adminFeatures.map(renderFeatureCard)}
@@ -135,11 +127,10 @@ const AdminDashboardScreen = ({ navigation }) => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0F0F0F', // Absolute Black
+        backgroundColor: '#0F0F0F', 
     },
     header: {
         paddingTop: 60,
@@ -153,7 +144,7 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         fontSize: 28,
-        fontFamily: 'PlayfairDisplay-Bold', // Assuming font exists, else fallback
+        fontFamily: 'PlayfairDisplay-Bold', 
         fontWeight: 'bold',
         color: '#D4AF37',
         letterSpacing: 0.5,
@@ -258,5 +249,4 @@ const styles = StyleSheet.create({
         color: colors.textSecondary,
     },
 });
-
 export default AdminDashboardScreen;

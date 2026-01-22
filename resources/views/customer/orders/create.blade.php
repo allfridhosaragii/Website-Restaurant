@@ -230,7 +230,6 @@
     function formatRupiah(amount) {
         return 'Rp ' + amount.toLocaleString('id-ID');
     }
-    
     // Load cart from server (sync with menu page cart)
     function loadCartFromServer() {
         fetch('/customer/cart', {
@@ -260,7 +259,6 @@
         })
         .catch(err => console.error('Failed to load cart:', err));
     }
-    
     // Update cart display
     function updateCart() {
         const container = document.getElementById('cartItemsContainer');
@@ -327,7 +325,6 @@
                 menuItem.querySelector('.qty-value').textContent = '0';
             }
             updateCart();
-            
             // Also remove from server cart
             fetch(`/customer/cart/${id}`, {
                 method: 'DELETE',
@@ -384,12 +381,10 @@
                 delete cart[id];
             }
             updateCart();
-            
             // Sync with server cart
             syncCartItem(id, qty);
         });
     });
-    
     // Sync cart item with server
     function syncCartItem(menuId, qty) {
         const token = document.querySelector('meta[name="csrf-token"]').content;
@@ -422,7 +417,6 @@
                 });
         }
     }
-    
     // Category filter
     document.querySelectorAll('.nav-pills .nav-link').forEach(tab => {
         tab.addEventListener('click', function() {

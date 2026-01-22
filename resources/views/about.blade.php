@@ -1,12 +1,7 @@
 @extends('layouts.guest')
-
 @section('title', 'The Legacy • Culinaire')
-
 @section('content')
-<!-- WRAPPER: Forced Dark Theme & CSS Isolation -->
 <div class="about-luxury-wrapper smooth-wrapper" id="aboutPageRoot">
-    
-    <!-- HERO SECTION -->
     <section class="about-hero-section" id="hero">
         <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=1920&auto=format&fit=crop');"></div>
         <div class="hero-overlay"></div>
@@ -20,19 +15,14 @@
             </div>
         </div>
     </section>
-
-    <!-- CHAPTER I: THE FOUNDATIONS (Central Timeline) -->
     <section class="era-section vertical-era" id="era-1">
         <div class="container-fluid px-0">
             <div class="era-header text-center mb-5" data-aos="fade-up">
                 <span class="era-label font-mono text-gold tracking-widest text-xs" data-i18n="chapter_1_label">{{ __('messages.chapter_1_label') }}</span>
                 <h2 class="display-3 text-white mt-3 mb-5" data-i18n="chapter_1_title">{{ __('messages.chapter_1_title') }}</h2>
             </div>
-            
             <div class="central-timeline">
                 <div class="central-line"></div>
-                
-                <!-- 2009 -->
                 <div class="timeline-node" data-year="2009">
                     <div class="node-year-label font-display text-gold">2009</div>
                     <div class="node-content">
@@ -45,8 +35,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- 2010 -->
                 <div class="timeline-node" data-year="2010">
                     <div class="node-year-label font-display text-gold">2010</div>
                     <div class="node-content">
@@ -59,8 +47,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- 2011 -->
                 <div class="timeline-node" data-year="2011">
                     <div class="node-year-label font-display text-gold">2011</div>
                     <div class="node-content">
@@ -73,8 +59,6 @@
                         </div>
                     </div>
                 </div>
-
-                 <!-- 2012 -->
                 <div class="timeline-node" data-year="2012">
                      <div class="node-year-label font-display text-gold">2012</div>
                     <div class="node-content">
@@ -90,18 +74,14 @@
             </div>
         </div>
     </section>
-
-    <!-- CHAPTER II: THE GOLDEN ERA (Horizontal Scroll - Simplified) -->
     <section class="horizontal-wrapper">
         <div class="horizontal-header text-center mb-5">
             <span class="era-label font-mono text-gold tracking-widest text-xs" data-i18n="chapter_2_label">{{ __('messages.chapter_2_label') }}</span>
             <h2 class="display-3 text-white mt-3" data-i18n="chapter_2_title">{{ __('messages.chapter_2_title') }}</h2>
             <p class="text-white-50 font-serif lead" data-i18n="chapter_2_subtitle">{{ __('messages.chapter_2_subtitle') }}</p>
         </div>
-        
         <div class="horizontal-scroll-container">
             <div class="horizontal-track">
-                <!-- 2013 -->
                 <div class="h-card glass-card">
                     <span class="h-year text-gold">2013</span>
                     <div class="h-content">
@@ -109,7 +89,6 @@
                         <p class="text-gray-300" data-i18n="timeline_2013_desc">{{ __('messages.timeline_2013_desc') }}</p>
                     </div>
                 </div>
-                <!-- 2014 -->
                 <div class="h-card glass-card">
                     <span class="h-year text-gold">2014</span>
                     <div class="h-content">
@@ -117,7 +96,6 @@
                         <p class="text-gray-300" data-i18n="timeline_2014_desc">{{ __('messages.timeline_2014_desc') }}</p>
                     </div>
                 </div>
-                 <!-- 2015 -->
                 <div class="h-card glass-card">
                     <span class="h-year text-gold">2015</span>
                      <div class="h-content">
@@ -125,7 +103,6 @@
                         <p class="text-gray-300" data-i18n="timeline_2015_desc">{{ __('messages.timeline_2015_desc') }}</p>
                     </div>
                 </div>
-                 <!-- 2016 -->
                 <div class="h-card glass-card">
                     <span class="h-year text-gold">2016</span>
                      <div class="h-content">
@@ -133,7 +110,6 @@
                         <p class="text-gray-300" data-i18n="timeline_2016_desc">{{ __('messages.timeline_2016_desc') }}</p>
                     </div>
                 </div>
-                 <!-- 2017 -->
                 <div class="h-card glass-card">
                     <span class="h-year text-gold">2017</span>
                      <div class="h-content">
@@ -144,17 +120,13 @@
             </div>
         </div>
     </section>
-
-    <!-- CHAPTER III: RESILIENCE (Spotlight) -->
     <section class="spotlight-section">
         <div class="container small-container">
             <div class="text-center mb-5">
                 <span class="era-label font-mono text-gold tracking-widest text-xs" data-i18n="chapter_3_label">{{ __('messages.chapter_3_label') }}</span>
                 <h2 class="display-3 text-white mt-3" data-i18n="chapter_3_title">{{ __('messages.chapter_3_title') }}</h2>
             </div>
-
             <div class="spotlight-list">
-                <!-- 2018 -->
                 <div class="spotlight-item" data-year="2018">
                     <div class="sl-year text-gold">2018</div>
                     <div class="sl-content">
@@ -162,8 +134,6 @@
                         <p class="text-gray-400" data-i18n="timeline_2018_desc">{{ __('messages.timeline_2018_desc') }}</p>
                     </div>
                 </div>
-
-                <!-- 2019 -->
                 <div class="spotlight-item" data-year="2019">
                     <div class="sl-year text-gold">2019</div>
                     <div class="sl-content">
@@ -171,8 +141,6 @@
                         <p class="text-gray-400" data-i18n="timeline_2019_desc">{{ __('messages.timeline_2019_desc') }}</p>
                     </div>
                 </div>
-
-                <!-- 2020 -->
                 <div class="spotlight-item" data-year="2020">
                     <div class="sl-year text-gold">2020</div>
                     <div class="sl-content">
@@ -180,8 +148,6 @@
                         <p class="text-gray-400" data-i18n="timeline_2020_desc">{{ __('messages.timeline_2020_desc') }}</p>
                     </div>
                 </div>
-
-                <!-- 2021 -->
                 <div class="spotlight-item" data-year="2021">
                     <div class="sl-year text-gold">2021</div>
                     <div class="sl-content">
@@ -192,17 +158,13 @@
             </div>
         </div>
     </section>
-
-    <!-- CHAPTER IV: THE VISION (Stacking Cards) -->
     <section class="stacking-section">
         <div class="container pb-5">
              <div class="text-center mb-5">
                 <span class="era-label font-mono text-gold tracking-widest text-xs" data-i18n="chapter_4_label">{{ __('messages.chapter_4_label') }}</span>
                 <h2 class="display-3 text-white mt-3" data-i18n="chapter_4_title">{{ __('messages.chapter_4_title') }}</h2>
             </div>
-            
             <div class="cards-stack-wrapper">
-                <!-- 2022 -->
                 <div class="stack-card" style="top: 100px;">
                     <div class="sc-content">
                         <span class="sc-year text-gold">2022</span>
@@ -213,8 +175,6 @@
                         <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80" alt="2022">
                     </div>
                 </div>
-                
-                <!-- 2023 -->
                 <div class="stack-card" style="top: 140px;">
                      <div class="sc-content">
                         <span class="sc-year text-gold">2023</span>
@@ -225,8 +185,6 @@
                         <img src="https://images.unsplash.com/photo-1592861956120-e524fc739696?w=800&q=80" alt="2023">
                     </div>
                 </div>
-
-                <!-- 2024 -->
                 <div class="stack-card" style="top: 180px;">
                      <div class="sc-content">
                         <span class="sc-year text-gold">2024</span>
@@ -237,8 +195,6 @@
                         <img src="https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?w=800&q=80" alt="2024">
                     </div>
                 </div>
-
-                <!-- 2025 -->
                 <div class="stack-card" style="top: 220px;">
                      <div class="sc-content">
                         <span class="sc-year text-gold">2025</span>
@@ -246,20 +202,16 @@
                         <p class="text-gray-300" data-i18n="timeline_2025_desc">{{ __('messages.timeline_2025_desc') }}</p>
                     </div>
                     <div class="sc-image">
-                         <!-- FIXED: Known High Quality Abstract Tech Image -->
                         <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80" alt="2025">
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
     <footer class="py-5 text-center mt-5 border-top border-secondary">
         <p class="font-mono text-white-50 text-xs tracking-widest mb-0">EST. 2009 • CULINAIRE</p>
     </footer>
-
 </div>
-
 <style>
 /* --- SCOPED LUXURY THEME --- */
 .about-luxury-wrapper {
@@ -273,7 +225,6 @@
     overflow-x: hidden;
     padding-bottom: 0;
 }
-
 /* Force Text Colors */
 .about-luxury-wrapper h1, 
 .about-luxury-wrapper h2, 
@@ -292,10 +243,8 @@
 .about-luxury-wrapper .text-white-50 { color: rgba(255,255,255,0.5) !important; }
 .about-luxury-wrapper .text-gray-300 { color: #d1d5db !important; }
 .about-luxury-wrapper .text-gray-400 { color: #9ca3af !important; }
-
 /* Disable strikethrough if present globally */
 .nav-link { text-decoration: none !important; }
-
 /* Hero */
 .about-hero-section {
     height: 100vh;
@@ -324,7 +273,6 @@
     line-height: 1;
     letter-spacing: -2px;
 }
-
 /* Central Timeline */
 .vertical-era { padding: 100px 0; background: #050608; }
 .central-timeline {
@@ -355,7 +303,6 @@
 .timeline-node:nth-child(odd) { flex-direction: row-reverse; }
 .timeline-node:nth-child(odd) .node-text { text-align: right; }
 .timeline-node:nth-child(even) .node-text { text-align: left; }
-
 /* FIXED LAYOUT: Floating Year Label */
 .timeline-node:nth-child(odd) .node-year-label {
     right: 52%; /* Offset from center to left */
@@ -374,7 +321,6 @@
     z-index: 0;
     line-height: 1;
 }
-
 .node-content {
     width: 100%;
     display: flex;
@@ -389,8 +335,6 @@
 .node-img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); transition: 0.5s; }
 .timeline-node:hover .node-img img { filter: grayscale(0); transform: scale(1.05); }
 .node-text { width: 45%; padding-top: 10px; }
-
-
 /* Horizontal Scroll (Simplified) */
 .horizontal-wrapper {
     background: #0A0C10;
@@ -425,8 +369,6 @@
 }
 .h-card:hover { transform: translateY(-10px); background: rgba(255,255,255,0.05); border-color: #D4AF37; }
 .h-year { font-size: 3rem; font-weight: 700; display: block; margin-bottom: 20px; }
-
-
 /* Spotlight Section */
 .spotlight-section { padding: 100px 0; background: #050608; }
 .spotlight-item {
@@ -441,8 +383,6 @@
     border-left-color: #D4AF37;
     background: linear-gradient(90deg, rgba(212,175,55,0.05), transparent);
 }
-
-
 /* Stacking Cards */
 .stacking-section { padding: 100px 0; background: #0A0C10; }
 .cards-stack-wrapper {
@@ -470,7 +410,6 @@
 .sc-image { width: 50%; height: 100%; }
 .sc-image img { width: 100%; height: 100%; object-fit: cover; }
 .sc-year { font-size: 4rem; font-family: 'Playfair Display', serif; font-weight: 700; line-height: 1; margin-bottom: 20px; display: block; }
-
 /* Responsive */
 @media(max-width: 768px) {
     .display-super { font-size: 4rem; }
@@ -488,7 +427,6 @@
         font-size: 4rem;
     }
     .central-line { display: none; }
-    
     .stack-card { flex-direction: column; height: auto; position: relative; top: 0 !important; margin-bottom: 30px; }
     .sc-content, .sc-image { width: 100%; }
     .sc-image { height: 250px; }
@@ -497,7 +435,6 @@
     .cards-stack-wrapper { height: auto; }
 }
 </style>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Simple Scroll Observer for Timeline
@@ -508,9 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }, { threshold: 0.2 });
-
     document.querySelectorAll('.timeline-node').forEach(node => observer.observe(node));
-
     // 2. Spotlight Active State
     const spotlightObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -520,7 +455,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }, { threshold: 0.5 });
-
     document.querySelectorAll('.spotlight-item').forEach(item => spotlightObserver.observe(item));
 });
 </script>

@@ -1,8 +1,6 @@
 @extends('layouts.guest')
-
 @section('content')
 <section class="hero-section" id="home">
-    <!-- Parallax Background Layer -->
     <div class="parallax-bg" id="heroParallax"></div>
     <div class="hero-overlay"></div>
     <div class="container-fluid px-4 px-lg-5">
@@ -638,7 +636,6 @@
         -ms-hyphens: none;
         white-space: normal;
     }
-    
     /* Experience Badge - Mobile Responsive */
     @media (max-width: 768px) {
         .experience-badge {
@@ -685,7 +682,6 @@
         // Ensure cursor state - HIDDEN INITIALLY (User Request)
         if(titleCursor) titleCursor.style.display = 'none'; 
         if(subtitleCursor) subtitleCursor.style.display = 'none';
-
         // 3. Animation Configuration
         const config = {
             baseSpeed: 50,      // Base speed in ms (lower is faster)
@@ -695,18 +691,15 @@
             punctuationPause: 400, // Pause at comma/period
             spacePause: 30     // Pause at space
         };
-
         // 4. Start Animation Sequence
         setTimeout(() => {
             // Show cursor just before typing starts
             if(titleCursor) titleCursor.style.display = 'inline-block';
-            
             typeText(titleContainer, titleText, () => {
                 // Title Finished - HIDE IMMEDIATELY (User Request)
                 if(titleCursor) {
                     titleCursor.style.display = 'none';
                 }
-
                 // Start Subtitle
                 setTimeout(() => {
                     if(subtitleCursor) {
@@ -729,26 +722,21 @@
             let charIndex = 0;
             let currentWordSpan = null;
             let isSpace = false;
-            
             function typeChar() {
                 // Check if we finished all tokens
                 if (tokenIndex >= tokens.length) {
                     onComplete();
                     return;
                 }
-                
                 const currentToken = tokens[tokenIndex];
-                
                 // Skip empty strings
                 if (currentToken === '') {
                     tokenIndex++;
                     setTimeout(typeChar, 0);
                     return;
                 }
-                
                 // Check if current token is whitespace
                 isSpace = /^\s+$/.test(currentToken);
-                
                 // If starting a new token
                 if (charIndex === 0) {
                     if (!isSpace) {
@@ -759,35 +747,28 @@
                         element.appendChild(currentWordSpan);
                     }
                 }
-                
                 const char = currentToken.charAt(charIndex);
-                
                 // Create span for character
                 const charSpan = document.createElement('span');
                 charSpan.textContent = char;
                 charSpan.className = 'char-reveal';
-                
                 // Append to word wrapper or directly to element (for spaces)
                 if (isSpace) {
                     element.appendChild(charSpan);
                 } else {
                     currentWordSpan.appendChild(charSpan);
                 }
-                
                 charIndex++;
-                
                 // Calculate Delay
                 let delay = config.baseSpeed + (Math.random() * config.variance * 2 - config.variance);
                 if (char === ' ') delay += config.spacePause;
                 if (['.', ',', '!', '?'].includes(char)) delay += config.punctuationPause;
-                
                 // Check if token is complete
                 if (charIndex >= currentToken.length) {
                     tokenIndex++;
                     charIndex = 0;
                     currentWordSpan = null;
                 }
-                
                 setTimeout(typeChar, delay);
             }
             typeChar();

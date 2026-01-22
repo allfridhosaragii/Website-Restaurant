@@ -1,7 +1,5 @@
 @extends('layouts.guest')
-
 @section('title', 'System Status')
-
 @section('content')
 <section class="min-vh-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #0B0E10 0%, #1a1f25 100%); padding-top: 100px;">
     <div class="container">
@@ -14,14 +12,12 @@
                         </div>
                         <h2 class="text-white mb-3 fw-bold">System Control</h2>
                         <p class="text-white-50 mb-4">Secret admin panel for maintenance control</p>
-                        
                         @if(session('success'))
                             <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
                                 {{ session('success') }}
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                         @endif
-
                         <div class="p-4 rounded-3 mb-4" style="background: rgba(0,0,0,0.3);">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div class="text-start">
@@ -40,7 +36,6 @@
                                 </form>
                             </div>
                         </div>
-
                         <div class="p-3 rounded-3" style="background: rgba(200,155,58,0.1); border: 1px solid rgba(200,155,58,0.3);">
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-info-circle text-warning me-2"></i>
@@ -51,7 +46,6 @@
                                 </small>
                             </div>
                         </div>
-
                         <div class="mt-4 pt-3 border-top" style="border-color: rgba(255,255,255,0.1) !important;">
                             <small class="text-white-50">
                                 <i class="bi bi-person-check me-1"></i> 

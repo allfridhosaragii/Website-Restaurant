@@ -16,10 +16,7 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { BASE_URL } from '../../config/app';
-
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
-// --- COLORS ---
 const COLORS = {
     maroon: '#8B1538',
     maroonDark: '#6B0F2A',
@@ -33,8 +30,6 @@ const COLORS = {
     platinum: '#E5E4E2',
     diamond: '#B9F2FF',
 };
-
-// --- HELPER FUNCTIONS ---
 const getUserLevel = (points) => {
     if (points >= 100000) return { level: 'Diamond', color: COLORS.diamond, next: 'Max Level', progress: 100 };
     if (points >= 50000) return { level: 'Platinum', color: COLORS.platinum, next: 100000, progress: ((points - 50000) / 50000) * 100 };
@@ -42,7 +37,6 @@ const getUserLevel = (points) => {
     if (points >= 10000) return { level: 'Silver', color: COLORS.silver, next: 25000, progress: ((points - 10000) / 15000) * 100 };
     return { level: 'Bronze', color: COLORS.bronze, next: 10000, progress: (points / 10000) * 100 };
 };
-
 const REWARDS = [
     { id: 1, name: 'Diskon 10%', points: 5000, icon: 'ticket-outline', description: 'Diskon 10% untuk pesanan berikutnya' },
     { id: 2, name: 'Gratis Minuman', points: 3000, icon: 'wine-outline', description: 'Minuman gratis pilihan' },
@@ -51,44 +45,33 @@ const REWARDS = [
     { id: 5, name: 'Voucher Rp 100K', points: 25000, icon: 'card-outline', description: 'Voucher senilai Rp 100.000' },
     { id: 6, name: 'Priority Seating', points: 20000, icon: 'star-outline', description: 'Prioritas pemilihan meja selama 1 bulan' },
 ];
-
 const PointsScreen = () => {
     const navigation = useNavigation();
     const isFocused = useIsFocused();
     const scrollY = useRef(new Animated.Value(0)).current;
-
-    // State
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [points, setPoints] = useState(0);
     const [transactions, setTransactions] = useState([]);
-    const [selectedTab, setSelectedTab] = useState('overview'); // 'overview', 'history', 'rewards'
-
-    // Derived State
+    const [selectedTab, setSelectedTab] = useState('overview'); 
     const userLevel = useMemo(() => getUserLevel(points), [points]);
-
     const fetchPointsData = async () => {
         try {
             const token = await AsyncStorage.getItem('userToken');
             const response = await axios.get(`${BASE_URL}/points`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-
             if (response.data.success) {
                 setPoints(response.data.points);
-                setFrames(response.data.transactions.data); // Pagination data
+                setFrames(response.data.transactions.data); 
             }
         } catch (error) {
             console.error('Fetch points error:', error);
-            // Fallback for demo if backend not ready yet
-            // setPoints(0);
         } finally {
             setLoading(false);
             setRefreshing(false);
         }
     };
-
-    // Helper to safely set transactions since pagination structure might differ
     const setFrames = (data) => {
         if (Array.isArray(data)) {
             setTransactions(data);
@@ -96,27 +79,21 @@ const PointsScreen = () => {
             setTransactions([]);
         }
     };
-
     useEffect(() => {
         if (isFocused) {
             fetchPointsData();
         }
     }, [isFocused]);
-
     const onRefresh = () => {
         setRefreshing(true);
         fetchPointsData();
     };
-
-    // --- RENDERERS ---
-
     const renderHeader = () => {
         const headerOpacity = scrollY.interpolate({
             inputRange: [0, 100],
             outputRange: [0, 1],
             extrapolate: 'clamp',
         });
-
         return (
             <Animated.View style={[styles.header, { opacity: headerOpacity }]}>
                 <LinearGradient
@@ -130,7 +107,6 @@ const PointsScreen = () => {
             </Animated.View>
         );
     };
-
     const renderPointsCard = () => (
         <View style={styles.cardContainer}>
             <LinearGradient
@@ -139,15 +115,14 @@ const PointsScreen = () => {
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
             >
-                {/* Level Badge */}
+                {}
                 <View style={styles.levelBadge}>
                     <Icon name="ribbon-outline" size={20} color={userLevel.color} />
                     <Text style={[styles.levelText, { color: userLevel.color }]}>
                         {userLevel.level} Member
                     </Text>
                 </View>
-
-                {/* Points Display */}
+                {}
                 <View style={styles.pointsDisplay}>
                     <Text style={styles.pointsLabel}>Total Poin</Text>
                     <Text style={styles.pointsValue}>
@@ -155,8 +130,7 @@ const PointsScreen = () => {
                     </Text>
                     <Text style={styles.pointsSubLabel}>Points Available</Text>
                 </View>
-
-                {/* Progress Bar */}
+                {}
                 <View style={styles.progressContainer}>
                     <View style={styles.progressHeader}>
                         <Text style={styles.progressLabel}>
@@ -181,7 +155,6 @@ const PointsScreen = () => {
             </LinearGradient>
         </View>
     );
-
     const renderTabs = () => (
         <View style={styles.tabsContainer}>
             {['Overview', 'History', 'Rewards'].map((tab) => {
@@ -200,7 +173,6 @@ const PointsScreen = () => {
             })}
         </View>
     );
-
     const renderOverview = () => (
         <View style={styles.sectionContainer}>
             <View style={styles.infoCard}>
@@ -208,7 +180,6 @@ const PointsScreen = () => {
                     <Icon name="trending-up-outline" size={24} color={COLORS.gold} />
                     <Text style={styles.sectionTitle}>Cara Mendapatkan Poin</Text>
                 </View>
-
                 <View style={styles.earnMethodItem}>
                     <View style={[styles.iconBox, { backgroundColor: 'rgba(16, 185, 129, 0.1)' }]}>
                         <Icon name="bag-handle-outline" size={24} color="#10B981" />
@@ -221,7 +192,6 @@ const PointsScreen = () => {
                         <Text style={[styles.pointsEarned, { color: '#10B981' }]}>+1.000</Text>
                     </View>
                 </View>
-
                 <View style={[styles.earnMethodItem, { marginTop: 12 }]}>
                     <View style={[styles.iconBox, { backgroundColor: 'rgba(59, 130, 246, 0.1)' }]}>
                         <Icon name="calendar-outline" size={24} color="#3B82F6" />
@@ -235,7 +205,6 @@ const PointsScreen = () => {
                     </View>
                 </View>
             </View>
-
             <View style={[styles.infoCard, { marginTop: 20 }]}>
                 <View style={styles.infoHeader}>
                     <Icon name="star-outline" size={24} color={COLORS.gold} />
@@ -256,7 +225,6 @@ const PointsScreen = () => {
             </View>
         </View>
     );
-
     const renderHistory = () => (
         <View style={styles.sectionContainer}>
             {loading ? (
@@ -294,7 +262,6 @@ const PointsScreen = () => {
             )}
         </View>
     );
-
     const renderRewards = () => (
         <View style={styles.sectionContainer}>
             {REWARDS.map((reward) => {
@@ -332,7 +299,6 @@ const PointsScreen = () => {
             })}
         </View>
     );
-
     return (
         <View style={styles.container}>
             {renderHeader()}
@@ -348,13 +314,12 @@ const PointsScreen = () => {
                 )}
                 scrollEventThrottle={16}
             >
-                {/* Background Gradient */}
+                {}
                 <LinearGradient
                     colors={[COLORS.maroonDark, COLORS.maroon, COLORS.maroonLight]}
                     style={styles.background}
                 />
-
-                {/* Main Content */}
+                {}
                 <View style={styles.content}>
                     <View style={styles.headerSpacer} />
                     <View style={styles.titleRow}>
@@ -366,10 +331,8 @@ const PointsScreen = () => {
                             <Text style={styles.screenSubtitle}>Rewards & Benefits</Text>
                         </View>
                     </View>
-
                     {renderPointsCard()}
                     {renderTabs()}
-
                     {selectedTab === 'overview' && renderOverview()}
                     {selectedTab === 'history' && renderHistory()}
                     {selectedTab === 'rewards' && renderRewards()}
@@ -378,7 +341,6 @@ const PointsScreen = () => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -478,7 +440,7 @@ const styles = StyleSheet.create({
     pointsValue: {
         fontSize: 48,
         fontWeight: 'bold',
-        color: COLORS.gold, // Gradient text fallback
+        color: COLORS.gold, 
         letterSpacing: -1,
     },
     pointsSubLabel: {
@@ -714,5 +676,4 @@ const styles = StyleSheet.create({
         fontStyle: 'italic',
     },
 });
-
 export default PointsScreen;

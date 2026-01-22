@@ -11,16 +11,13 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors, spacing, fontSize, borderRadius } from '../../theme/colors';
-
 const ContactScreen = () => {
     const handleCall = () => {
         Linking.openURL('tel:+62318286500');
     };
-
     const handleEmail = () => {
         Linking.openURL('mailto:info@surabaya.telkomuniversity.ac.id');
     };
-
     const handleMaps = () => {
         const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
         const latLng = 'Universitas Telkom Surabaya, Jl. Ketintang No.156, Surabaya';
@@ -31,19 +28,17 @@ const ContactScreen = () => {
         });
         Linking.openURL(url);
     };
-
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false}>
-                {/* Hero Section */}
+                {}
                 <View style={styles.heroSection}>
                     <Text style={styles.heroPretitle}>GET IN TOUCH</Text>
                     <Text style={styles.heroTitle}>Let's Start a Conversation</Text>
                     <Text style={styles.heroSubtitle}>We invite you to experience the extraordinary.</Text>
                     <View style={styles.separator} />
                 </View>
-
-                {/* Contact Options */}
+                {}
                 <View style={styles.section}>
                     <TouchableOpacity style={styles.contactCard} onPress={handleMaps}>
                         <View style={styles.iconContainer}>
@@ -56,7 +51,6 @@ const ContactScreen = () => {
                         </View>
                         <Icon name="chevron-forward" size={24} color={colors.accent} />
                     </TouchableOpacity>
-
                     <TouchableOpacity style={styles.contactCard} onPress={handleCall}>
                         <View style={styles.iconContainer}>
                             <Text style={styles.number}>02</Text>
@@ -68,7 +62,6 @@ const ContactScreen = () => {
                         </View>
                         <Icon name="chevron-forward" size={24} color={colors.accent} />
                     </TouchableOpacity>
-
                     <TouchableOpacity style={styles.contactCard} onPress={handleEmail}>
                         <View style={styles.iconContainer}>
                             <Text style={styles.number}>03</Text>
@@ -80,35 +73,30 @@ const ContactScreen = () => {
                         <Icon name="chevron-forward" size={24} color={colors.accent} />
                     </TouchableOpacity>
                 </View>
-
-                {/* Map Placeholder */}
+                {}
                 <View style={styles.mapSection}>
                     <TouchableOpacity style={styles.mapButton} onPress={handleMaps}>
                         <Icon name="map" size={32} color={colors.accent} />
                         <Text style={styles.mapButtonText}>Open in Maps</Text>
                     </TouchableOpacity>
                 </View>
-
-                {/* Send Message Form Placeholder */}
+                {}
                 <View style={styles.formSection}>
                     <Text style={styles.formTitle}>Send a Message</Text>
                     <Text style={styles.formSubtitle}>Your feedback and enquiries are paramount to us.</Text>
-                    {/* Form fields would go here - placeholder for now */}
+                    {}
                     <View style={styles.inputPlaceholder}><Text style={styles.placeholderText}>Your Name</Text></View>
                     <View style={styles.inputPlaceholder}><Text style={styles.placeholderText}>Email Address</Text></View>
                     <View style={styles.inputPlaceholder}><Text style={styles.placeholderText}>Subject</Text></View>
                     <View style={[styles.inputPlaceholder, { height: 100 }]}><Text style={styles.placeholderText}>Message</Text></View>
-
                     <TouchableOpacity style={styles.submitButton}>
                         <Text style={styles.submitButtonText}>SEND MESSAGE</Text>
                     </TouchableOpacity>
                 </View>
-
             </ScrollView>
         </SafeAreaView>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -249,5 +237,4 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
 });
-
 export default ContactScreen;

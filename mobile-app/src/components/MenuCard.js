@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors, spacing, fontSize, borderRadius } from '../theme/colors';
-
 const MenuCard = ({ menu, onPress, horizontal = false }) => {
     const formatPrice = (price) => {
         return new Intl.NumberFormat('id-ID', {
@@ -11,7 +10,6 @@ const MenuCard = ({ menu, onPress, horizontal = false }) => {
             minimumFractionDigits: 0,
         }).format(price);
     };
-
     if (horizontal) {
         return (
             <TouchableOpacity style={styles.cardHorizontal} onPress={onPress}>
@@ -30,7 +28,6 @@ const MenuCard = ({ menu, onPress, horizontal = false }) => {
             </TouchableOpacity>
         );
     }
-
     return (
         <TouchableOpacity style={styles.card} onPress={onPress}>
             <Image
@@ -51,23 +48,21 @@ const MenuCard = ({ menu, onPress, horizontal = false }) => {
         </TouchableOpacity>
     );
 };
-
 const styles = StyleSheet.create({
     card: {
-        width: '100%', // Let parent control width
-        backgroundColor: '#1E1E1E', // Darker surface matching screenshot
-        borderRadius: 24, // Rounder corners like screenshot
+        width: '100%', 
+        backgroundColor: '#1E1E1E', 
+        borderRadius: 24, 
         marginBottom: spacing.md,
         overflow: 'hidden',
-        // Removed border for cleaner look
     },
     image: {
         width: '100%',
-        height: 160, // Taller image like screenshot
+        height: 160, 
     },
     info: {
         padding: 12,
-        alignItems: 'center', // Center text alignment like screenshot
+        alignItems: 'center', 
     },
     category: {
         fontSize: 10,
@@ -79,13 +74,13 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     name: {
-        fontSize: 16, // Slightly larger
+        fontSize: 16, 
         fontWeight: 'bold',
         color: colors.white,
         marginBottom: 4,
         textAlign: 'center',
         fontFamily: 'serif',
-        height: 44, // Fixed height for 2 lines
+        height: 44, 
     },
     price: {
         fontSize: 16,
@@ -104,7 +99,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    // Horizontal variant
     cardHorizontal: {
         width: 160,
         backgroundColor: colors.surface,
@@ -126,5 +120,4 @@ const styles = StyleSheet.create({
         right: spacing.sm,
     },
 });
-
 export default MenuCard;

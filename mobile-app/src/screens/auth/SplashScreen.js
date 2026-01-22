@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { colors } from '../../theme/colors';
-
 const SplashScreen = () => {
     return (
         <View style={styles.container}>
@@ -15,7 +14,6 @@ const SplashScreen = () => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -38,5 +36,4 @@ const styles = StyleSheet.create({
         marginTop: 40,
     },
 });
-
 export default SplashScreen;

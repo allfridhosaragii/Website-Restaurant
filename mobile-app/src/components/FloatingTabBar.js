@@ -15,12 +15,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors, spacing, borderRadius } from '../theme/colors';
-
 const { width } = Dimensions.get('window');
 const TAB_WIDTH = (width - 48) / 4;
-
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
-
 const TabBarIcon = ({ route, isFocused, onPress, index, animatedIndex }) => {
     const getIconName = () => {
         switch (route.name) {
@@ -36,7 +33,6 @@ const TabBarIcon = ({ route, isFocused, onPress, index, animatedIndex }) => {
                 return 'ellipse';
         }
     };
-
     const animatedIconStyle = useAnimatedStyle(() => {
         const scale = interpolate(
             animatedIndex.value,
@@ -54,7 +50,6 @@ const TabBarIcon = ({ route, isFocused, onPress, index, animatedIndex }) => {
             transform: [{ scale }, { translateY }],
         };
     });
-
     const animatedBgStyle = useAnimatedStyle(() => {
         const opacity = interpolate(
             animatedIndex.value,
@@ -73,17 +68,15 @@ const TabBarIcon = ({ route, isFocused, onPress, index, animatedIndex }) => {
             transform: [{ scale }],
         };
     });
-
     return (
         <AnimatedTouchable
             onPress={onPress}
             style={styles.tabButton}
             activeOpacity={0.7}
         >
-            {/* Animated background glow */}
+            {}
             <Animated.View style={[styles.iconBg, animatedBgStyle]} />
-
-            {/* Icon */}
+            {}
             <Animated.View style={animatedIconStyle}>
                 <Icon
                     name={getIconName()}
@@ -94,18 +87,14 @@ const TabBarIcon = ({ route, isFocused, onPress, index, animatedIndex }) => {
         </AnimatedTouchable>
     );
 };
-
 const FloatingTabBar = ({ state, descriptors, navigation }) => {
     const animatedIndex = useSharedValue(state.index);
-
     React.useEffect(() => {
         animatedIndex.value = withSpring(state.index, {
             damping: 15,
             stiffness: 150,
         });
     }, [state.index]);
-
-    // Animated indicator style
     const indicatorStyle = useAnimatedStyle(() => {
         return {
             transform: [
@@ -118,32 +107,27 @@ const FloatingTabBar = ({ state, descriptors, navigation }) => {
             ],
         };
     });
-
     return (
         <View style={styles.container}>
-            {/* Floating bar */}
+            {}
             <View style={styles.tabBar}>
-                {/* Animated indicator */}
+                {}
                 <Animated.View style={[styles.indicator, indicatorStyle]}>
                     <View style={styles.indicatorInner} />
                 </Animated.View>
-
-                {/* Tab buttons */}
+                {}
                 {state.routes.map((route, index) => {
                     const isFocused = state.index === index;
-
                     const onPress = () => {
                         const event = navigation.emit({
                             type: 'tabPress',
                             target: route.key,
                             canPreventDefault: true,
                         });
-
                         if (!isFocused && !event.defaultPrevented) {
                             navigation.navigate(route.name);
                         }
                     };
-
                     return (
                         <TabBarIcon
                             key={route.key}
@@ -159,7 +143,6 @@ const FloatingTabBar = ({ state, descriptors, navigation }) => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
@@ -210,5 +193,4 @@ const styles = StyleSheet.create({
         backgroundColor: colors.accent,
     },
 });
-
 export default FloatingTabBar;

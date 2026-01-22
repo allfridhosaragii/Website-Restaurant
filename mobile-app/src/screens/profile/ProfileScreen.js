@@ -17,26 +17,20 @@ import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 const BASE_URL = 'https://website-restaurant.up.railway.app/api';
-
 const { width } = Dimensions.get('window');
-
 const ProfileScreen = ({ navigation }) => {
     const { user, logout } = useAuth();
     const { isDarkMode, toggleTheme } = useSettings();
     const [isIndonesian, setIsIndonesian] = useState(true);
     const [stats, setStats] = useState({ points: 0, total_orders: 0, total_favorites: 0 });
-
     useEffect(() => {
         fetchDashboardStats();
     }, []);
-
     const fetchDashboardStats = async () => {
         try {
             const token = await AsyncStorage.getItem('auth_token');
             if (!token) return;
-
             const response = await axios.get(`${BASE_URL}/dashboard`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -48,28 +42,23 @@ const ProfileScreen = ({ navigation }) => {
             console.log('Dashboard stats error:', error);
         }
     };
-
     const handleLogout = () => {
         logout();
     };
-
     return (
         <View style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor="#8B1538" />
-
-            {/* Background Curve */}
+            {}
             <View style={styles.headerBackground}>
                 <View style={styles.headerCurve} />
             </View>
-
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
             >
-                {/* Header Title */}
+                {}
                 <Text style={styles.headerTitle}>Profile</Text>
-
-                {/* Profile Card */}
+                {}
                 <TouchableOpacity
                     onPress={() => navigation.navigate('Points')}
                     activeOpacity={0.9}
@@ -91,7 +80,6 @@ const ProfileScreen = ({ navigation }) => {
                                     <MaterialIcon name="crown" size={12} color="#FFF" />
                                 </View>
                             </View>
-
                             <View style={styles.userInfo}>
                                 <Text style={styles.userName}>{user?.name || 'Pengguna Culinaire'}</Text>
                                 <Text style={styles.userEmail}>{user?.email || 'email@culinaire.com'}</Text>
@@ -100,7 +88,6 @@ const ProfileScreen = ({ navigation }) => {
                                     <Text style={styles.platinumText}>PLATINUM MEMBER</Text>
                                 </View>
                             </View>
-
                             <TouchableOpacity
                                 style={styles.editButton}
                                 onPress={() => navigation.navigate('EditProfile')}
@@ -108,7 +95,6 @@ const ProfileScreen = ({ navigation }) => {
                                 <Icon name="create-outline" size={20} color="#FFF" />
                             </TouchableOpacity>
                         </View>
-
                         <View style={styles.statsRow}>
                             <View style={styles.statItem}>
                                 <Text style={styles.statValue}>{(stats.points || 0).toLocaleString()}</Text>
@@ -127,8 +113,7 @@ const ProfileScreen = ({ navigation }) => {
                         </View>
                     </LinearGradient>
                 </TouchableOpacity>
-
-                {/* Quick Actions */}
+                {}
                 <View style={styles.quickActionsRow}>
                     <TouchableOpacity
                         style={styles.quickActionCard}
@@ -142,7 +127,6 @@ const ProfileScreen = ({ navigation }) => {
                             <Text style={styles.quickActionLabel}>Histori</Text>
                         </View>
                     </TouchableOpacity>
-
                     <TouchableOpacity
                         style={styles.quickActionCard}
                         onPress={() => navigation.navigate('Favorites')}
@@ -156,8 +140,7 @@ const ProfileScreen = ({ navigation }) => {
                         </View>
                     </TouchableOpacity>
                 </View>
-
-                {/* Settings Section */}
+                {}
                 <Text style={styles.sectionTitle}>Pengaturan Tampilan</Text>
                 <View style={styles.menuCard}>
                     <View style={styles.menuItem}>
@@ -175,9 +158,7 @@ const ProfileScreen = ({ navigation }) => {
                             value={!isDarkMode}
                         />
                     </View>
-
                     <View style={styles.divider} />
-
                     <View style={styles.menuItem}>
                         <View style={styles.menuItemLeft}>
                             <View style={[styles.menuIcon, { backgroundColor: '#E3F2FD' }]}>
@@ -197,8 +178,7 @@ const ProfileScreen = ({ navigation }) => {
                         />
                     </View>
                 </View>
-
-                {/* Contact Section */}
+                {}
                 <Text style={styles.sectionTitle}>Hubungi Kami</Text>
                 <View style={styles.menuCard}>
                     <TouchableOpacity style={styles.menuItem}>
@@ -213,9 +193,7 @@ const ProfileScreen = ({ navigation }) => {
                         </View>
                         <Icon name="chevron-forward" size={20} color="#CCC" />
                     </TouchableOpacity>
-
                     <View style={styles.divider} />
-
                     <TouchableOpacity style={styles.menuItem}>
                         <View style={styles.menuItemLeft}>
                             <View style={[styles.menuIcon, { backgroundColor: '#E3F2FD' }]}>
@@ -228,9 +206,7 @@ const ProfileScreen = ({ navigation }) => {
                         </View>
                         <Icon name="chevron-forward" size={20} color="#CCC" />
                     </TouchableOpacity>
-
                     <View style={styles.divider} />
-
                     <TouchableOpacity style={styles.menuItem}>
                         <View style={styles.menuItemLeft}>
                             <View style={[styles.menuIcon, { backgroundColor: '#FFEBEE' }]}>
@@ -244,8 +220,7 @@ const ProfileScreen = ({ navigation }) => {
                         <Icon name="chevron-forward" size={20} color="#CCC" />
                     </TouchableOpacity>
                 </View>
-
-                {/* Info Section */}
+                {}
                 <View style={[styles.menuCard, { marginTop: 16 }]}>
                     <TouchableOpacity style={styles.menuItem}>
                         <View style={styles.menuItemLeft}>
@@ -256,9 +231,7 @@ const ProfileScreen = ({ navigation }) => {
                         </View>
                         <Icon name="chevron-forward" size={20} color="#CCC" />
                     </TouchableOpacity>
-
                     <View style={styles.divider} />
-
                     <TouchableOpacity style={styles.menuItem}>
                         <View style={styles.menuItemLeft}>
                             <View style={[styles.menuIcon, { backgroundColor: '#FFF3E0' }]}>
@@ -268,9 +241,7 @@ const ProfileScreen = ({ navigation }) => {
                         </View>
                         <Icon name="chevron-forward" size={20} color="#CCC" />
                     </TouchableOpacity>
-
                     <View style={styles.divider} />
-
                     <TouchableOpacity style={styles.menuItem}>
                         <View style={styles.menuItemLeft}>
                             <View style={[styles.menuIcon, { backgroundColor: '#E8F5E9' }]}>
@@ -281,24 +252,20 @@ const ProfileScreen = ({ navigation }) => {
                         <Icon name="chevron-forward" size={20} color="#CCC" />
                     </TouchableOpacity>
                 </View>
-
-                {/* Logout Button */}
+                {}
                 <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
                     <Icon name="log-out-outline" size={20} color="#C62828" />
                     <Text style={styles.logoutText}>Keluar</Text>
                 </TouchableOpacity>
-
                 <View style={styles.footer}>
                     <Text style={styles.versionText}>Culinaire v1.0.0</Text>
                     <Text style={styles.sloganText}>Premium Dining Experience</Text>
                 </View>
-
                 <View style={{ height: 100 }} />
             </ScrollView>
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -310,7 +277,7 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         height: 300,
-        backgroundColor: '#8B1538', // Deep Burgundy
+        backgroundColor: '#8B1538', 
         borderBottomLeftRadius: 40,
         borderBottomRightRadius: 40,
     },
@@ -330,7 +297,7 @@ const styles = StyleSheet.create({
         padding: 20,
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.2)',
-        backgroundColor: 'rgba(255,255,255,0.1)', // Glassmorphism
+        backgroundColor: 'rgba(255,255,255,0.1)', 
         marginBottom: 24,
     },
     profileHeader: {
@@ -346,7 +313,7 @@ const styles = StyleSheet.create({
         width: 64,
         height: 64,
         borderRadius: 32,
-        backgroundColor: '#D4AF37', // Gold avatar bg
+        backgroundColor: '#D4AF37', 
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 2,
@@ -435,7 +402,6 @@ const styles = StyleSheet.create({
         height: 30,
         backgroundColor: 'rgba(255,255,255,0.2)',
     },
-    // Quick Actions
     quickActionsRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -472,7 +438,6 @@ const styles = StyleSheet.create({
         fontSize: 11,
         color: '#666',
     },
-    // Settings
     sectionTitle: {
         fontSize: 16,
         fontWeight: 'bold',
@@ -528,7 +493,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#F0F0F0',
         marginLeft: 50,
     },
-    // Logout
     logoutButton: {
         marginTop: 24,
         marginBottom: 24,
@@ -563,5 +527,4 @@ const styles = StyleSheet.create({
         fontFamily: 'serif',
     },
 });
-
 export default ProfileScreen;

@@ -310,30 +310,22 @@ class AdminCmsController extends Controller
         }
         return response()->json(['success' => false, 'message' => 'No image uploaded'], 400);
     }
-    
     public function application()
     {
         $currentApk = null;
         $activeApk = CmsSetting::get('active_apk_filename');
-        
         if ($activeApk) {
             $supabaseUrl = env('SUPABASE_URL');
             $bucket = env('SUPABASE_BUCKET');
             $publicUrl = "{$supabaseUrl}/storage/v1/object/public/{$bucket}/apks/{$activeApk}";
-            
-            // We can add a simple check if the file exists on Supabase if needed, 
-            // but for now we'll trust the database record for the UI.
             $currentApk = [
                 'name' => $activeApk,
-                'size' => CmsSetting::get('active_apk_size', '48 MB'), // We'll store size in DB too
+                'size' => CmsSetting::get('active_apk_size', '48 MB'), 
                 'date' => CmsSetting::get('active_apk_date', date('d M Y H:i')),
                 'url' => $publicUrl,
             ];
         }
-        
         $history = CmsSetting::get('apk_upload_history', []);
-
-        // SEED HISTORY: If history is empty but there is an active APK, add it to history
         if (empty($history) && $activeApk) {
             $history = [[
                 'name' => $activeApk,
@@ -342,113 +334,79 @@ class AdminCmsController extends Controller
             ]];
             CmsSetting::set('apk_upload_history', $history, 'application', 'json');
         }
-        
         return view('admin.application.index', compact('currentApk', 'history'));
     }
-    
     public function updateApplication(Request $request)
     {
         $request->validate([
-            'apk_file' => 'nullable|file|max:102400', // 100MB max
+            'apk_file' => 'nullable|file|max:102400', 
         ]);
-        
         if ($request->hasFile('apk_file')) {
             $file = $request->file('apk_file');
-            
-            // Validate it's an APK file
             if ($file->getClientOriginalExtension() !== 'apk') {
                 return redirect('/admin/application')->with('error', 'File harus berformat .apk');
             }
-            
-            // Move file to Supabase
             $timestamp = date('dmy-Hi');
             $newFilename = 'Culinaire-' . $timestamp . '.apk';
             $fileSize = $this->formatFileSize($file->getSize());
             $fileDate = date('d M Y H:i');
-            
             $supabaseUrl = env('SUPABASE_URL');
             $serviceRole = env('SUPABASE_SERVICE_ROLE_KEY');
             $bucket = env('SUPABASE_BUCKET');
-
-            // --- AUTO-CLEANUP LOGIC ---
-            // 1. Get current active filename from database
             $oldFilename = CmsSetting::get('active_apk_filename');
-            
-            // 2. If old file exists, delete it from Supabase Storage
             if ($oldFilename) {
                 Http::withHeaders([
                     'Authorization' => "Bearer {$serviceRole}",
                 ])->delete("{$supabaseUrl}/storage/v1/object/{$bucket}/apks/{$oldFilename}");
-                
-                // Note: We don't block upload if delete fails (e.g. file already gone manually)
             }
-            // --------------------------
-            
             $response = Http::withHeaders([
                 'Authorization' => "Bearer {$serviceRole}",
             ])->attach(
                 'file', file_get_contents($file->getRealPath()), $newFilename
             )->post("{$supabaseUrl}/storage/v1/object/{$bucket}/apks/{$newFilename}");
-
             if ($response->failed()) {
                 return redirect('/admin/application')->with('error', 'Gagal upload ke Supabase: ' . $response->body());
             }
-            
-            // Store the filename and metadata in settings
             CmsSetting::set('active_apk_filename', $newFilename, 'application', 'text');
             CmsSetting::set('active_apk_size', $fileSize, 'application', 'text');
             CmsSetting::set('active_apk_date', $fileDate, 'application', 'text');
-            
             return redirect('/admin/application')->with('success', 'Aplikasi berhasil diupload ke Supabase dengan nama ' . $newFilename . '!');
         }
-
         return redirect('/admin/application')->with('error', 'Silakan pilih file APK terlebih dahulu');
     }
-    
     private function formatFileSize($bytes)
     {
         if ($bytes < 1024) return $bytes . ' B';
         if ($bytes < 1024 * 1024) return round($bytes / 1024, 1) . ' KB';
         return round($bytes / (1024 * 1024), 1) . ' MB';
     }
-
     public function generateUploadUrl(Request $request)
     {
         $request->validate([
             'filename' => 'required|string',
         ]);
-
         $supabaseUrl = env('SUPABASE_URL');
         $serviceRole = env('SUPABASE_SERVICE_ROLE_KEY');
         $bucket = env('SUPABASE_BUCKET');
-
-        // 1. Generate new unique filename
         $timestamp = date('dmy-Hi');
         $extension = pathinfo($request->filename, PATHINFO_EXTENSION) ?: 'apk';
         $newFilename = 'Culinaire-' . $timestamp . '.' . $extension;
-
-        // 2. Auto-cleanup: Delete old file
         $oldFilename = CmsSetting::get('active_apk_filename');
         if ($oldFilename) {
             Http::withHeaders([
                 'Authorization' => "Bearer {$serviceRole}",
             ])->delete("{$supabaseUrl}/storage/v1/object/{$bucket}/apks/{$oldFilename}");
         }
-
-        // 3. Get Signed Upload URL from Supabase
         $response = Http::withHeaders([
             'Authorization' => "Bearer {$serviceRole}",
             'Content-Type' => 'application/json',
         ])->post("{$supabaseUrl}/storage/v1/object/upload/sign/{$bucket}/apks/{$newFilename}", [
-            'expiresIn' => 3600 // 1 hour
+            'expiresIn' => 3600 
         ]);
-
         if ($response->failed()) {
             return response()->json(['success' => false, 'message' => 'Gagal membuat upload URL: ' . $response->body()], 500);
         }
-
         $data = $response->json();
-        
         return response()->json([
             'success' => true,
             'upload_url' => "{$supabaseUrl}/storage/v1" . $data['url'],
@@ -456,39 +414,26 @@ class AdminCmsController extends Controller
             'supabase_url' => $supabaseUrl
         ]);
     }
-
     public function finalizeUpload(Request $request)
     {
         $request->validate([
             'filename' => 'required|string',
             'size' => 'required|string',
         ]);
-
         $fileDate = date('d M Y H:i');
-
-        // Update current active APK
         CmsSetting::set('active_apk_filename', $request->filename, 'application', 'text');
         CmsSetting::set('active_apk_size', $request->size, 'application', 'text');
         CmsSetting::set('active_apk_date', $fileDate, 'application', 'text');
-
-        // Update history
         $history = CmsSetting::get('apk_upload_history', []);
-        
-        // Add newest to the top
         array_unshift($history, [
             'name' => $request->filename,
             'size' => $request->size,
             'date' => $fileDate
         ]);
-
-        // Keep only top 100 entries to avoid DB bloat
         $history = array_slice($history, 0, 100);
-
         CmsSetting::set('apk_upload_history', $history, 'application', 'json');
-
         return response()->json(['success' => true]);
     }
-
     public function getDownloadActivities()
     {
         $activities = \DB::table('activity_logs')
@@ -499,6 +444,10 @@ class AdminCmsController extends Controller
                 'activity_logs.action',
                 'activity_logs.description',
                 'activity_logs.ip_address',
+                'activity_logs.device_type',
+                'activity_logs.device_name',
+                'activity_logs.browser',
+                'activity_logs.os',
                 'activity_logs.created_at',
                 'users.name as user_name',
                 'users.email as user_email'
@@ -506,10 +455,10 @@ class AdminCmsController extends Controller
             ->orderBy('activity_logs.created_at', 'desc')
             ->limit(50)
             ->get();
-
         return response()->json([
             'success' => true,
             'data' => $activities
         ]);
     }
+
 }

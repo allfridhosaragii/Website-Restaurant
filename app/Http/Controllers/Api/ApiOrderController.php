@@ -1,25 +1,18 @@
 <?php
-
 namespace App\Http\Controllers\Api;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-
 class ApiOrderController extends Controller
 {
-    /**
-     * List user's orders
-     */
     public function index(Request $request)
     {
         $orders = \DB::table('orders')
             ->where('user_id', $request->user()->id)
             ->orderBy('created_at', 'desc')
             ->get();
-        
         foreach ($orders as $order) {
             $order->items = \DB::table('order_items')
                 ->join('menus', 'order_items.menu_id', '=', 'menus.id')
@@ -27,7 +20,6 @@ class ApiOrderController extends Controller
                 ->select('order_items.*', 'menus.name as menu_name', 'menus.image_url')
                 ->get();
         }
-        
         return response()->json([
             'success' => true,
             'orders' => $orders->map(function ($order) {
@@ -44,10 +36,6 @@ class ApiOrderController extends Controller
             }),
         ]);
     }
-
-    /**
-     * Create new order from cart
-     */
     public function store(Request $request)
     {
         try {
@@ -55,27 +43,19 @@ class ApiOrderController extends Controller
                 'payment_method' => 'required|in:cash,transfer,qris',
                 'notes' => 'nullable|string|max:500',
             ]);
-            
             $user = $request->user();
             $cartItems = \App\Models\CartItem::where('user_id', $user->id)->with('menu')->get();
-            
             if ($cartItems->isEmpty()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Cart is empty',
                 ], 400);
             }
-            
-            // Calculate total safely
             $total = $cartItems->sum(function ($item) {
                 return $item->menu ? $item->quantity * $item->menu->price : 0;
             });
-            
-            // Generate Order Number
             $orderNumber = 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(5));
-            
             DB::beginTransaction();
-            
             $orderId = DB::table('orders')->insertGetId([
                 'order_number' => $orderNumber,
                 'user_id' => $user->id,
@@ -86,39 +66,29 @@ class ApiOrderController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-            
             foreach ($cartItems as $item) {
-                // Skip items with deleted menu or use fallback price
                 $price = $item->menu ? $item->menu->price : 0;
-                
                 DB::table('order_items')->insert([
                     'order_id' => $orderId,
                     'menu_id' => $item->menu_id,
                     'quantity' => $item->quantity,
                     'price' => $price,
-                    'subtotal' => $price * $item->quantity, // Added subtotal required by schema
-                    'menu_name' => $item->menu ? $item->menu->name : 'Unknown Item', // Added menu_name required by schema
+                    'subtotal' => $price * $item->quantity, 
+                    'menu_name' => $item->menu ? $item->menu->name : 'Unknown Item', 
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
             }
-            
-            // Clear cart after order
             \App\Models\CartItem::where('user_id', $user->id)->delete();
-            
-            // Add Points (+1000 for every order)
             $points = 1000;
             $user->increment('points', $points);
-            
             \App\Models\PointTransaction::create([
                 'user_id' => $user->id,
                 'points' => $points,
                 'type' => 'order',
                 'description' => 'Pembelian Menu (' . $orderNumber . ')',
             ]);
-            
             DB::commit();
-            
             return response()->json([
                 'success' => true,
                 'message' => 'Order created successfully',
@@ -130,7 +100,6 @@ class ApiOrderController extends Controller
                     'payment_method' => $request->payment_method,
                 ],
             ], 201);
-            
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Order creation failed: ' . $e->getMessage());
@@ -140,30 +109,23 @@ class ApiOrderController extends Controller
             ], 500);
         }
     }
-
-    /**
-     * Get single order detail
-     */
     public function show(Request $request, $id)
     {
         $order = \DB::table('orders')
             ->where('id', $id)
             ->where('user_id', $request->user()->id)
             ->first();
-        
         if (!$order) {
             return response()->json([
                 'success' => false,
                 'message' => 'Order not found',
             ], 404);
         }
-        
         $order->items = \DB::table('order_items')
             ->join('menus', 'order_items.menu_id', '=', 'menus.id')
             ->where('order_items.order_id', $order->id)
             ->select('order_items.*', 'menus.name as menu_name', 'menus.image_url')
             ->get();
-        
         return response()->json([
             'success' => true,
             'order' => [

@@ -1,13 +1,10 @@
 @extends('layouts.guest')
-
 @section('title', 'Maintenance Control')
-
 @section('content')
 <section class="min-vh-100 d-flex align-items-center" style="background: linear-gradient(135deg, #0B0E10 0%, #1a1f25 100%); padding-top: 100px;">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-10">
-                <!-- Header -->
                 <div class="text-center mb-5">
                     <div class="d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background: rgba(200,155,58,0.15); border: 2px solid rgba(200,155,58,0.3); border-radius: 50%;">
                         <i class="bi bi-shield-lock-fill" style="font-size: 2.5rem; color: #D4AF37;"></i>
@@ -15,22 +12,17 @@
                     <h1 class="text-white fw-bold mb-2">Maintenance Control</h1>
                     <p class="text-white-50">Secret admin panel - Only for <strong class="text-warning">{{ auth()->user()->email }}</strong></p>
                 </div>
-
-                <!-- Control Panel -->
                 <div class="row g-4">
-                    <!-- Toggle Section -->
                     <div class="col-md-5">
                         <div class="card border-0 h-100" style="background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(200,155,58,0.2) !important;">
                             <div class="card-body p-4">
                                 <h5 class="text-white mb-4"><i class="bi bi-gear-fill me-2 text-warning"></i>Control Panel</h5>
-                                
                                 @if(session('success'))
                                     <div class="alert alert-success alert-dismissible fade show mb-4" role="alert" style="background: rgba(25,135,84,0.2); border: 1px solid rgba(25,135,84,0.3); color: #75b798;">
                                         <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
                                     </div>
                                 @endif
-
                                 <div class="p-4 rounded-3 mb-4" style="background: rgba(0,0,0,0.3);">
                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                         <div>
@@ -41,7 +33,6 @@
                                             {{ $isMaintenanceMode ? 'ACTIVE' : 'INACTIVE' }}
                                         </span>
                                     </div>
-                                    
                                     <form action="{{ url('/maintenance/toggle') }}" method="POST">
                                         @csrf
                                         <button type="submit" class="btn btn-lg w-100 {{ $isMaintenanceMode ? 'btn-danger' : 'btn-success' }}" id="toggleBtn">
@@ -53,9 +44,7 @@
                                         </button>
                                     </form>
                                 </div>
-
                                 @if($isMaintenanceMode && $maintenanceStartTime)
-                                <!-- Duration Counter -->
                                 <div class="p-3 rounded-3 mb-4" style="background: rgba(220,53,69,0.15); border: 1px solid rgba(220,53,69,0.3);">
                                     <div class="d-flex align-items-center mb-2">
                                         <i class="bi bi-clock-history text-danger me-2"></i>
@@ -104,7 +93,6 @@
                                     setInterval(updateDuration, 1000);
                                 </script>
                                 @endif
-
                                 <div class="p-3 rounded-3" style="background: rgba(200,155,58,0.1); border: 1px solid rgba(200,155,58,0.3);">
                                     <small class="text-white-50">
                                         <i class="bi bi-info-circle text-warning me-2"></i>
@@ -114,8 +102,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Live Preview Section -->
                     <div class="col-md-7">
                         <div class="card border-0 h-100" style="background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(200,155,58,0.2) !important;">
                             <div class="card-body p-4">
@@ -123,10 +109,7 @@
                                     <i class="bi bi-eye-fill me-2 text-warning"></i>Live Preview
                                     <span class="badge {{ $isMaintenanceMode ? 'bg-danger' : 'bg-success' }} ms-2">{{ $isMaintenanceMode ? 'Maintenance' : 'Normal' }}</span>
                                 </h5>
-                                
-                                <!-- Real Live Preview with Iframe -->
                                 <div class="preview-container rounded-3 overflow-hidden position-relative" style="border: 2px solid rgba(200,155,58,0.2); height: 400px; background: #0B0E10;">
-                                    <!-- Browser Chrome Bar -->
                                     <div class="d-flex align-items-center px-3 py-2" style="background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(200,155,58,0.2);">
                                         <div class="d-flex gap-1 me-3">
                                             <span style="width: 10px; height: 10px; border-radius: 50%; background: #ff5f57;"></span>
@@ -139,15 +122,12 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    <!-- Iframe Preview - Shows actual page -->
                                     <iframe 
                                         src="{{ $isMaintenanceMode ? url('/maintenance/preview') : url('/') }}" 
                                         style="width: 166.67%; height: 166.67%; border: none; transform: scale(0.6); transform-origin: top left;"
                                         loading="lazy"
                                     ></iframe>
                                 </div>
-
                                 <div class="mt-3 d-flex justify-content-between align-items-center">
                                     <small class="text-white-50">
                                         <i class="bi bi-arrow-repeat me-1"></i> Preview updates after toggle
@@ -160,16 +140,12 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Footer Info -->
                 <div class="mt-4 text-center">
                     <small class="text-white-50">
                         <i class="bi bi-shield-check me-1"></i> 
                         This page is only accessible by the super admin account
                     </small>
                 </div>
-
-                <!-- Real-Time Visitor Tracking Section - Always Visible -->
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="card border-0" style="background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(200,155,58,0.2) !important;">
@@ -184,7 +160,6 @@
                                         <i class="bi bi-arrow-repeat text-white-50 spinning" id="refresh-indicator" style="display: none;"></i>
                                     </div>
                                 </div>
-                                
                                 <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
                                     <table class="table table-dark table-hover mb-0" style="background: transparent;">
                                         <thead style="position: sticky; top: 0; background: #1a1f25; z-index: 10;">
@@ -209,7 +184,6 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                
                                 <div class="mt-3 text-center">
                                     <small class="text-white-50">
                                         <i class="bi bi-info-circle me-1"></i>
@@ -224,7 +198,6 @@
         </div>
     </div>
 </section>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form[action*="/maintenance/toggle"]');
@@ -233,13 +206,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const previewBadge = document.querySelector('.col-md-7 .badge');
     const iframe = document.querySelector('iframe');
     const durationSection = document.getElementById('durationCounter')?.closest('.p-3.rounded-3.mb-4');
-    
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
-        
         toggleBtn.disabled = true;
         toggleBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Processing...';
-        
         try {
             const response = await fetch(form.action, {
                 method: 'POST',
@@ -250,38 +220,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify({})
             });
-            
             const data = await response.json();
-            
             if (data.success) {
                 // Update status badge
                 if (statusBadge) {
                     statusBadge.className = `badge ${data.isMaintenanceMode ? 'bg-danger' : 'bg-success'} px-3 py-2`;
                     statusBadge.textContent = data.isMaintenanceMode ? 'ACTIVE' : 'INACTIVE';
                 }
-                
                 // Update toggle button
                 toggleBtn.className = `btn btn-lg w-100 ${data.isMaintenanceMode ? 'btn-danger' : 'btn-success'}`;
                 toggleBtn.innerHTML = data.isMaintenanceMode 
                     ? '<i class="bi bi-toggle-on me-2"></i> Turn OFF Maintenance'
                     : '<i class="bi bi-toggle-off me-2"></i> Turn ON Maintenance';
-                
                 // Update preview badge
                 if (previewBadge) {
                     previewBadge.className = `badge ${data.isMaintenanceMode ? 'bg-danger' : 'bg-success'} ms-2`;
                     previewBadge.textContent = data.isMaintenanceMode ? 'Maintenance' : 'Normal';
                 }
-                
                 // Update iframe
                 if (iframe) {
                     iframe.src = data.isMaintenanceMode 
                         ? '{{ url("/maintenance/preview") }}'
                         : '{{ url("/") }}';
                 }
-                
                 // Show success toast
                 showToast(data.message, 'success');
-                
                 // Handle duration counter - reload page to show/hide it properly
                 setTimeout(() => {
                     window.location.reload();
@@ -294,7 +257,6 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleBtn.innerHTML = '<i class="bi bi-exclamation-triangle me-2"></i> Error - Try Again';
         }
     });
-    
     function showToast(message, type) {
         const toast = document.createElement('div');
         toast.className = `alert alert-${type} position-fixed`;
@@ -305,7 +267,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-
 <style>
 @keyframes fadeIn {
     from { opacity: 0; transform: translateX(20px); }
@@ -319,46 +280,36 @@ document.addEventListener('DOMContentLoaded', function() {
     animation: spin 1s linear infinite;
 }
 </style>
-
 <script>
 // Visitor Tracking - Always runs
 (function() {
     let visitorData = [];
     let lastFetchTime = Date.now();
-    
     function formatDuration(seconds) {
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
         const secs = seconds % 60;
-        
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     }
-    
     function updateDurations() {
         const elapsed = Math.floor((Date.now() - lastFetchTime) / 1000);
         const durationCells = document.querySelectorAll('.duration-cell[data-active="true"]');
-        
         durationCells.forEach((cell, index) => {
             const baseDuration = parseInt(cell.dataset.baseDuration) || 0;
             cell.textContent = formatDuration(baseDuration + elapsed);
         });
     }
-    
     async function fetchVisitors() {
         const indicator = document.getElementById('refresh-indicator');
         if (indicator) indicator.style.display = 'inline-block';
-        
         try {
             const response = await fetch('/api/site-visitors-history');
             const data = await response.json();
-            
             visitorData = data.visitors || [];
             lastFetchTime = Date.now();
-            
             // Update counts
             document.getElementById('active-count').textContent = data.active_count + ' Active';
             document.getElementById('total-today').textContent = data.total_today + ' Today';
-            
             // Update table
             const tbody = document.getElementById('visitors-table-body');
             if (visitorData.length === 0) {
@@ -398,13 +349,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (indicator) indicator.style.display = 'none';
         }
     }
-    
     // Initial fetch
     fetchVisitors();
-    
     // Refresh data every 5 seconds
     setInterval(fetchVisitors, 5000);
-    
     // Update duration display every 1 second (only for active visitors)
     setInterval(updateDurations, 1000);
 })();

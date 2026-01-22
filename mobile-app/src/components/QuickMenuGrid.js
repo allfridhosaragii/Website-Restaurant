@@ -2,14 +2,12 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { colors } from '../theme/colors';
-
 const MENU_ITEMS = [
     { id: 1, label: 'Pesan', icon: 'food', color: colors.primary },
     { id: 2, label: 'Reservasi', icon: 'calendar-clock', color: colors.accent.orange },
     { id: 3, label: 'Promo', icon: 'ticket-percent', color: colors.accent.purple },
     { id: 4, label: 'Voucher', icon: 'wallet-giftcard', color: colors.secondary },
 ];
-
 const QuickMenuGrid = () => {
     return (
         <View style={styles.container}>
@@ -24,7 +22,6 @@ const QuickMenuGrid = () => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
@@ -49,5 +46,4 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
 });
-
 export default QuickMenuGrid;

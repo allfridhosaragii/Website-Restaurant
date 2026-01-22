@@ -15,23 +15,19 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { colors, spacing, borderRadius, fontSize } from '../../theme/colors';
 import { adminAPI } from '../../api/client';
 import LinearGradient from 'react-native-linear-gradient';
-
 const AdminMenuScreen = ({ navigation }) => {
     const [menus, setMenus] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-
     useFocusEffect(
         useCallback(() => {
             loadMenus();
         }, [])
     );
-
     const loadMenus = async () => {
         try {
             const response = await adminAPI.getMenus();
-            // Handle both structure: { data: [...] } or [...]
             const data = response.data.data || response.data;
             setMenus(Array.isArray(data) ? data : []);
         } catch (error) {
@@ -42,7 +38,6 @@ const AdminMenuScreen = ({ navigation }) => {
             setRefreshing(false);
         }
     };
-
     const handleDelete = (menu) => {
         Alert.alert(
             'Hapus Menu',
@@ -65,12 +60,10 @@ const AdminMenuScreen = ({ navigation }) => {
             ]
         );
     };
-
     const filteredMenus = menus.filter(item =>
         item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.category.toLowerCase().includes(searchQuery.toLowerCase())
     );
-
     const renderItem = ({ item }) => (
         <View style={styles.card}>
             <Image
@@ -88,17 +81,14 @@ const AdminMenuScreen = ({ navigation }) => {
                 </View>
                 <Text style={styles.price}>Rp {parseInt(item.price).toLocaleString('id-ID')}</Text>
                 <Text style={styles.category}>{item.category}</Text>
-
                 <View style={styles.actionRow}>
                     <TouchableOpacity
                         style={[styles.actionBtn, styles.editBtn]}
                         onPress={() => Alert.alert('Info', 'Fitur Edit akan segera hadir di update berikutnya!')}
-                    // onPress={() => navigation.navigate('AdminMenuForm', { menu: item })}
                     >
                         <Icon name="create-outline" size={18} color="#D4AF37" />
                         <Text style={styles.editBtnText}>Edit</Text>
                     </TouchableOpacity>
-
                     <TouchableOpacity
                         style={[styles.actionBtn, styles.deleteBtn]}
                         onPress={() => handleDelete(item)}
@@ -110,10 +100,9 @@ const AdminMenuScreen = ({ navigation }) => {
             </View>
         </View>
     );
-
     return (
         <View style={styles.container}>
-            {/* Header */}
+            {}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
                     <Icon name="arrow-back" size={24} color="#FFF" />
@@ -121,8 +110,7 @@ const AdminMenuScreen = ({ navigation }) => {
                 <Text style={styles.headerTitle}>Manage Menu</Text>
                 <View style={{ width: 24 }} />
             </View>
-
-            {/* Search Bar */}
+            {}
             <View style={styles.searchContainer}>
                 <View style={styles.searchBar}>
                     <Icon name="search" size={20} color={colors.textSecondary} />
@@ -135,7 +123,6 @@ const AdminMenuScreen = ({ navigation }) => {
                     />
                 </View>
             </View>
-
             <FlatList
                 data={filteredMenus}
                 keyExtractor={(item) => item.id.toString()}
@@ -157,12 +144,10 @@ const AdminMenuScreen = ({ navigation }) => {
                     )
                 }
             />
-
-            {/* Floating Action Button */}
+            {}
             <TouchableOpacity
                 style={styles.fab}
                 onPress={() => Alert.alert('Info', 'Fitur Tambah Menu akan segera hadir di update berikutnya!')}
-            // onPress={() => navigation.navigate('AdminMenuForm')}
             >
                 <LinearGradient
                     colors={['#D4AF37', '#B8860B']}
@@ -174,7 +159,6 @@ const AdminMenuScreen = ({ navigation }) => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -332,5 +316,4 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
 });
-
 export default AdminMenuScreen;

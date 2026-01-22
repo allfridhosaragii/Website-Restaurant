@@ -9,16 +9,13 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors, spacing, fontSize, borderRadius } from '../../theme/colors';
 import { orderAPI } from '../../api/client';
-
 const OrderDetailScreen = ({ route }) => {
     const { id } = route.params;
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
-
     useEffect(() => {
         loadOrder();
     }, [id]);
-
     const loadOrder = async () => {
         try {
             const response = await orderAPI.getById(id);
@@ -29,7 +26,6 @@ const OrderDetailScreen = ({ route }) => {
             setLoading(false);
         }
     };
-
     const formatPrice = (price) => {
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
@@ -37,7 +33,6 @@ const OrderDetailScreen = ({ route }) => {
             minimumFractionDigits: 0,
         }).format(price);
     };
-
     const getStatusColor = (status) => {
         switch (status) {
             case 'completed': return colors.success;
@@ -46,7 +41,6 @@ const OrderDetailScreen = ({ route }) => {
             default: return colors.accent;
         }
     };
-
     if (loading) {
         return (
             <View style={styles.loader}>
@@ -54,14 +48,12 @@ const OrderDetailScreen = ({ route }) => {
             </View>
         );
     }
-
     if (!order) {
         return null;
     }
-
     return (
         <ScrollView style={styles.container}>
-            {/* Order Info */}
+            {}
             <View style={styles.section}>
                 <View style={styles.headerRow}>
                     <Text style={styles.orderNo}>#{order.order_number}</Text>
@@ -71,8 +63,7 @@ const OrderDetailScreen = ({ route }) => {
                 </View>
                 <Text style={styles.date}>{order.created_at}</Text>
             </View>
-
-            {/* Items */}
+            {}
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Item Pesanan</Text>
                 {order.items?.map((item, index) => (
@@ -86,8 +77,7 @@ const OrderDetailScreen = ({ route }) => {
                     </View>
                 ))}
             </View>
-
-            {/* Payment Summary */}
+            {}
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Ringkasan Pembayaran</Text>
                 <View style={styles.summaryRow}>
@@ -103,8 +93,7 @@ const OrderDetailScreen = ({ route }) => {
                     <Text style={styles.totalValue}>{formatPrice(order.total)}</Text>
                 </View>
             </View>
-
-            {/* Payment Method */}
+            {}
             <View style={styles.section}>
                 <View style={styles.infoRow}>
                     <Icon name="card-outline" size={20} color={colors.accent} />
@@ -115,7 +104,6 @@ const OrderDetailScreen = ({ route }) => {
         </ScrollView>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -236,5 +224,4 @@ const styles = StyleSheet.create({
         textTransform: 'capitalize',
     },
 });
-
 export default OrderDetailScreen;

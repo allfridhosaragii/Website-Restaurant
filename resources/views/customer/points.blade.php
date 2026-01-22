@@ -1,8 +1,6 @@
 @extends('layouts.guest')
-
 @section('content')
 <div class="points-page">
-    <!-- Hero Section -->
     <div class="points-hero">
         <div class="hero-glow"></div>
         <div class="container">
@@ -21,8 +19,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Stats Cards -->
     <div class="container">
         <div class="stats-grid">
             <div class="stat-card order-card">
@@ -52,8 +48,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- How to Earn Section -->
         <div class="earn-section">
             <h3 class="section-title">
                 <span class="title-icon"><i class="bi bi-stars"></i></span>
@@ -76,14 +70,11 @@
                 </div>
             </div>
         </div>
-
-        <!-- Transaction History -->
         <div class="history-section">
             <h3 class="section-title">
                 <span class="title-icon"><i class="bi bi-clock-history"></i></span>
                 Riwayat Poin
             </h3>
-            
             @if($history->count() > 0)
             <div class="history-list">
                 @foreach($history as $item)
@@ -138,14 +129,12 @@
         </div>
     </div>
 </div>
-
 <style>
 .points-page {
     min-height: 100vh;
     background: var(--bg-primary);
     padding-bottom: 4rem;
 }
-
 /* Hero Section */
 .points-hero {
     position: relative;
@@ -154,7 +143,6 @@
     overflow: hidden;
     margin-bottom: -3rem;
 }
-
 .hero-glow {
     position: absolute;
     width: 600px;
@@ -165,17 +153,14 @@
     transform: translate(-50%, -50%);
     pointer-events: none;
 }
-
 .hero-content {
     text-align: center;
     position: relative;
     z-index: 2;
 }
-
 .points-crown {
     margin-bottom: 1.5rem;
 }
-
 .crown-icon {
     width: 100px;
     height: 100px;
@@ -183,12 +168,10 @@
     filter: drop-shadow(0 10px 30px rgba(200, 155, 58, 0.4));
     animation: float 4s ease-in-out infinite;
 }
-
 @keyframes float {
     0%, 100% { transform: translateY(0px) rotate(0deg); }
     50% { transform: translateY(-12px) rotate(2deg); }
 }
-
 .points-label {
     font-size: 0.875rem;
     text-transform: uppercase;
@@ -197,7 +180,6 @@
     margin-bottom: 0.5rem;
     font-weight: 500;
 }
-
 .points-value {
     display: flex;
     align-items: baseline;
@@ -205,7 +187,6 @@
     gap: 0.5rem;
     margin-bottom: 1rem;
 }
-
 .points-number {
     font-family: var(--font-heading);
     font-size: 4.5rem;
@@ -217,18 +198,15 @@
     text-shadow: 0 4px 20px rgba(200, 155, 58, 0.3);
     line-height: 1;
 }
-
 .points-suffix {
     font-size: 1.5rem;
     color: rgba(255, 255, 255, 0.5);
     font-weight: 400;
 }
-
 .points-tagline {
     color: rgba(255, 255, 255, 0.6);
     font-size: 0.9rem;
 }
-
 /* Stats Grid */
 .stats-grid {
     display: grid;
@@ -236,7 +214,6 @@
     gap: 1.5rem;
     margin-bottom: 3rem;
 }
-
 .stat-card {
     background: var(--glass-bg);
     backdrop-filter: blur(20px);
@@ -252,7 +229,6 @@
     position: relative;
     overflow: hidden;
 }
-
 .stat-card::before {
     content: '';
     position: absolute;
@@ -264,26 +240,21 @@
     opacity: 0;
     transition: opacity 0.3s ease;
 }
-
 .stat-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
-
 .stat-card:hover::before {
     opacity: 1;
 }
-
 .stat-card.order-card .stat-icon {
     background: linear-gradient(135deg, rgba(25, 135, 84, 0.15), rgba(25, 135, 84, 0.05));
     color: #198754;
 }
-
 .stat-card.reservation-card .stat-icon {
     background: linear-gradient(135deg, rgba(200, 155, 58, 0.2), rgba(200, 155, 58, 0.05));
     color: var(--accent);
 }
-
 .stat-icon {
     width: 56px;
     height: 56px;
@@ -294,11 +265,9 @@
     font-size: 1.5rem;
     flex-shrink: 0;
 }
-
 .stat-info {
     flex: 1;
 }
-
 .stat-value {
     font-family: var(--font-heading);
     font-size: 1.75rem;
@@ -306,31 +275,26 @@
     color: var(--text-primary);
     line-height: 1.2;
 }
-
 .stat-label {
     font-size: 0.8rem;
     color: var(--text-muted);
     margin-top: 0.25rem;
 }
-
 .stat-rate {
     text-align: right;
     padding-left: 1rem;
     border-left: 1px solid var(--border-light);
 }
-
 .rate-value {
     display: block;
     font-weight: 700;
     font-size: 0.9rem;
     color: var(--accent);
 }
-
 .rate-label {
     font-size: 0.7rem;
     color: var(--text-muted);
 }
-
 /* Section Styles */
 .section-title {
     display: flex;
@@ -342,7 +306,6 @@
     color: var(--text-primary);
     margin-bottom: 1.5rem;
 }
-
 .title-icon {
     width: 40px;
     height: 40px;
@@ -354,7 +317,6 @@
     color: var(--text-on-accent);
     font-size: 1rem;
 }
-
 /* Earn Section */
 .earn-section {
     background: var(--glass-bg);
@@ -365,13 +327,11 @@
     padding: 2rem;
     margin-bottom: 2rem;
 }
-
 .earn-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
 }
-
 .earn-item {
     display: flex;
     gap: 1rem;
@@ -381,12 +341,10 @@
     border: 1px solid var(--border-light);
     transition: all 0.3s ease;
 }
-
 .earn-item:hover {
     border-color: var(--accent);
     box-shadow: 0 4px 20px rgba(200, 155, 58, 0.1);
 }
-
 .earn-step {
     width: 36px;
     height: 36px;
@@ -400,26 +358,22 @@
     font-size: 0.9rem;
     flex-shrink: 0;
 }
-
 .earn-content h4 {
     font-size: 1rem;
     font-weight: 600;
     color: var(--text-primary);
     margin-bottom: 0.5rem;
 }
-
 .earn-content p {
     font-size: 0.85rem;
     color: var(--text-muted);
     margin: 0;
     line-height: 1.5;
 }
-
 .earn-content strong {
     color: var(--accent);
     font-weight: 600;
 }
-
 /* History Section */
 .history-section {
     background: var(--glass-bg);
@@ -429,13 +383,11 @@
     border-radius: 24px;
     padding: 2rem;
 }
-
 .history-list {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
 }
-
 .history-item {
     display: flex;
     align-items: center;
@@ -446,13 +398,11 @@
     border: 1px solid var(--border-light);
     transition: all 0.3s ease;
 }
-
 .history-item:hover {
     transform: translateX(4px);
     border-color: var(--border-medium);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
-
 .history-icon {
     width: 44px;
     height: 44px;
@@ -463,35 +413,29 @@
     font-size: 1.1rem;
     flex-shrink: 0;
 }
-
 .history-item.order .history-icon {
     background: linear-gradient(135deg, rgba(25, 135, 84, 0.15), rgba(25, 135, 84, 0.05));
     color: #198754;
 }
-
 .history-item.reservation .history-icon {
     background: linear-gradient(135deg, rgba(200, 155, 58, 0.2), rgba(200, 155, 58, 0.05));
     color: var(--accent);
 }
-
 .history-details {
     flex: 1;
     min-width: 0;
 }
-
 .history-title {
     font-weight: 600;
     font-size: 0.95rem;
     color: var(--text-primary);
     margin-bottom: 0.25rem;
 }
-
 .history-meta {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
 }
-
 .history-meta span {
     display: inline-flex;
     align-items: center;
@@ -499,15 +443,12 @@
     font-size: 0.75rem;
     color: var(--text-muted);
 }
-
 .history-meta i {
     font-size: 0.7rem;
 }
-
 .history-points {
     flex-shrink: 0;
 }
-
 .points-badge {
     display: inline-block;
     padding: 0.4rem 0.85rem;
@@ -515,23 +456,19 @@
     font-weight: 700;
     font-size: 0.85rem;
 }
-
 .points-badge.order {
     background: linear-gradient(135deg, rgba(25, 135, 84, 0.15), rgba(25, 135, 84, 0.08));
     color: #198754;
 }
-
 .points-badge.reservation {
     background: linear-gradient(135deg, rgba(200, 155, 58, 0.2), rgba(200, 155, 58, 0.08));
     color: var(--accent);
 }
-
 /* Empty State */
 .empty-state {
     text-align: center;
     padding: 3rem 2rem;
 }
-
 .empty-icon {
     width: 80px;
     height: 80px;
@@ -544,14 +481,12 @@
     font-size: 2rem;
     color: var(--text-muted);
 }
-
 .empty-state h4 {
     font-family: var(--font-heading);
     font-size: 1.25rem;
     color: var(--text-primary);
     margin-bottom: 0.5rem;
 }
-
 .empty-state p {
     color: var(--text-muted);
     font-size: 0.9rem;
@@ -560,41 +495,33 @@
     margin-left: auto;
     margin-right: auto;
 }
-
 .empty-actions {
     display: flex;
     gap: 1rem;
     justify-content: center;
     flex-wrap: wrap;
 }
-
 /* Responsive */
 @media (max-width: 768px) {
     .points-hero {
         padding: 3rem 0 5rem;
     }
-    
     .points-number {
         font-size: 3rem;
     }
-    
     .crown-icon {
         width: 80px;
         height: 80px;
     }
-    
     .stats-grid {
         grid-template-columns: 1fr;
     }
-    
     .earn-grid {
         grid-template-columns: 1fr;
     }
-    
     .stat-card {
         flex-wrap: wrap;
     }
-    
     .stat-rate {
         width: 100%;
         border-left: none;
@@ -607,52 +534,42 @@
         gap: 0.5rem;
         justify-content: center;
     }
-    
     .history-item {
         flex-wrap: wrap;
     }
-    
     .history-details {
         order: 1;
         width: 100%;
     }
-    
     .history-points {
         order: 0;
     }
-    
     .history-meta {
         margin-top: 0.5rem;
     }
 }
-
 /* Dark Mode Support */
 [data-theme="dark"] .points-hero {
     background: linear-gradient(135deg, #0B0E10 0%, #16252B 50%, #0B0E10 100%);
 }
-
 [data-theme="dark"] .stat-card,
 [data-theme="dark"] .earn-section,
 [data-theme="dark"] .history-section {
     background: rgba(22, 37, 43, 0.9);
     border-color: rgba(255, 255, 255, 0.06);
 }
-
 [data-theme="dark"] .earn-item,
 [data-theme="dark"] .history-item {
     background: rgba(11, 14, 16, 0.6);
     border-color: rgba(255, 255, 255, 0.04);
 }
-
 [data-theme="dark"] .earn-item:hover,
 [data-theme="dark"] .stat-card:hover {
     border-color: var(--accent);
 }
-
 [data-theme="dark"] .history-item:hover {
     border-color: rgba(255, 255, 255, 0.1);
 }
-
 [data-theme="dark"] .empty-icon {
     background: linear-gradient(135deg, rgba(22, 37, 43, 0.8), rgba(30, 48, 56, 0.5));
 }

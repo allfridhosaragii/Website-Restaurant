@@ -1,16 +1,12 @@
 @extends('layouts.guest')
-
 @section('content')
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-12">
-            <!-- Header -->
             <div class="card border-0 shadow-lg mb-5 overflow-hidden position-relative" style="border-radius: 20px; background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);">
                 <div class="card-body p-5 text-center text-white position-relative">
                     <div class="position-absolute top-0 start-0 w-100 h-100" style="background: radial-gradient(circle at 50% 50%, rgba(220, 53, 69, 0.15) 0%, transparent 70%); pointer-events: none;"></div>
-                    
                     <h2 class="mb-4 fw-light text-uppercase tracking-wider" style="letter-spacing: 2px;">Your Favorite Menus</h2>
-                    
                     <div class="mb-4">
                         <img src="https://res.cloudinary.com/dh9ysyfit/image/upload/v1766509327/IMG_8024_tcrsza.png" 
                              alt="Favorites" 
@@ -19,8 +15,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Favorites Grid -->
             @if($favorites->count() > 0)
                 <div class="row g-4">
                     @foreach($favorites as $fav)
@@ -60,7 +54,6 @@
         </div>
     </div>
 </div>
-
 <style>
     @keyframes pulse-red {
         0% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(220, 53, 69, 0.4)); }

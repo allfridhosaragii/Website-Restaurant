@@ -14,43 +14,35 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useAuth } from '../../context/AuthContext';
-
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const { login, googleLogin } = useAuth();
     const [loading, setLoading] = useState(false);
-
     const handleLogin = async () => {
         if (!email || !password) {
             Alert.alert("Perhatian", "Mohon isi email dan password");
             return;
         }
-
         setLoading(true);
         const result = await login(email, password);
         setLoading(false);
-
         if (!result.success) {
             Alert.alert("Login Gagal", result.error || "Terjadi kesalahan.");
         }
     };
-
     const handleGoogleLogin = async () => {
         setLoading(true);
         const result = await googleLogin();
         setLoading(false);
-
         if (!result.success) {
             Alert.alert("Google Login Gagal", result.error || "Terjadi kesalahan.");
         }
     };
-
     return (
         <View style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor="#F5F5F0" />
-
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={{ flex: 1 }}
@@ -59,7 +51,7 @@ const LoginScreen = ({ navigation }) => {
                     contentContainerStyle={styles.scrollContent}
                     showsVerticalScrollIndicator={false}
                 >
-                    {/* Header Section */}
+                    {}
                     <View style={styles.headerContainer}>
                         <View style={styles.logoBox}>
                             <Text style={styles.logoLetter}>C</Text>
@@ -67,10 +59,9 @@ const LoginScreen = ({ navigation }) => {
                         <Text style={styles.appTitle}>Culinaire</Text>
                         <Text style={styles.appSubtitle}>Premium Culinary Experience</Text>
                     </View>
-
-                    {/* Form Card */}
+                    {}
                     <View style={styles.card}>
-                        {/* Email Input */}
+                        {}
                         <Text style={styles.label}>Email</Text>
                         <View style={styles.inputContainer}>
                             <TextInput
@@ -83,8 +74,7 @@ const LoginScreen = ({ navigation }) => {
                                 autoCapitalize="none"
                             />
                         </View>
-
-                        {/* Password Input */}
+                        {}
                         <Text style={styles.label}>Password</Text>
                         <View style={styles.inputContainer}>
                             <TextInput
@@ -99,56 +89,48 @@ const LoginScreen = ({ navigation }) => {
                                 <Icon name={showPassword ? "eye-off-outline" : "eye-outline"} size={20} color="#999" />
                             </TouchableOpacity>
                         </View>
-
                         <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate('ForgotPassword')}>
                             <Text style={styles.forgotPasswordText}>Lupa password?</Text>
                         </TouchableOpacity>
-
-                        {/* Login Button */}
+                        {}
                         <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
                             <Text style={styles.loginButtonText}>{loading ? 'Memuat...' : 'Masuk'}</Text>
                         </TouchableOpacity>
                     </View>
-
-                    {/* Divider */}
+                    {}
                     <View style={styles.dividerContainer}>
                         <View style={styles.dividerLine} />
                         <Text style={styles.dividerText}>Atau lanjutkan dengan</Text>
                         <View style={styles.dividerLine} />
                     </View>
-
-                    {/* Google Login */}
+                    {}
                     <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin} disabled={loading}>
                         <View style={styles.gLogoContainer}>
                             <Text style={{ fontSize: 24, fontWeight: 'bold' }}><Text style={{ color: '#4285F4' }}>G</Text><Text style={{ color: '#DB4437' }}>o</Text><Text style={{ color: '#F4B400' }}>o</Text><Text style={{ color: '#4285F4' }}>g</Text><Text style={{ color: '#0F9D58' }}>l</Text><Text style={{ color: '#DB4437' }}>e</Text></Text>
                         </View>
                     </TouchableOpacity>
-
-                    {/* Footer */}
+                    {}
                     <View style={styles.footer}>
                         <Text style={styles.footerText}>Belum punya akun? </Text>
                         <TouchableOpacity onPress={() => navigation.navigate('Register')}>
                             <Text style={styles.footerLink}>Daftar Sekarang</Text>
                         </TouchableOpacity>
                     </View>
-
                     <View style={{ height: 50 }} />
                 </ScrollView>
             </KeyboardAvoidingView>
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F5F0', // Cream Background
+        backgroundColor: '#F5F5F0', 
     },
     scrollContent: {
         padding: 24,
         alignItems: 'center',
     },
-    // Header
     headerContainer: {
         alignItems: 'center',
         marginTop: 40,
@@ -157,7 +139,7 @@ const styles = StyleSheet.create({
     logoBox: {
         width: 80,
         height: 80,
-        backgroundColor: '#9A1B3F', // Burgundy
+        backgroundColor: '#9A1B3F', 
         borderRadius: 24,
         justifyContent: 'center',
         alignItems: 'center',
@@ -185,7 +167,6 @@ const styles = StyleSheet.create({
         color: '#666',
         letterSpacing: 0.5,
     },
-    // Card
     card: {
         backgroundColor: '#FFF',
         width: '100%',
@@ -224,7 +205,7 @@ const styles = StyleSheet.create({
         marginBottom: 24,
     },
     forgotPasswordText: {
-        color: '#9A1B3F', // Burgundy
+        color: '#9A1B3F', 
         fontSize: 13,
         fontWeight: '600',
     },
@@ -245,7 +226,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-    // Divider
     dividerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -262,7 +242,6 @@ const styles = StyleSheet.create({
         color: '#888',
         fontSize: 13,
     },
-    // Google Button
     googleButton: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -284,7 +263,6 @@ const styles = StyleSheet.create({
         color: '#333',
         fontWeight: '600',
     },
-    // Footer
     footer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -299,5 +277,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
-
 export default LoginScreen;

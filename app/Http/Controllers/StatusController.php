@@ -1,40 +1,30 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use App\Models\CmsSetting;
-
 class StatusController extends Controller
 {
     public function index()
     {
         $maintenanceMode = CmsSetting::where('key', 'maintenance_mode')->first();
         $isMaintenanceMode = $maintenanceMode && $maintenanceMode->value === 'true';
-        
         $maintenanceStartTime = null;
         if ($isMaintenanceMode) {
             $startSetting = CmsSetting::where('key', 'maintenance_start_time')->first();
             $maintenanceStartTime = $startSetting ? $startSetting->value : null;
         }
-        
         return view('maintenance_control', compact('isMaintenanceMode', 'maintenanceStartTime'));
     }
-
     public function toggle(Request $request)
     {
         $setting = CmsSetting::firstOrCreate(
             ['key' => 'maintenance_mode'],
             ['value' => 'false', 'type' => 'boolean']
         );
-
         $newValue = $setting->value === 'true' ? 'false' : 'true';
         $setting->value = $newValue;
         $setting->save();
-
         $startTime = null;
-        
-        // Track start time when turning ON
         if ($newValue === 'true') {
             $startTime = now()->toISOString();
             CmsSetting::updateOrCreate(
@@ -42,15 +32,10 @@ class StatusController extends Controller
                 ['value' => $startTime, 'type' => 'string']
             );
         } else {
-            // Clear start time when turning OFF
             CmsSetting::where('key', 'maintenance_start_time')->delete();
-            
-            // Clear all visitor tracking data when maintenance is turned OFF
             \App\Models\SiteVisitor::truncate();
             \App\Models\MaintenanceVisitor::truncate();
         }
-
-        // Return JSON for AJAX requests
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
@@ -59,7 +44,6 @@ class StatusController extends Controller
                 'message' => 'Maintenance mode ' . ($newValue === 'true' ? 'activated' : 'deactivated')
             ]);
         }
-
         return redirect('/maintenance')->with('success', 'Maintenance mode ' . ($newValue === 'true' ? 'activated' : 'deactivated'));
     }
 }

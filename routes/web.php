@@ -11,46 +11,31 @@ use App\Http\Controllers\Admin\AdminActivityController;
 use App\Http\Controllers\Admin\AdminReservationController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\StatusController;
-
-// Secret Maintenance Control Page (Super Admin Only)
 Route::get('/maintenance', function () {
-    // If not logged in, redirect to login
     if (!auth()->check()) {
         return redirect('/login')->with('warning', 'Silakan login untuk mengakses halaman ini.');
     }
-    
-    // If logged in but not super admin, redirect to landing page
     if (auth()->user()->email !== 'pedoprimasaragi@gmail.com') {
         return redirect('/');
     }
-    
-    // Super admin can access
     return app(\App\Http\Controllers\StatusController::class)->index();
 })->withoutMiddleware([\App\Http\Middleware\MaintenanceMiddleware::class]);
-
 Route::post('/maintenance/toggle', [\App\Http\Controllers\StatusController::class, 'toggle'])
     ->middleware(['auth', \App\Http\Middleware\SuperAdminMiddleware::class])
     ->withoutMiddleware([\App\Http\Middleware\MaintenanceMiddleware::class]);
-
-// Maintenance Preview Route (for live preview iframe - super admin only)
 Route::get('/maintenance/preview', function () {
     if (!auth()->check() || auth()->user()->email !== 'pedoprimasaragi@gmail.com') {
         abort(403);
     }
     return view('maintenance');
 })->withoutMiddleware([\App\Http\Middleware\MaintenanceMiddleware::class]);
-
-// API endpoint for real-time maintenance status check (polling)
 Route::get('/api/maintenance-status', function () {
     $setting = \App\Models\CmsSetting::where('key', 'maintenance_mode')->first();
     $isMaintenanceMode = $setting && $setting->value === 'true';
-    
     return response()->json([
         'maintenance' => $isMaintenanceMode
     ]);
 });
-
-// Visitor Tracking API Routes
 Route::post('/api/maintenance-visitor/enter', function (\Illuminate\Http\Request $request) {
     $visitor = \App\Models\MaintenanceVisitor::updateOrCreate(
         ['session_id' => $request->session_id],
@@ -68,7 +53,6 @@ Route::post('/api/maintenance-visitor/enter', function (\Illuminate\Http\Request
     );
     return response()->json(['success' => true, 'id' => $visitor->id]);
 });
-
 Route::post('/api/maintenance-visitor/heartbeat', function (\Illuminate\Http\Request $request) {
     $visitor = \App\Models\MaintenanceVisitor::where('session_id', $request->session_id)->first();
     if ($visitor) {
@@ -78,7 +62,6 @@ Route::post('/api/maintenance-visitor/heartbeat', function (\Illuminate\Http\Req
     }
     return response()->json(['success' => true]);
 });
-
 Route::post('/api/maintenance-visitor/exit', function (\Illuminate\Http\Request $request) {
     $visitor = \App\Models\MaintenanceVisitor::where('session_id', $request->session_id)->first();
     if ($visitor) {
@@ -89,20 +72,15 @@ Route::post('/api/maintenance-visitor/exit', function (\Illuminate\Http\Request 
     }
     return response()->json(['success' => true]);
 });
-
 Route::get('/api/maintenance-visitors', function () {
     if (!auth()->check() || auth()->user()->email !== 'pedoprimasaragi@gmail.com') {
         abort(403);
     }
-    
-    // Mark inactive visitors (no heartbeat for 60s)
     \App\Models\MaintenanceVisitor::where('is_active', true)
         ->where('last_heartbeat', '<', now()->subSeconds(60))
         ->update(['is_active' => false, 'exit_time' => \DB::raw('last_heartbeat')]);
-    
     $activeVisitors = \App\Models\MaintenanceVisitor::getActiveVisitors();
     $todayVisitors = \App\Models\MaintenanceVisitor::getTodayVisitors();
-    
     return response()->json([
         'active' => $activeVisitors->map(fn($v) => [
             'id' => $v->id,
@@ -119,8 +97,6 @@ Route::get('/api/maintenance-visitors', function () {
         'active_count' => $activeVisitors->count(),
     ]);
 })->withoutMiddleware([\App\Http\Middleware\MaintenanceMiddleware::class]);
-
-// Site-Wide Visitor Tracking API Routes
 Route::post('/api/site-visitor/enter', function (\Illuminate\Http\Request $request) {
     $visitor = \App\Models\SiteVisitor::create([
         'session_id' => $request->session_id,
@@ -140,7 +116,6 @@ Route::post('/api/site-visitor/enter', function (\Illuminate\Http\Request $reque
     ]);
     return response()->json(['success' => true, 'id' => $visitor->id]);
 });
-
 Route::post('/api/site-visitor/heartbeat', function (\Illuminate\Http\Request $request) {
     $visitor = \App\Models\SiteVisitor::where('session_id', $request->session_id)
         ->where('page_url', $request->page_url)
@@ -153,7 +128,6 @@ Route::post('/api/site-visitor/heartbeat', function (\Illuminate\Http\Request $r
     }
     return response()->json(['success' => true]);
 });
-
 Route::post('/api/site-visitor/exit', function (\Illuminate\Http\Request $request) {
     $visitor = \App\Models\SiteVisitor::where('session_id', $request->session_id)
         ->where('page_url', $request->page_url)
@@ -167,20 +141,15 @@ Route::post('/api/site-visitor/exit', function (\Illuminate\Http\Request $reques
     }
     return response()->json(['success' => true]);
 });
-
 Route::get('/api/site-visitors', function () {
     if (!auth()->check() || auth()->user()->email !== 'pedoprimasaragi@gmail.com') {
         abort(403);
     }
-    
-    // Mark inactive visitors (no heartbeat for 60s)
     \App\Models\SiteVisitor::where('is_active', true)
         ->where('last_heartbeat', '<', now()->subSeconds(60))
         ->update(['is_active' => false, 'exit_time' => \DB::raw('last_heartbeat')]);
-    
     $activeVisitors = \App\Models\SiteVisitor::getActiveVisitors();
     $todayVisitors = \App\Models\SiteVisitor::getTodayVisitors();
-    
     return response()->json([
         'active' => $activeVisitors->map(fn($v) => [
             'id' => $v->id,
@@ -199,25 +168,17 @@ Route::get('/api/site-visitors', function () {
         'active_count' => $activeVisitors->count(),
     ]);
 })->withoutMiddleware([\App\Http\Middleware\MaintenanceMiddleware::class]);
-
-// Visitor History API - Returns ALL visitors (active + inactive)
 Route::get('/api/site-visitors-history', function () {
     if (!auth()->check() || auth()->user()->email !== 'pedoprimasaragi@gmail.com') {
         abort(403);
     }
-    
-    // Mark inactive visitors (no heartbeat for 60s)
     \App\Models\SiteVisitor::where('is_active', true)
         ->where('last_heartbeat', '<', now()->subSeconds(60))
         ->update(['is_active' => false, 'exit_time' => \DB::raw('last_heartbeat')]);
-    
-    // Get ALL visitors from today (both active and inactive)
     $allVisitors = \App\Models\SiteVisitor::whereDate('entry_time', today())
         ->orderBy('entry_time', 'desc')
         ->get();
-    
     $activeCount = $allVisitors->where('is_active', true)->count();
-    
     return response()->json([
         'visitors' => $allVisitors->map(fn($v) => [
             'id' => $v->id,
@@ -237,18 +198,12 @@ Route::get('/api/site-visitors-history', function () {
         'active_count' => $activeCount,
     ]);
 })->withoutMiddleware([\App\Http\Middleware\MaintenanceMiddleware::class]);
-
-// Redirect old /status to /maintenance
 Route::get('/status', function () {
     return redirect('/maintenance');
 });
-
-// PWA Offline Fallback Route
 Route::get('/offline', function () {
     return view('offline');
 });
-
-// Main Routes with Maintenance Check
 Route::middleware([\App\Http\Middleware\MaintenanceMiddleware::class])->group(function () {
     Route::get('/', function () {
         $featuredMenus = \DB::table('menus')->where('is_available', true)->limit(3)->get();
@@ -307,14 +262,12 @@ Route::prefix('customer')->middleware('auth')->group(function () {
         $totalOrders = \DB::table('orders')->where('user_id', $userId)->count();
         $totalReservations = \App\Models\Reservation::where('user_id', $userId)->count();
         $totalFavorites = \App\Models\Favorite::where('user_id', $userId)->count();
-        
         $upcomingReservation = \App\Models\Reservation::where('user_id', $userId)
             ->where('date', '>=', now()->toDateString())
             ->whereIn('status', ['accepted', 'pending'])
             ->orderBy('date', 'asc')
             ->orderBy('time', 'asc')
             ->first();
-            
         return view('customer.dashboard', compact('orders', 'totalOrders', 'totalReservations', 'totalFavorites', 'upcomingReservation'));
     });
     Route::get('/orders', function () {
@@ -344,19 +297,12 @@ Route::prefix('customer')->middleware('auth')->group(function () {
         $user = auth()->user();
         $totalOrders = \DB::table('orders')->where('user_id', $user->id)->count();
         $totalReservations = \DB::table('reservations')->where('user_id', $user->id)->count();
-        
-        // Use real points from database (synced with mobile app)
         $points = $user->points;
-        
         return view('customer.profile', compact('totalOrders', 'totalReservations', 'points'));
     });
     Route::get('/point', function () {
         $user = auth()->user();
-        
-        // Use real points from database (synced with mobile app)
         $points = $user->points;
-        
-        // Get transaction history from point_transactions table
         $history = \App\Models\PointTransaction::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get()
@@ -370,31 +316,24 @@ Route::prefix('customer')->middleware('auth')->group(function () {
                     'type' => $tx->type
                 ];
             });
-        
-        // Calculate totals for display
         $orderPoints = $history->where('type', 'order')->sum('points_earned');
         $reservationPoints = $history->where('type', 'reservation')->sum('points_earned');
         $totalOrders = $history->where('type', 'order')->count();
         $acceptedReservations = $history->where('type', 'reservation')->count();
-
         return view('customer.points', compact('points', 'history', 'orderPoints', 'reservationPoints', 'totalOrders', 'acceptedReservations'));
     });
-    
     Route::get('/favorite', function () {
         $favorites = \App\Models\Favorite::where('user_id', auth()->id())
-            ->with('menu') // Eager load menu
+            ->with('menu') 
             ->orderBy('created_at', 'desc')
             ->get();
-            
         return view('customer.favorites', compact('favorites'));
     });
-
     Route::post('/favorite/{menuId}', function ($menuId) {
         $user = auth()->user();
         $favorite = \App\Models\Favorite::where('user_id', $user->id)
             ->where('menu_id', $menuId)
             ->first();
-
         if ($favorite) {
             $favorite->delete();
             $status = 'removed';
@@ -407,23 +346,17 @@ Route::prefix('customer')->middleware('auth')->group(function () {
             $status = 'added';
             $message = 'Added to favorites';
         }
-
         if (request()->wantsJson()) {
             return response()->json(['status' => $status, 'message' => $message]);
         }
-
         return redirect()->back()->with('success', $message);
     });
-    
-    // Cart Routes
     Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index']);
     Route::post('/cart/add', [\App\Http\Controllers\CartController::class, 'add']);
     Route::delete('/cart/{id}', [\App\Http\Controllers\CartController::class, 'remove']);
     Route::put('/cart/{id}', [\App\Http\Controllers\CartController::class, 'update']);
     Route::get('/cart/count', [\App\Http\Controllers\CartController::class, 'count']);
     Route::delete('/cart', [\App\Http\Controllers\CartController::class, 'clear']);
-
-    // Payment Routes
     Route::get('/payment/return', [\App\Http\Controllers\PaymentController::class, 'return']);
     Route::get('/payment/{id}/pay', [\App\Http\Controllers\PaymentController::class, 'pay']);
 });
@@ -489,22 +422,16 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::post('/developer/api/content', [\App\Http\Controllers\Admin\AdminCmsController::class, 'apiUpdateContent']);
     Route::post('/developer/api/image', [\App\Http\Controllers\Admin\AdminCmsController::class, 'apiUploadImage']);
     Route::post('/developer/settings', [\App\Http\Controllers\Admin\AdminCmsController::class, 'updateSettings']);
-    
-    // Application Download Management
     Route::get('/application', [\App\Http\Controllers\Admin\AdminCmsController::class, 'application']);
     Route::post('/application', [\App\Http\Controllers\Admin\AdminCmsController::class, 'updateApplication']);
     Route::post('/application/generate-upload-url', [\App\Http\Controllers\Admin\AdminCmsController::class, 'generateUploadUrl']);
     Route::post('/application/finalize-upload', [\App\Http\Controllers\Admin\AdminCmsController::class, 'finalizeUpload']);
     Route::get('/application/api/downloads', [\App\Http\Controllers\Admin\AdminCmsController::class, 'getDownloadActivities']);
-
-    // Inventory Management
     Route::get('/inventory', [\App\Http\Controllers\Admin\AdminInventoryController::class, 'index'])->name('admin.inventory.index');
     Route::post('/inventory/{id}/update', [\App\Http\Controllers\Admin\AdminInventoryController::class, 'updateStock']);
     Route::post('/inventory/{id}/adjust', [\App\Http\Controllers\Admin\AdminInventoryController::class, 'adjustStock']);
     Route::post('/inventory/{id}/toggle', [\App\Http\Controllers\Admin\AdminInventoryController::class, 'toggleAvailability']);
     Route::post('/inventory/reset-all', [\App\Http\Controllers\Admin\AdminInventoryController::class, 'resetAllStock']);
-
-    // Statistics & Monitoring (Super Admin Only)
     Route::middleware([\App\Http\Middleware\SuperAdminMiddleware::class])->group(function () {
         Route::get('/statistik', [\App\Http\Controllers\Admin\AdminStatisticsController::class, 'index'])->name('admin.statistics.index');
         Route::get('/statistik/api/activities', [\App\Http\Controllers\Admin\AdminStatisticsController::class, 'getActivities']);
@@ -513,7 +440,6 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
         Route::get('/statistik/api/live-visitors', [\App\Http\Controllers\Admin\AdminStatisticsController::class, 'getLiveVisitors']);
         Route::get('/statistik/api/user-history', [\App\Http\Controllers\Admin\AdminStatisticsController::class, 'getUserHistory']);
     });
-    // Admin Access Management (Super Admin Only)
     Route::middleware([\App\Http\Middleware\SuperAdminMiddleware::class])->group(function () {
         Route::get('/access', [\App\Http\Controllers\Admin\AdminAccessController::class, 'index'])->name('admin.access.index');
         Route::get('/access/create', [\App\Http\Controllers\Admin\AdminAccessController::class, 'create'])->name('admin.access.create');
@@ -531,4 +457,4 @@ Route::get('lang/{locale}', function ($locale) {
     } 
     return redirect()->back(); 
 })->name('lang.switch');
-}); // End of MaintenanceMiddleware group
+}); 

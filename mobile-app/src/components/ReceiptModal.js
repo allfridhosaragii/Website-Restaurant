@@ -12,13 +12,10 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
-
 const { height } = Dimensions.get('window');
-
 const ReceiptModal = ({ visible, onClose, receiptData }) => {
     const scaleAnim = useRef(new Animated.Value(0.8)).current;
     const opacityAnim = useRef(new Animated.Value(0)).current;
-
     useEffect(() => {
         if (visible) {
             Animated.parallel([
@@ -39,21 +36,17 @@ const ReceiptModal = ({ visible, onClose, receiptData }) => {
             opacityAnim.setValue(0);
         }
     }, [visible]);
-
     const formatPrice = (price) => {
         return `Rp ${parseInt(price || 0).toLocaleString('id-ID')}`;
     };
-
     if (!visible || !receiptData) return null;
-
     return (
         <Modal transparent visible={visible} animationType="none">
-            {/* Backdrop */}
+            {}
             <View style={styles.backdrop}>
                 <TouchableOpacity style={styles.backdropTouch} onPress={onClose} />
             </View>
-
-            {/* Receipt Card */}
+            {}
             <Animated.View
                 style={[
                     styles.container,
@@ -63,7 +56,7 @@ const ReceiptModal = ({ visible, onClose, receiptData }) => {
                     },
                 ]}
             >
-                {/* Success Header */}
+                {}
                 <View style={styles.successHeader}>
                     <View style={styles.successIconContainer}>
                         <Icon name="checkmark-circle" size={60} color="#10B981" />
@@ -71,16 +64,14 @@ const ReceiptModal = ({ visible, onClose, receiptData }) => {
                     <Text style={styles.successTitle}>Pesanan Berhasil!</Text>
                     <Text style={styles.successSubtitle}>Terima kasih atas pesanan Anda</Text>
                 </View>
-
-                {/* Receipt Details */}
+                {}
                 <View style={styles.receiptSection}>
-                    {/* Order Number */}
+                    {}
                     <View style={styles.orderInfo}>
                         <MaterialIcon name="receipt" size={20} color="#8B1538" />
                         <Text style={styles.orderNumber}>{receiptData.receiptNumber}</Text>
                     </View>
-
-                    {/* Date Time */}
+                    {}
                     <View style={styles.dateTimeRow}>
                         <View style={styles.dateTimeItem}>
                             <Icon name="calendar-outline" size={16} color="#6B7280" />
@@ -91,11 +82,9 @@ const ReceiptModal = ({ visible, onClose, receiptData }) => {
                             <Text style={styles.dateTimeText}>{receiptData.time}</Text>
                         </View>
                     </View>
-
-                    {/* Divider */}
+                    {}
                     <View style={styles.divider} />
-
-                    {/* Items List */}
+                    {}
                     <Text style={styles.itemsTitle}>Detail Pesanan</Text>
                     <ScrollView style={styles.itemsList} showsVerticalScrollIndicator={false}>
                         {receiptData.items.map((item, index) => (
@@ -108,15 +97,13 @@ const ReceiptModal = ({ visible, onClose, receiptData }) => {
                             </View>
                         ))}
                     </ScrollView>
-
-                    {/* Total */}
+                    {}
                     <View style={styles.totalSection}>
                         <Text style={styles.totalLabel}>Total Pembayaran</Text>
                         <Text style={styles.totalAmount}>{formatPrice(receiptData.total)}</Text>
                     </View>
                 </View>
-
-                {/* Close Button */}
+                {}
                 <TouchableOpacity onPress={onClose} activeOpacity={0.8}>
                     <LinearGradient
                         colors={['#8B1538', '#6B0F2A']}
@@ -129,7 +116,6 @@ const ReceiptModal = ({ visible, onClose, receiptData }) => {
         </Modal>
     );
 };
-
 const styles = StyleSheet.create({
     backdrop: {
         ...StyleSheet.absoluteFillObject,
@@ -274,5 +260,4 @@ const styles = StyleSheet.create({
         color: '#FFF',
     },
 });
-
 export default ReceiptModal;

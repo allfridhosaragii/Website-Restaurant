@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { colors } from '../theme/colors';
-
 const MemberCard = () => {
     return (
         <LinearGradient
@@ -19,7 +18,6 @@ const MemberCard = () => {
                 </View>
                 <Icon name="crown" size={30} color={colors.secondary} />
             </View>
-
             <View style={styles.footer}>
                 <View>
                     <Text style={styles.pointsLabel}>Poin Anda</Text>
@@ -32,7 +30,6 @@ const MemberCard = () => {
         </LinearGradient>
     );
 };
-
 const styles = StyleSheet.create({
     card: {
         margin: 20,
@@ -88,5 +85,4 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
 });
-
 export default MemberCard;

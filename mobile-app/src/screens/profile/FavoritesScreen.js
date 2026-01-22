@@ -12,18 +12,15 @@ import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors, spacing, fontSize, borderRadius } from '../../theme/colors';
 import { favoritesAPI } from '../../api/client';
-
 const FavoritesScreen = ({ navigation }) => {
     const [favorites, setFavorites] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
-
     useFocusEffect(
         useCallback(() => {
             loadFavorites();
         }, [])
     );
-
     const loadFavorites = async () => {
         try {
             const response = await favoritesAPI.getAll();
@@ -35,7 +32,6 @@ const FavoritesScreen = ({ navigation }) => {
             setRefreshing(false);
         }
     };
-
     const formatPrice = (price) => {
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
@@ -43,7 +39,6 @@ const FavoritesScreen = ({ navigation }) => {
             minimumFractionDigits: 0,
         }).format(price);
     };
-
     const renderItem = ({ item }) => (
         <TouchableOpacity
             style={styles.card}
@@ -57,7 +52,6 @@ const FavoritesScreen = ({ navigation }) => {
             <Icon name="heart" size={24} color={colors.error} />
         </TouchableOpacity>
     );
-
     if (loading) {
         return (
             <View style={styles.loader}>
@@ -65,7 +59,6 @@ const FavoritesScreen = ({ navigation }) => {
             </View>
         );
     }
-
     return (
         <View style={styles.container}>
             <FlatList
@@ -87,7 +80,6 @@ const FavoritesScreen = ({ navigation }) => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -146,5 +138,4 @@ const styles = StyleSheet.create({
         marginTop: spacing.sm,
     },
 });
-
 export default FavoritesScreen;

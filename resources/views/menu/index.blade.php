@@ -112,8 +112,6 @@
     </div>
     </div>
 </section>
-
-<!-- Luxury Floating Cart Button -->
 <div id="floatingCartContainer" class="lux-cart-float">
     <button type="button" class="lux-cart-btn" onclick="toggleCartPanel()">
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
@@ -122,11 +120,8 @@
         <span class="lux-cart-count" id="cartCountBadge">0</span>
     </button>
 </div>
-
-<!-- Luxury Cart Panel -->
 <div class="lux-overlay" id="cartOverlay" onclick="closeCartPanel()"></div>
 <div class="lux-cart-panel" id="cartPanel">
-    <!-- Premium Header -->
     <div class="lux-cart-head">
         <div class="lux-cart-head-inner">
             <div class="lux-cart-brand">
@@ -147,11 +142,7 @@
             </button>
         </div>
     </div>
-    
-    <!-- Cart Content -->
     <div class="lux-cart-content" id="cartModalBody"></div>
-    
-    <!-- Premium Footer -->
     <div class="lux-cart-foot">
         <div class="lux-total-row">
             <span class="lux-total-label">Subtotal</span>
@@ -168,7 +159,6 @@
         </button>
     </div>
 </div>
-
 <script>document.body.classList.add('menu-page');</script>
 @endsection
 @push('styles')
@@ -188,7 +178,6 @@
         background: var(--primary);
         color: var(--white);
     }
-    
     /* Mobile Responsive - Compact E-commerce Style */
     @media (max-width: 576px) {
         #menuGrid {
@@ -311,15 +300,12 @@
             }
         });
     });
-
     function toggleFavorite(btn, menuId) {
         // CSRF Token
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        
         // Optimistic UI Update
         const icon = btn.querySelector('i');
         const isFav = icon.classList.contains('bi-heart-fill');
-        
         // Toggle Icon immediately
         if (isFav) {
             icon.classList.remove('bi-heart-fill', 'text-danger');
@@ -330,11 +316,9 @@
             icon.classList.add('bi-heart-fill', 'text-danger');
             icon.style.color = '#dc3545';
         }
-        
         // Add animation class
         btn.classList.add('animate-pulse');
         setTimeout(() => btn.classList.remove('animate-pulse'), 300);
-
         fetch(`/customer/favorite/${menuId}`, {
             method: 'POST',
             headers: {
@@ -376,14 +360,11 @@
             alert('Failed to update favorite. Please try again.');
         });
     }
-
     // Cart Functions
     document.addEventListener('DOMContentLoaded', function() {
         updateCartCount();
-        
         // Polling for real-time updates (every 1 second)
         setInterval(updateCartCount, 1000);
-        
         // Immediate update when tab becomes visible
         document.addEventListener('visibilitychange', function() {
             if (!document.hidden) {
@@ -391,14 +372,12 @@
             }
         });
     });
-
     function updateCartCount() {
         fetch('/customer/cart/count')
             .then(res => res.json())
             .then(data => {
                 const container = document.getElementById('floatingCartContainer');
                 const badge = document.getElementById('cartCountBadge');
-                
                 if (data.count > 0) {
                     container.classList.add('show');
                     if (badge) {
@@ -412,11 +391,9 @@
             })
             .catch(err => console.error(err));
     }
-
     function toggleCartPanel() {
         const panel = document.getElementById('cartPanel');
         const overlay = document.getElementById('cartOverlay');
-        
         if (panel.classList.contains('open')) {
             closeCartPanel();
         } else {
@@ -426,7 +403,6 @@
             loadCartItems();
         }
     }
-
     function closeCartPanel() {
         const panel = document.getElementById('cartPanel');
         const overlay = document.getElementById('cartOverlay');
@@ -434,19 +410,15 @@
         overlay.classList.remove('show');
         document.body.style.overflow = '';
     }
-
     function addToCart(btn, menuId) {
         @guest
             window.location.href = "{{ route('login') }}";
             return;
         @endguest
-
         const originalContent = btn.innerHTML;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
         btn.disabled = true;
-
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
         fetch('/customer/cart/add', {
             method: 'POST',
             headers: {
@@ -484,11 +456,9 @@
             alert('Gagal: ' + error.message);
         });
     }
-
     function loadCartItems() {
         const modalBody = document.getElementById('cartModalBody');
         modalBody.innerHTML = '<div class="cart-loading"><div class="cart-spinner"></div></div>';
-        
         fetch('/customer/cart')
             .then(res => res.json())
             .then(data => {
@@ -501,23 +471,19 @@
                 console.error(err);
             });
     }
-
     function openCartModal() {
         toggleCartPanel();
     }
-
     function renderCartModal(data) {
         const modalBody = document.getElementById('cartModalBody');
         const modalTotal = document.getElementById('cartModalTotal');
         const btnCheckout = document.getElementById('btnCheckout');
         const headerCount = document.getElementById('cartHeaderCount');
-        
         // Update header count
         if (headerCount) {
             const count = data.items ? data.items.length : 0;
             headerCount.textContent = count > 0 ? `${count} item${count > 1 ? 's' : ''}` : '';
         }
-        
         if (!data.items || data.items.length === 0) {
             modalBody.innerHTML = `
                 <div class="lux-empty">
@@ -537,18 +503,14 @@
             btnCheckout.classList.add('disabled');
             return;
         }
-
         btnCheckout.classList.remove('disabled');
         modalTotal.innerText = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(data.total);
-
         let html = '<div class="lux-items">';
         data.items.forEach((item, index) => {
             if (!item.menu) return;
-
             const subtotal = item.menu.price * item.quantity;
             const unitPrice = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(item.menu.price);
             const totalPrice = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(subtotal);
-            
             html += `
                 <div class="lux-item" style="animation-delay: ${index * 0.05}s">
                     <div class="lux-item-img-wrap">
@@ -587,11 +549,9 @@
         html += '</div>';
         modalBody.innerHTML = html;
     }
-
     function updateCartItem(id, change) {
         // Optimistic UI could be added here, but for safety we'll wait for server
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        
         // Use existing function to get current quantity? 
         // We'll just try to "GET" current state? No, "update" endpoint takes absolute quantity.
         // Wait, my controller update takes "quantity" (absolute). 
@@ -599,7 +559,6 @@
         // Solution: Polling maintains state, or I finding item in DOM?
         // Better: Backend "add" endpoint handles incremental?
         // No, 'update' replaces.
-        
         // I must allow logic to just call "add" for +1.
         // But for -1?
         // Let's first Find the item in local data? 
@@ -608,18 +567,15 @@
         // No, I can cheat: fetch individual logic or just use "Add" logic?
         // Actually, CartController::add handles "increment" if item exists.
         // But I don't have "decrement" logic in "add".
-        
         // Let's use PUT to /customer/cart/{id}. But I need "newQuantity".
         // I can grab it from DOM?
         // Yes, let's grab it from the span sibling.
         // OR better: reload the whole modal every click? (Slightly slow but reliable).
-        
         // Wait, Render has: onclick="updateCartItem(item.id, +/-1)".
         // I'll grab the current qty from the span next to the button.
         // This is a bit hacky but works.
         // Better: Pass current qty to function? `updateCartItem(id, currentQty, change)`
         // Rewriting render to pass `item.quantity`.
-        
         // Let's pause and rewrite render to use: `updateCartItem(id, ${item.quantity} + ${change})`?
         // No, `updateCartItem(${item.id}, ${item.quantity + change})`.
         // Wait, JS template string evaluates immediately.
@@ -627,51 +583,42 @@
         // If I click +, I want it to become 3.
         // But if I click again without re-render, it sends 3 again (no change).
         // Solution: Re-render Modal on each update.
-        
         // So:
         // 1. Call API with (Current + Change).
         // 2. On Success -> openCartModal() (re-fetch & re-render).
         // BUT I need correct Current Qty.
         // If I rely on re-render, I can just hardcode "1" and "-1" and handle logic in backend?
         // No, backend update expects absolute.
-        
         // Re-render approach:
         // HTML: onclick="tempUpdate(${item.id}, ${item.quantity}, 1)"
         // Function: calculates new qty, calls API, then re-fetches.
     }
-    
     function updateCartItem(id, currentQty, change) {
         const newQty = currentQty + change;
         if (newQty < 1) return; 
-        
         // Optimistic UI Update - update immediately
         const item = document.querySelector(`.lux-item[data-id="${id}"]`) || 
                      document.querySelector(`.lux-item:has([onclick*="updateCartItem(${id},"])`);
-        
         let unitPrice = 0;
         if (item) {
             const qtyEl = item.querySelector('.lux-qty-num');
             const priceEl = item.querySelector('.lux-item-total');
             const unitEl = item.querySelector('.lux-item-unit');
             if (qtyEl) qtyEl.textContent = newQty;
-            
             // Update subtotal based on unit price
             if (priceEl && unitEl) {
                 unitPrice = parseInt(unitEl.textContent.replace(/[^\d]/g, ''));
                 const newTotal = unitPrice * newQty;
                 priceEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(newTotal);
             }
-            
             // Update button state
             const minusBtn = item.querySelector('.lux-qty-btn:first-child');
             if (minusBtn) minusBtn.disabled = (newQty <= 1);
-            
             // Update onclick to reflect new quantity
             const minusBtnAll = item.querySelectorAll('.lux-qty-btn');
             if (minusBtnAll[0]) minusBtnAll[0].setAttribute('onclick', `updateCartItem(${id}, ${newQty}, -1)`);
             if (minusBtnAll[1]) minusBtnAll[1].setAttribute('onclick', `updateCartItem(${id}, ${newQty}, 1)`);
         }
-        
         // Update grand total immediately
         const totalEl = document.getElementById('cartModalTotal');
         if (totalEl && unitPrice) {
@@ -680,9 +627,7 @@
             const newGrandTotal = currentTotal + priceDiff;
             totalEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(newGrandTotal);
         }
-        
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        
         fetch(`/customer/cart/${id}`, {
             method: 'PUT',
             headers: {
@@ -704,12 +649,10 @@
             refreshCartContent(); // Revert on error only
         });
     }
-
     function removeCartItem(id) {
         // Find the item element first
         const item = document.querySelector(`.lux-item[data-id="${id}"]`) || 
                      document.querySelector(`.lux-item:has([onclick*="removeCartItem(${id})"])`);
-        
         // Optimistic UI - remove immediately with animation
         if (item) {
             item.style.transition = 'all 0.3s ease';
@@ -717,9 +660,7 @@
             item.style.transform = 'translateX(30px)';
             setTimeout(() => item.remove(), 300);
         }
-
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        
         fetch(`/customer/cart/${id}`, {
             method: 'DELETE',
             headers: {
@@ -740,7 +681,6 @@
             refreshCartContent(); // Revert on error
         });
     }
-
     // Update total price optimistically
     function updateTotalOptimistic(change) {
         const totalEl = document.getElementById('cartModalTotal');
@@ -750,7 +690,6 @@
             // We don't know exact item price here, so just leave it for server sync
         }
     }
-
     // Refresh cart content without closing/reopening panel
     function refreshCartContent() {
         fetch('/customer/cart')
@@ -762,10 +701,7 @@
             })
             .catch(err => console.error(err));
     }
-
-
     // Wait, updateCartItem definition in Render needs to change.
-
 </script>
 <style>
     .animate-pulse {
@@ -785,9 +721,7 @@
         transform: scale(1.1);
         background: white;
     }
-
     /* ========== LUXURY CART DESIGN ========== */
-    
     /* Premium Floating Button */
     .lux-cart-float {
         position: fixed;
@@ -799,13 +733,11 @@
         transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         pointer-events: none;
     }
-    
     .lux-cart-float.show {
         opacity: 1;
         transform: translateY(0) scale(1);
         pointer-events: auto;
     }
-    
     .lux-cart-btn {
         width: 60px;
         height: 60px;
@@ -824,7 +756,6 @@
             inset 0 1px 0 rgba(255, 255, 255, 0.1);
         transition: all 0.3s ease;
     }
-    
     .lux-cart-btn::before {
         content: '';
         position: absolute;
@@ -835,22 +766,18 @@
         opacity: 0;
         transition: opacity 0.3s ease;
     }
-    
     .lux-cart-btn:hover {
         transform: translateY(-3px);
         box-shadow: 
             0 12px 40px rgba(0, 0, 0, 0.35),
             0 0 0 1px rgba(200, 155, 58, 0.4);
     }
-    
     .lux-cart-btn:hover::before {
         opacity: 0.15;
     }
-    
     .lux-cart-btn:active {
         transform: scale(0.95);
     }
-    
     .lux-cart-count {
         position: absolute;
         top: -6px;
@@ -869,7 +796,6 @@
         box-shadow: 0 2px 8px rgba(200, 155, 58, 0.4);
         letter-spacing: -0.02em;
     }
-
     /* Overlay */
     .lux-overlay {
         position: fixed;
@@ -882,12 +808,10 @@
         visibility: hidden;
         transition: all 0.4s ease;
     }
-    
     .lux-overlay.show {
         opacity: 1;
         visibility: visible;
     }
-
     /* Cart Panel */
     .lux-cart-panel {
         position: fixed;
@@ -904,30 +828,25 @@
         flex-direction: column;
         box-shadow: -20px 0 60px rgba(0, 0, 0, 0.4);
     }
-    
     .lux-cart-panel.open {
         transform: translateX(0);
     }
-
     /* Header */
     .lux-cart-head {
         padding: 0 24px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
-    
     .lux-cart-head-inner {
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: 24px 0;
     }
-    
     .lux-cart-brand {
         display: flex;
         align-items: center;
         gap: 14px;
     }
-    
     .lux-cart-icon {
         width: 44px;
         height: 44px;
@@ -939,26 +858,22 @@
         justify-content: center;
         color: #C89B3A;
     }
-    
     .lux-cart-titles {
         display: flex;
         flex-direction: column;
         gap: 2px;
     }
-    
     .lux-cart-label {
         font-size: 1.15rem;
         font-weight: 600;
         color: #fff;
         letter-spacing: -0.02em;
     }
-    
     .lux-cart-count-text {
         font-size: 0.8rem;
         color: rgba(255, 255, 255, 0.4);
         font-weight: 400;
     }
-    
     .lux-close-btn {
         width: 40px;
         height: 40px;
@@ -972,35 +887,29 @@
         color: rgba(255, 255, 255, 0.5);
         transition: all 0.2s ease;
     }
-    
     .lux-close-btn:hover {
         background: rgba(255, 255, 255, 0.08);
         color: #fff;
     }
-
     /* Content */
     .lux-cart-content {
         flex: 1;
         overflow-y: auto;
         padding: 20px 24px;
     }
-    
     .lux-cart-content::-webkit-scrollbar {
         width: 5px;
     }
-    
     .lux-cart-content::-webkit-scrollbar-thumb {
         background: rgba(200, 155, 58, 0.3);
         border-radius: 5px;
     }
-
     /* Cart Items */
     .lux-items {
         display: flex;
         flex-direction: column;
         gap: 16px;
     }
-    
     .lux-item {
         display: flex;
         gap: 16px;
@@ -1012,14 +921,12 @@
         opacity: 0;
         transform: translateX(20px);
     }
-    
     @keyframes luxItemSlide {
         to {
             opacity: 1;
             transform: translateX(0);
         }
     }
-    
     .lux-item-img-wrap {
         flex-shrink: 0;
         width: 80px;
@@ -1028,7 +935,6 @@
         overflow: hidden;
         position: relative;
     }
-    
     .lux-item-img-wrap::after {
         content: '';
         position: absolute;
@@ -1037,32 +943,27 @@
         border-radius: 12px;
         pointer-events: none;
     }
-    
     .lux-item-img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         transition: transform 0.3s ease;
     }
-    
     .lux-item:hover .lux-item-img {
         transform: scale(1.05);
     }
-    
     .lux-item-details {
         flex: 1;
         min-width: 0;
         display: flex;
         flex-direction: column;
     }
-    
     .lux-item-top {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
         gap: 8px;
     }
-    
     .lux-item-name {
         margin: 0;
         font-size: 0.95rem;
@@ -1074,7 +975,6 @@
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
-    
     .lux-item-remove {
         flex-shrink: 0;
         width: 24px;
@@ -1089,18 +989,15 @@
         border-radius: 6px;
         transition: all 0.2s ease;
     }
-    
     .lux-item-remove:hover {
         background: rgba(220, 53, 69, 0.15);
         color: #dc3545;
     }
-    
     .lux-item-unit {
         font-size: 0.8rem;
         color: rgba(255, 255, 255, 0.55);
         margin-top: 4px;
     }
-    
     .lux-item-bottom {
         display: flex;
         justify-content: space-between;
@@ -1108,7 +1005,6 @@
         margin-top: auto;
         padding-top: 12px;
     }
-    
     .lux-qty {
         display: flex;
         align-items: center;
@@ -1117,7 +1013,6 @@
         border-radius: 10px;
         overflow: hidden;
     }
-    
     .lux-qty-btn {
         width: 32px;
         height: 32px;
@@ -1130,17 +1025,14 @@
         justify-content: center;
         transition: all 0.15s ease;
     }
-    
     .lux-qty-btn:hover:not(:disabled) {
         background: rgba(255, 255, 255, 0.08);
         color: #fff;
     }
-    
     .lux-qty-btn:disabled {
         opacity: 0.25;
         cursor: not-allowed;
     }
-    
     .lux-qty-num {
         min-width: 32px;
         text-align: center;
@@ -1148,20 +1040,17 @@
         font-weight: 600;
         color: #fff;
     }
-    
     .lux-item-total {
         font-size: 0.95rem;
         font-weight: 600;
         color: #C89B3A;
     }
-
     /* Footer */
     .lux-cart-foot {
         padding: 20px 24px 28px;
         background: linear-gradient(180deg, rgba(15, 25, 35, 0.95) 0%, rgba(10, 16, 24, 1) 100%);
         border-top: 1px solid rgba(255, 255, 255, 0.04);
     }
-    
     .lux-shipping-notice {
         display: flex;
         align-items: center;
@@ -1174,26 +1063,22 @@
         color: #C89B3A;
         font-size: 0.8rem;
     }
-    
     .lux-total-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 16px;
     }
-    
     .lux-total-label {
         font-size: 0.9rem;
         color: rgba(255, 255, 255, 0.5);
     }
-    
     .lux-total-price {
         font-size: 1.4rem;
         font-weight: 700;
         color: #fff;
         letter-spacing: -0.02em;
     }
-    
     .lux-checkout-btn {
         display: flex;
         align-items: center;
@@ -1212,18 +1097,15 @@
         box-shadow: 0 4px 20px rgba(200, 155, 58, 0.25);
         transition: all 0.3s ease;
     }
-    
     .lux-checkout-btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 30px rgba(200, 155, 58, 0.35);
         color: #fff;
     }
-    
     .lux-checkout-btn.disabled {
         opacity: 0.4;
         pointer-events: none;
     }
-    
     .lux-continue-btn {
         width: 100%;
         padding: 14px;
@@ -1236,19 +1118,16 @@
         cursor: pointer;
         transition: all 0.2s ease;
     }
-    
     .lux-continue-btn:hover {
         background: rgba(255, 255, 255, 0.04);
         border-color: rgba(255, 255, 255, 0.2);
         color: #fff;
     }
-
     /* Empty State */
     .lux-empty {
         text-align: center;
         padding: 60px 20px;
     }
-    
     .lux-empty-icon {
         width: 88px;
         height: 88px;
@@ -1261,20 +1140,17 @@
         justify-content: center;
         color: rgba(255, 255, 255, 0.15);
     }
-    
     .lux-empty-title {
         font-size: 1.15rem;
         font-weight: 600;
         color: #fff;
         margin: 0 0 8px;
     }
-    
     .lux-empty-text {
         font-size: 0.9rem;
         color: rgba(255, 255, 255, 0.4);
         margin: 0 0 24px;
     }
-    
     .lux-empty-btn {
         padding: 12px 28px;
         background: linear-gradient(135deg, #C89B3A 0%, #a67c28 100%);
@@ -1286,19 +1162,16 @@
         cursor: pointer;
         transition: all 0.3s ease;
     }
-    
     .lux-empty-btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(200, 155, 58, 0.3);
     }
-    
     /* Loading */
     .cart-loading {
         display: flex;
         justify-content: center;
         padding: 80px 0;
     }
-    
     .cart-spinner {
         width: 32px;
         height: 32px;
@@ -1307,19 +1180,15 @@
         border-radius: 50%;
         animation: luxSpin 0.8s linear infinite;
     }
-    
     @keyframes luxSpin { to { transform: rotate(360deg); } }
-
     /* Light Mode */
     [data-theme="light"] .lux-cart-panel {
         background: linear-gradient(180deg, #fefefe 0%, #f8f9fa 100%);
         box-shadow: -20px 0 60px rgba(0, 0, 0, 0.1);
     }
-    
     [data-theme="light"] .lux-cart-head {
         border-color: rgba(0, 0, 0, 0.08);
     }
-    
     [data-theme="light"] .lux-cart-label,
     [data-theme="light"] .lux-item-name,
     [data-theme="light"] .lux-qty-num,
@@ -1327,202 +1196,161 @@
     [data-theme="light"] .lux-empty-title {
         color: #0f1923 !important;
     }
-    
     [data-theme="light"] .lux-cart-count-text,
     [data-theme="light"] .lux-item-unit,
     [data-theme="light"] .lux-total-label {
         color: rgba(0, 0, 0, 0.5);
     }
-    
     [data-theme="light"] .lux-cart-icon {
         background: rgba(200, 155, 58, 0.12);
         border-color: rgba(200, 155, 58, 0.25);
     }
-    
     [data-theme="light"] .lux-close-btn {
         background: rgba(0, 0, 0, 0.05);
         color: rgba(0, 0, 0, 0.6);
     }
-    
     [data-theme="light"] .lux-close-btn:hover {
         background: rgba(0, 0, 0, 0.1);
         color: #0f1923;
     }
-    
     [data-theme="light"] .lux-item {
         background: #fff;
         border-color: rgba(0, 0, 0, 0.08);
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
-    
     [data-theme="light"] .lux-qty {
         background: rgba(0, 0, 0, 0.04);
         border-color: rgba(0, 0, 0, 0.08);
     }
-    
     [data-theme="light"] .lux-qty-btn {
         color: rgba(0, 0, 0, 0.6);
     }
-    
     [data-theme="light"] .lux-qty-btn:hover:not(:disabled) {
         background: rgba(0, 0, 0, 0.08);
         color: #0f1923;
     }
-    
     [data-theme="light"] .lux-item-remove {
         color: rgba(0, 0, 0, 0.3);
     }
-    
     [data-theme="light"] .lux-cart-foot {
         background: #fff;
         border-color: rgba(0, 0, 0, 0.08);
     }
-    
     [data-theme="light"] .lux-continue-btn {
         border-color: rgba(0, 0, 0, 0.12);
         color: rgba(0, 0, 0, 0.7);
     }
-    
     [data-theme="light"] .lux-continue-btn:hover {
         background: rgba(0, 0, 0, 0.04);
         color: #0f1923;
     }
-    
     [data-theme="light"] .lux-empty-icon {
         background: rgba(0, 0, 0, 0.03);
         border-color: rgba(0, 0, 0, 0.06);
         color: rgba(0, 0, 0, 0.2);
     }
-    
     [data-theme="light"] .lux-empty-text {
         color: rgba(0, 0, 0, 0.5);
     }
-
     /* Mobile - Compact View */
     @media (max-width: 480px) {
         .lux-cart-panel {
             max-width: 100%;
         }
-        
         .lux-cart-float {
             bottom: 16px;
             right: 16px;
         }
-        
         .lux-cart-btn {
             width: 50px;
             height: 50px;
         }
-        
         .lux-cart-btn svg {
             width: 18px;
             height: 18px;
         }
-        
         .lux-cart-count {
             min-width: 20px;
             height: 20px;
             font-size: 0.65rem;
         }
-        
         /* Compact Header */
         .lux-cart-head {
             padding: 0 16px;
         }
-        
         .lux-cart-head-inner {
             padding: 16px 0;
         }
-        
         .lux-cart-icon {
             width: 36px;
             height: 36px;
             border-radius: 10px;
         }
-        
         .lux-cart-icon svg {
             width: 16px;
             height: 16px;
         }
-        
         .lux-cart-brand {
             gap: 10px;
         }
-        
         .lux-cart-label {
             font-size: 1rem;
         }
-        
         .lux-cart-count-text {
             font-size: 0.7rem;
         }
-        
         .lux-close-btn {
             width: 34px;
             height: 34px;
         }
-        
         /* Compact Content */
         .lux-cart-content {
             padding: 12px 16px;
         }
-        
         .lux-items {
             gap: 10px;
         }
-        
         .lux-item {
             padding: 10px;
             gap: 10px;
             border-radius: 12px;
         }
-        
         .lux-item-img-wrap {
             width: 60px;
             height: 60px;
             border-radius: 10px;
         }
-        
         .lux-item-name {
             font-size: 0.85rem;
         }
-        
         .lux-item-unit {
             font-size: 0.7rem;
         }
-        
         .lux-item-bottom {
             padding-top: 8px;
         }
-        
         .lux-qty {
             border-radius: 8px;
         }
-        
         .lux-qty-btn {
             width: 28px;
             height: 28px;
         }
-        
         .lux-qty-num {
             min-width: 24px;
             font-size: 0.8rem;
         }
-        
         .lux-item-total {
             font-size: 0.85rem;
         }
-        
         .lux-item-remove {
             width: 22px;
             height: 22px;
         }
-        
         /* Compact Footer */
         .lux-cart-foot {
             padding: 14px 16px 20px;
         }
-        
         .lux-shipping-notice {
             padding: 10px 12px;
             font-size: 0.7rem;
@@ -1530,67 +1358,54 @@
             border-radius: 8px;
             gap: 8px;
         }
-        
         .lux-shipping-notice svg {
             width: 14px;
             height: 14px;
         }
-        
         .lux-total-row {
             margin-bottom: 12px;
         }
-        
         .lux-total-label {
             font-size: 0.8rem;
         }
-        
         .lux-total-price {
             font-size: 1.15rem;
         }
-        
         .lux-checkout-btn {
             padding: 12px;
             font-size: 0.9rem;
             border-radius: 10px;
         }
-        
         .lux-checkout-btn svg {
             width: 16px;
             height: 16px;
         }
-        
         .lux-continue-btn {
             padding: 10px;
             font-size: 0.8rem;
             margin-top: 8px;
             border-radius: 10px;
         }
-        
         /* Compact Empty State */
         .lux-empty {
             padding: 40px 16px;
         }
-        
         .lux-empty-icon {
             width: 64px;
             height: 64px;
             margin-bottom: 16px;
         }
-        
         .lux-empty-icon svg {
             width: 28px;
             height: 28px;
         }
-        
         .lux-empty-title {
             font-size: 1rem;
         }
-        
         .lux-empty-text {
             font-size: 0.8rem;
             margin-bottom: 16px;
         }
-        
         .lux-empty-btn {
             padding: 10px 20px;
             font-size: 0.8rem;
@@ -1621,18 +1436,15 @@
     // JavaScript-managed hover state - completely replaces CSS :hover
     document.addEventListener('DOMContentLoaded', function() {
         const menuCards = document.querySelectorAll('.menu-card');
-        
         menuCards.forEach(function(card) {
             // Add .is-hovered on mouse enter
             card.addEventListener('mouseenter', function() {
                 this.classList.add('is-hovered');
             });
-            
             // Remove .is-hovered on mouse leave
             card.addEventListener('mouseleave', function() {
                 this.classList.remove('is-hovered');
             });
-            
             // Also handle touch devices
             card.addEventListener('touchstart', function() {
                 // Remove from all other cards first
@@ -1642,7 +1454,6 @@
                 this.classList.add('is-hovered');
             }, { passive: true });
         });
-        
         // Remove hover from all cards when clicking outside menu area
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.menu-card')) {
@@ -1651,7 +1462,6 @@
                 });
             }
         });
-        
         // Blur all buttons inside menu cards after any click to prevent focus persistence
         document.addEventListener('mouseup', function() {
             document.querySelectorAll('.menu-card button, .menu-card .btn').forEach(function(btn) {

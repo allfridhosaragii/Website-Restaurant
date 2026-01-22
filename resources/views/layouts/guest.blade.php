@@ -6,15 +6,12 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="{{ __('messages.meta_desc') }}">
     <meta name="keywords" content="restaurant, culinary, Indonesian food, fine dining, reservasi, kuliner">
-    
-    <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#0C2A36">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Culinaire">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
     <link rel="apple-touch-icon" href="{{ asset('icons/icon-192x192.png') }}">
-    
     <title>@hasSection('title') @yield('title') - @endif{{ config('app.name', __('messages.premium_restaurant')) }}</title>
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,34 +23,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ time() }}">
-    
-    <!-- View Transitions API -->
     <meta name="view-transition" content="same-origin">
     <style>
         /* View Transitions - Smooth page navigation */
         @view-transition {
             navigation: auto;
         }
-        
         ::view-transition-old(root) {
             animation: fade-out 0.25s ease-out forwards;
         }
-        
         ::view-transition-new(root) {
             animation: fade-in 0.25s ease-in forwards;
         }
-        
         @keyframes fade-out {
             from { opacity: 1; transform: scale(1); }
             to { opacity: 0; transform: scale(0.98); }
         }
-        
         @keyframes fade-in {
             from { opacity: 0; transform: scale(1.02); }
             to { opacity: 1; transform: scale(1); }
         }
-        
-
     </style>
     @stack('styles')
     <script>
@@ -65,7 +54,6 @@
     </script>
 </head>
 <body>
-    
     @include('components.navbar')
     <main>
         @if(session('warning') && auth()->check())
@@ -123,7 +111,6 @@
         const htmlElement = document.documentElement;
         const savedTheme = localStorage.getItem('theme') || 'dark';
         htmlElement.setAttribute('data-theme', savedTheme);
-        
         // Global toggle function for sync
         window.toggleTheme = function() {
             const currentTheme = htmlElement.getAttribute('data-theme');
@@ -131,7 +118,6 @@
             htmlElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
         };
-        
         // Setup all theme toggles after DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
             const themeToggles = document.querySelectorAll('.theme-toggle');
@@ -143,7 +129,6 @@
                 });
             });
         });
-        
         window.addEventListener('scroll', () => {
             const navbar = document.querySelector('.navbar-culinaire');
             if (navbar) {
@@ -218,17 +203,13 @@
     @if(request()->has('cms_mode') || session('cms_mode'))
         <script src="{{ asset('js/cms-iframe.js') }}"></script>
     @endif
-    
-    <!-- Real-time Maintenance Mode Detection -->
     @if(!request()->is('maintenance*') && !request()->is('project*') && !request()->is('login') && !request()->is('register') && !request()->is('auth/*'))
     <script>
         (function() {
             let maintenanceCheckInterval;
             const currentPath = window.location.pathname;
-            
             // Don't run on root or auth pages
             if (currentPath === '/' || currentPath.startsWith('/login') || currentPath.startsWith('/register') || currentPath.startsWith('/auth')) return;
-            
             // Check maintenance status
             async function checkMaintenanceStatus() {
                 try {
@@ -237,11 +218,9 @@
                         cache: 'no-store'
                     });
                     const data = await response.json();
-                    
                     if (data.maintenance) {
                         // Stop polling
                         clearInterval(maintenanceCheckInterval);
-                        
                         // Redirect to landing page (maintenance will be shown there)
                         window.location.href = '/';
                     }
@@ -249,17 +228,13 @@
                     console.log('Maintenance check failed:', error);
                 }
             }
-            
             // Start polling every 5 seconds
             maintenanceCheckInterval = setInterval(checkMaintenanceStatus, 5000);
-            
             // Also check immediately on page load
             checkMaintenanceStatus();
         })();
     </script>
     @endif
-
-    <!-- Global Site Visitor Tracking -->
     @if(!request()->is('maintenance') && !request()->is('maintenance/*'))
     <script>
         (function() {
@@ -267,12 +242,10 @@
             const pageSessionId = 'sv_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             const pageUrl = window.location.pathname;
             const pageTitle = document.title;
-
             // Detect browser info
             const ua = navigator.userAgent;
             let browser = 'Unknown';
             let browserVersion = '';
-            
             if (ua.includes('Firefox/')) {
                 browser = 'Firefox';
                 browserVersion = ua.match(/Firefox\/(\d+)/)?.[1] || '';
@@ -289,7 +262,6 @@
                 browser = 'Opera';
                 browserVersion = ua.match(/(?:Opera|OPR)\/(\d+)/)?.[1] || '';
             }
-
             // Detect device type
             let deviceType = 'Desktop';
             if (/Mobi|Android/i.test(ua)) {
@@ -297,7 +269,6 @@
             } else if (/Tablet|iPad/i.test(ua)) {
                 deviceType = 'Tablet';
             }
-
             // Detect OS
             let os = 'Unknown';
             if (ua.includes('Windows')) os = 'Windows';
@@ -305,10 +276,8 @@
             else if (ua.includes('Linux')) os = 'Linux';
             else if (ua.includes('Android')) os = 'Android';
             else if (ua.includes('iOS') || ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
-
             // Screen resolution
             const resolution = window.screen.width + 'x' + window.screen.height;
-
             // Send entry data
             fetch('/api/site-visitor/enter', {
                 method: 'POST',
@@ -324,7 +293,6 @@
                     screen_resolution: resolution
                 })
             });
-
             // Heartbeat every 30 seconds (optimized from 1 second to reduce server load)
             setInterval(() => {
                 fetch('/api/site-visitor/heartbeat', {
@@ -333,7 +301,6 @@
                     body: JSON.stringify({ session_id: pageSessionId, page_url: pageUrl })
                 });
             }, 30000);
-
             // Send exit on page unload
             window.addEventListener('beforeunload', () => {
                 navigator.sendBeacon('/api/site-visitor/exit', JSON.stringify({
@@ -341,7 +308,6 @@
                     page_url: pageUrl
                 }));
             });
-
             // Also send exit on visibility change (for mobile)
             document.addEventListener('visibilitychange', () => {
                 if (document.visibilityState === 'hidden') {
@@ -354,11 +320,7 @@
         })();
     </script>
     @endif
-
-    <!-- Error Tracker with Screenshot -->
     <script src="{{ asset('js/error-tracker.js') }}" defer></script>
-
-    <!-- PWA Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -368,7 +330,6 @@
             });
         }
     </script>
-
     @include('components.app-promo')
 </body>
 </html>

@@ -8,14 +8,11 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useCart } from '../context/CartContext';
-
 const FloatingCartButton = ({ onPress }) => {
     const { cartItemCount } = useCart();
     const scaleAnim = useRef(new Animated.Value(0)).current;
     const badgeScaleAnim = useRef(new Animated.Value(1)).current;
     const prevCount = useRef(cartItemCount);
-
-    // Entrance animation when cart becomes non-empty
     useEffect(() => {
         if (cartItemCount > 0) {
             Animated.spring(scaleAnim, {
@@ -32,8 +29,6 @@ const FloatingCartButton = ({ onPress }) => {
             }).start();
         }
     }, [cartItemCount > 0]);
-
-    // Badge pulse when count changes
     useEffect(() => {
         if (cartItemCount !== prevCount.current && cartItemCount > 0) {
             Animated.sequence([
@@ -51,11 +46,9 @@ const FloatingCartButton = ({ onPress }) => {
             prevCount.current = cartItemCount;
         }
     }, [cartItemCount]);
-
     if (cartItemCount === 0) {
         return null;
     }
-
     return (
         <Animated.View
             style={[
@@ -79,8 +72,7 @@ const FloatingCartButton = ({ onPress }) => {
                 activeOpacity={0.8}
             >
                 <Icon name="cart" size={26} color="#FFF" />
-
-                {/* Badge */}
+                {}
                 <Animated.View
                     style={[
                         styles.badge,
@@ -95,11 +87,10 @@ const FloatingCartButton = ({ onPress }) => {
         </Animated.View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        bottom: 100, // Above tab bar
+        bottom: 100, 
         right: 16,
         zIndex: 30,
     },
@@ -136,5 +127,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
-
 export default FloatingCartButton;

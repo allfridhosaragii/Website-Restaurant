@@ -13,7 +13,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { colors, spacing, fontSize, borderRadius } from '../../theme/colors';
 import { reservationAPI } from '../../api/client';
 import { useSettings } from '../../context/SettingsContext';
-
 const CreateReservationScreen = ({ navigation }) => {
     const { isDarkMode, colors, t } = useSettings();
     const [date, setDate] = useState('');
@@ -21,13 +20,11 @@ const CreateReservationScreen = ({ navigation }) => {
     const [guests, setGuests] = useState('2');
     const [notes, setNotes] = useState('');
     const [loading, setLoading] = useState(false);
-
     const handleSubmit = async () => {
         if (!date || !time || !guests) {
             Alert.alert('Error', 'Mohon lengkapi semua field');
             return;
         }
-
         try {
             setLoading(true);
             await reservationAPI.create({
@@ -47,12 +44,10 @@ const CreateReservationScreen = ({ navigation }) => {
             setLoading(false);
         }
     };
-
     const guestOptions = ['1', '2', '3', '4', '5', '6', '7', '8'];
-
     return (
         <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-            {/* Date */}
+            {}
             <View style={styles.inputGroup}>
                 <Text style={[styles.label, { color: colors.text }]}>Date</Text>
                 <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
@@ -66,8 +61,7 @@ const CreateReservationScreen = ({ navigation }) => {
                     />
                 </View>
             </View>
-
-            {/* Time */}
+            {}
             <View style={styles.inputGroup}>
                 <Text style={[styles.label, { color: colors.text }]}>Time</Text>
                 <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
@@ -81,8 +75,7 @@ const CreateReservationScreen = ({ navigation }) => {
                     />
                 </View>
             </View>
-
-            {/* Guests */}
+            {}
             <View style={styles.inputGroup}>
                 <Text style={[styles.label, { color: colors.text }]}>Guests</Text>
                 <View style={styles.guestsContainer}>
@@ -109,8 +102,7 @@ const CreateReservationScreen = ({ navigation }) => {
                     ))}
                 </View>
             </View>
-
-            {/* Notes */}
+            {}
             <View style={styles.inputGroup}>
                 <Text style={[styles.label, { color: colors.text }]}>Notes (Optional)</Text>
                 <View style={[styles.inputContainer, styles.textAreaContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
@@ -126,8 +118,7 @@ const CreateReservationScreen = ({ navigation }) => {
                     />
                 </View>
             </View>
-
-            {/* Submit Button */}
+            {}
             <TouchableOpacity
                 style={[styles.button, { backgroundColor: colors.primary }, loading && styles.buttonDisabled]}
                 onPress={handleSubmit}
@@ -142,7 +133,6 @@ const CreateReservationScreen = ({ navigation }) => {
         </ScrollView>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -224,5 +214,4 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
 });
-
 export default CreateReservationScreen;

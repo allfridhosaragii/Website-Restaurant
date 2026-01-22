@@ -18,22 +18,18 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, spacing, fontSize, borderRadius, shadows } from '../../theme/colors';
 import { useSettings } from '../../context/SettingsContext';
-
 const BASE_URL = 'https://website-restaurant.up.railway.app/api';
 const BASE_IMAGE_URL = 'https://website-restaurant.up.railway.app/storage/';
-
 const CartScreen = ({ navigation }) => {
     const { isDarkMode, colors, t } = useSettings();
     const [cartItems, setCartItems] = useState([]);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(true);
-
     useFocusEffect(
         useCallback(() => {
             loadCart();
         }, [])
     );
-
     const getAuthConfig = async () => {
         const token = await AsyncStorage.getItem('auth_token');
         return {
@@ -44,7 +40,6 @@ const CartScreen = ({ navigation }) => {
             }
         };
     };
-
     const loadCart = async () => {
         try {
             const config = await getAuthConfig();
@@ -59,13 +54,11 @@ const CartScreen = ({ navigation }) => {
             setLoading(false);
         }
     };
-
     const updateQuantity = async (id, newQuantity) => {
         if (newQuantity < 1) {
             removeItem(id);
             return;
         }
-
         try {
             const config = await getAuthConfig();
             await axios.put(`${BASE_URL}/cart/${id}`, { quantity: newQuantity }, config);
@@ -74,7 +67,6 @@ const CartScreen = ({ navigation }) => {
             Alert.alert('Error', 'Gagal mengubah jumlah');
         }
     };
-
     const removeItem = async (id) => {
         try {
             const config = await getAuthConfig();
@@ -84,18 +76,15 @@ const CartScreen = ({ navigation }) => {
             Alert.alert('Error', 'Gagal menghapus item');
         }
     };
-
     const formatPrice = (price) => {
         return `Rp ${parseInt(price || 0).toLocaleString('id-ID')}`;
     };
-
     const getImageUrl = (imagePath) => {
         if (!imagePath) return 'https://via.placeholder.com/80';
         if (imagePath.startsWith('http')) return imagePath;
-        const cleanPath = imagePath.replace(/^public\//, '');
+        const cleanPath = imagePath.replace(/^public\
         return `${BASE_IMAGE_URL}${cleanPath}`;
     };
-
     const renderCartItem = ({ item, index }) => (
         <Animated.View entering={FadeInDown.delay(index * 100).springify()} style={[styles.cartItem, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Image
@@ -125,7 +114,6 @@ const CartScreen = ({ navigation }) => {
             </View>
         </Animated.View>
     );
-
     const renderEmpty = () => (
         <View style={styles.emptyContainer}>
             <Icon name="cart-outline" size={80} color={colors.textSecondary} />
@@ -139,7 +127,6 @@ const CartScreen = ({ navigation }) => {
             </TouchableOpacity>
         </View>
     );
-
     if (loading) {
         return (
             <View style={[styles.loaderContainer, { backgroundColor: colors.background }]}>
@@ -147,16 +134,13 @@ const CartScreen = ({ navigation }) => {
             </View>
         );
     }
-
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
             <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={colors.background} />
-
             <View style={[styles.header, { borderBottomColor: colors.border }]}>
                 <Text style={[styles.headerTitle, { color: colors.primary }]}>Keranjang</Text>
                 <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>{cartItems.length} items</Text>
             </View>
-
             {cartItems.length === 0 ? (
                 renderEmpty()
             ) : (
@@ -168,8 +152,7 @@ const CartScreen = ({ navigation }) => {
                         contentContainerStyle={styles.list}
                         showsVerticalScrollIndicator={false}
                     />
-
-                    {/* Bottom Total & Checkout */}
+                    {}
                     <Animated.View entering={SlideInDown.springify()} style={[styles.bottomBar, { backgroundColor: colors.surface }]}>
                         <View style={styles.totalSection}>
                             <Text style={[styles.totalLabel, { color: colors.textSecondary }]}>Total</Text>
@@ -193,7 +176,6 @@ const CartScreen = ({ navigation }) => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: { flex: 1 },
     loaderContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
@@ -331,5 +313,4 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
 });
-
 export default CartScreen;

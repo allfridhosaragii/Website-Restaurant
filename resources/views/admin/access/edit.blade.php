@@ -11,18 +11,15 @@
             <i class="bi bi-arrow-left me-1"></i>Kembali
         </a>
     </div>
-
     @if(session('error'))
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <i class="bi bi-x-circle me-2"></i>{{ session('error') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     @endif
-
     <form action="{{ route('admin.access.update', $admin->id) }}" method="POST">
         @csrf
         @method('PUT')
-        
         <div class="row">
             <div class="col-md-6">
                 <div class="card mb-4">
@@ -55,7 +52,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="col-md-6">
                 <div class="card mb-4">
                     <div class="card-header">
@@ -99,7 +95,6 @@
                 </div>
             </div>
         </div>
-
         <div class="mt-2">
             <button type="submit" class="btn btn-primary">
                 <i class="bi bi-check-lg me-1"></i>Simpan Perubahan
@@ -107,7 +102,6 @@
         </div>
     </form>
 </div>
-
 <script>
 function checkAll() {
     document.querySelectorAll('input[name="permissions[]"]').forEach(cb => cb.checked = true);

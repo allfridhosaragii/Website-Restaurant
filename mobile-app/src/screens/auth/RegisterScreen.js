@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useAuth } from '../../context/AuthContext';
-
 const RegisterScreen = ({ navigation }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -24,20 +23,16 @@ const RegisterScreen = ({ navigation }) => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const { register } = useAuth();
     const [loading, setLoading] = useState(false);
-
     const handleRegister = async () => {
         setLoading(true);
-        // Simulate API call
         setTimeout(async () => {
             await register(name, email, password);
             setLoading(false);
         }, 1500);
     };
-
     return (
         <View style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor="#F5F5F0" />
-
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={{ flex: 1 }}
@@ -46,7 +41,7 @@ const RegisterScreen = ({ navigation }) => {
                     contentContainerStyle={styles.scrollContent}
                     showsVerticalScrollIndicator={false}
                 >
-                    {/* Header Section */}
+                    {}
                     <View style={styles.headerContainer}>
                         <View style={styles.logoBox}>
                             <Text style={styles.logoLetter}>C</Text>
@@ -54,11 +49,9 @@ const RegisterScreen = ({ navigation }) => {
                         <Text style={styles.appTitle}>Daftar</Text>
                         <Text style={styles.appSubtitle}>Buat akun baru untuk memulai perjalanan kuliner Anda</Text>
                     </View>
-
-                    {/* Form Card */}
+                    {}
                     <View style={styles.card}>
-
-                        {/* Name Input */}
+                        {}
                         <Text style={styles.label}>Nama Lengkap</Text>
                         <View style={styles.inputContainer}>
                             <Icon name="person-outline" size={20} color="#999" style={styles.inputIcon} />
@@ -70,8 +63,7 @@ const RegisterScreen = ({ navigation }) => {
                                 onChangeText={setName}
                             />
                         </View>
-
-                        {/* Email Input */}
+                        {}
                         <Text style={styles.label}>Email</Text>
                         <View style={styles.inputContainer}>
                             <Icon name="mail-outline" size={20} color="#999" style={styles.inputIcon} />
@@ -85,8 +77,7 @@ const RegisterScreen = ({ navigation }) => {
                                 autoCapitalize="none"
                             />
                         </View>
-
-                        {/* Phone Input */}
+                        {}
                         <Text style={styles.label}>Nomor Telepon</Text>
                         <View style={styles.inputContainer}>
                             <Icon name="call-outline" size={20} color="#999" style={styles.inputIcon} />
@@ -99,8 +90,7 @@ const RegisterScreen = ({ navigation }) => {
                                 keyboardType="phone-pad"
                             />
                         </View>
-
-                        {/* Password Input */}
+                        {}
                         <Text style={styles.label}>Password</Text>
                         <View style={styles.inputContainer}>
                             <Icon name="lock-closed-outline" size={20} color="#999" style={styles.inputIcon} />
@@ -116,8 +106,7 @@ const RegisterScreen = ({ navigation }) => {
                                 <Icon name={showPassword ? "eye-off-outline" : "eye-outline"} size={20} color="#999" />
                             </TouchableOpacity>
                         </View>
-
-                        {/* Confirm Password Input */}
+                        {}
                         <Text style={styles.label}>Konfirmasi Password</Text>
                         <View style={styles.inputContainer}>
                             <Icon name="lock-closed-outline" size={20} color="#999" style={styles.inputIcon} />
@@ -133,21 +122,18 @@ const RegisterScreen = ({ navigation }) => {
                                 <Icon name={showConfirmPassword ? "eye-off-outline" : "eye-outline"} size={20} color="#999" />
                             </TouchableOpacity>
                         </View>
-
-                        {/* Register Button */}
+                        {}
                         <TouchableOpacity style={styles.registerButton} onPress={handleRegister} disabled={loading}>
                             <Text style={styles.registerButtonText}>{loading ? 'Memproses...' : 'Daftar'}</Text>
                         </TouchableOpacity>
                     </View>
-
-                    {/* Divider */}
+                    {}
                     <View style={styles.dividerContainer}>
                         <View style={styles.dividerLine} />
                         <Text style={styles.dividerText}>Atau lanjutkan dengan</Text>
                         <View style={styles.dividerLine} />
                     </View>
-
-                    {/* Google Login */}
+                    {}
                     <TouchableOpacity style={styles.googleButton}>
                         <Image
                             source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg' }}
@@ -158,32 +144,28 @@ const RegisterScreen = ({ navigation }) => {
                         </View>
                         <Text style={styles.googleButtonText}>Daftar dengan Google</Text>
                     </TouchableOpacity>
-
-                    {/* Footer */}
+                    {}
                     <View style={styles.footer}>
                         <Text style={styles.footerText}>Sudah punya akun? </Text>
                         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
                             <Text style={styles.footerLink}>Masuk Disini</Text>
                         </TouchableOpacity>
                     </View>
-
                     <View style={{ height: 50 }} />
                 </ScrollView>
             </KeyboardAvoidingView>
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F5F0', // Cream Background
+        backgroundColor: '#F5F5F0', 
     },
     scrollContent: {
         padding: 24,
         alignItems: 'center',
     },
-    // Header
     headerContainer: {
         alignItems: 'center',
         marginTop: 20,
@@ -192,7 +174,7 @@ const styles = StyleSheet.create({
     logoBox: {
         width: 64,
         height: 64,
-        backgroundColor: '#9A1B3F', // Burgundy
+        backgroundColor: '#9A1B3F', 
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
@@ -222,7 +204,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         lineHeight: 20,
     },
-    // Card
     card: {
         backgroundColor: '#FFF',
         width: '100%',
@@ -277,7 +258,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-    // Divider
     dividerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -294,7 +274,6 @@ const styles = StyleSheet.create({
         color: '#888',
         fontSize: 13,
     },
-    // Google Button
     googleButton: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -316,7 +295,6 @@ const styles = StyleSheet.create({
         color: '#333',
         fontWeight: '600',
     },
-    // Footer
     footer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -331,5 +309,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
-
 export default RegisterScreen;

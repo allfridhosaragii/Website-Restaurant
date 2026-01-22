@@ -1,8 +1,8 @@
 export const colors = {
-    primary: '#800020', // Burgundy
-    primaryDim: '#5D0016', // Darker Burgundy for gradients
-    secondary: '#D4AF37', // Gold
-    background: '#FAF3E0', // Light Cream
+    primary: '#800020', 
+    primaryDim: '#5D0016', 
+    secondary: '#D4AF37', 
+    background: '#FAF3E0', 
     surface: '#FFFFFF',
     surfaceLight: '#F5F5F5',
     cardBackground: '#FFFFFF',
@@ -21,7 +21,6 @@ export const colors = {
     error: '#D32F2F',
     black: '#1C1C1E',
 };
-
 export const spacing = {
     xs: 4,
     sm: 8,
@@ -30,7 +29,6 @@ export const spacing = {
     xl: 32,
     xxl: 48,
 };
-
 export const fontSize = {
     xs: 10,
     sm: 12,
@@ -40,7 +38,6 @@ export const fontSize = {
     xxl: 22,
     xxxl: 28,
 };
-
 export const borderRadius = {
     sm: 4,
     md: 8,
@@ -48,7 +45,6 @@ export const borderRadius = {
     xl: 16,
     full: 9999,
 };
-
 export const shadows = {
     sm: {
         shadowColor: '#000',

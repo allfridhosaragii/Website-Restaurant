@@ -4,20 +4,15 @@ import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
 import { colors } from '../../theme/colors';
-
 const OrderSuccessScreen = ({ navigation, route }) => {
-    // Generate random Order ID if not passed
     const orderId = route.params?.orderId || `#ORD-${Math.floor(100000 + Math.random() * 900000)}`;
     const total = route.params?.total || 150000;
     const items = route.params?.items || [];
-
-    // Disable Back Button
     useEffect(() => {
         const backAction = () => true;
         const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
         return () => backHandler.remove();
     }, []);
-
     const formatPrice = (price) => {
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
@@ -25,7 +20,6 @@ const OrderSuccessScreen = ({ navigation, route }) => {
             minimumFractionDigits: 0,
         }).format(price);
     };
-
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -34,22 +28,18 @@ const OrderSuccessScreen = ({ navigation, route }) => {
                         <Icon name="checkmark" size={60} color="#FFF" />
                     </View>
                 </Animated.View>
-
                 <Animated.Text entering={FadeInDown.delay(300)} style={styles.title}>
                     Pesanan Diterima!
                 </Animated.Text>
                 <Animated.Text entering={FadeInDown.delay(400)} style={styles.subtitle}>
                     Kami sedang menyiapkan hidangan lezat untuk Anda.
                 </Animated.Text>
-
                 <Animated.View entering={FadeInDown.delay(600)} style={styles.receiptCard}>
                     <View style={styles.receiptHeader}>
                         <Text style={styles.receiptTitle}>Struk Digital</Text>
                         <Text style={styles.orderId}>{orderId}</Text>
                     </View>
-
                     <View style={styles.divider} />
-
                     <View style={styles.receiptRow}>
                         <Text style={styles.label}>Waktu</Text>
                         <Text style={styles.value}>{new Date().toLocaleString()}</Text>
@@ -64,10 +54,8 @@ const OrderSuccessScreen = ({ navigation, route }) => {
                             <Text style={styles.statusText}>LUNAS</Text>
                         </View>
                     </View>
-
                     <View style={styles.divider} />
-
-                    {/* Summary Items (Max 3) */}
+                    {}
                     <View style={styles.itemsContainer}>
                         {items.slice(0, 3).map((item, index) => (
                             <View key={index} style={styles.itemRow}>
@@ -80,16 +68,13 @@ const OrderSuccessScreen = ({ navigation, route }) => {
                         )}
                         {items.length === 0 && <Text style={styles.moreItems}>Paket Hemat Spesial</Text>}
                     </View>
-
                     <View style={styles.divider} />
-
                     <View style={styles.totalRow}>
                         <Text style={styles.totalLabel}>TOTAL</Text>
                         <Text style={styles.totalValue}>{formatPrice(total)}</Text>
                     </View>
                 </Animated.View>
             </ScrollView>
-
             <View style={styles.footer}>
                 <TouchableOpacity
                     style={styles.primaryBtn}
@@ -102,13 +87,10 @@ const OrderSuccessScreen = ({ navigation, route }) => {
                         <Text style={styles.btnText}>Kembali ke Beranda</Text>
                     </LinearGradient>
                 </TouchableOpacity>
-
                 <TouchableOpacity
                     style={styles.secondaryBtn}
                     onPress={() => {
                         navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] });
-                        // Navigate to Orders tab logic would need precise tab handling, for now reset to home is safe
-                        // Ideally: navigation.navigate('MainTabs', { screen: 'Orders' });
                         setTimeout(() => navigation.navigate('Orders'), 100);
                     }}
                 >
@@ -118,11 +100,10 @@ const OrderSuccessScreen = ({ navigation, route }) => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.primary, // Full burgundy bg for premium feel
+        backgroundColor: colors.primary, 
     },
     scrollContent: {
         alignItems: 'center',
@@ -142,7 +123,7 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 50,
-        backgroundColor: '#4CAF50', // Success Green
+        backgroundColor: '#4CAF50', 
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 4,
@@ -196,7 +177,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#E0E0E0',
         marginVertical: 16,
         borderStyle: 'dashed',
-        borderWidth: 1, // Simulate dash with border style if possible or just line
+        borderWidth: 1, 
         borderColor: '#E0E0E0'
     },
     receiptRow: {
@@ -284,7 +265,7 @@ const styles = StyleSheet.create({
     gradientBtn: {
         paddingVertical: 16,
         alignItems: 'center',
-        backgroundColor: '#FFF' // Fallback
+        backgroundColor: '#FFF' 
     },
     btnText: {
         color: '#FFF',
@@ -303,5 +284,4 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
 });
-
 export default OrderSuccessScreen;

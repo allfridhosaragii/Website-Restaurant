@@ -12,22 +12,17 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useSettings } from '../../context/SettingsContext';
 import { APP_VERSION } from '../../config/app';
 import { spacing, fontSize } from '../../theme/colors';
-
 const SettingsScreen = ({ navigation }) => {
     const { isDarkMode, toggleTheme, language, toggleLanguage, colors, t } = useSettings();
-
-    // Toggle Switch Custom Colors
     const trackColor = { false: "#767577", true: '#B8860B' };
     const thumbColor = isDarkMode ? '#D4AF37' : "#f4f3f4";
-
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
             <StatusBar
                 barStyle={isDarkMode ? "light-content" : "dark-content"}
                 backgroundColor={colors.background}
             />
-
-            {/* Custom Header */}
+            {}
             <View style={[styles.header, { backgroundColor: colors.background }]}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
                     <Icon name="arrow-back" size={24} color={colors.text} />
@@ -37,10 +32,8 @@ const SettingsScreen = ({ navigation }) => {
                 </Text>
                 <View style={{ width: 40 }} />
             </View>
-
             <ScrollView contentContainerStyle={styles.content}>
-
-                {/* Section: Appearance */}
+                {}
                 <Text style={styles.sectionHeader}>
                     {language === 'en' ? 'APPEARANCE' : 'TAMPILAN'}
                 </Text>
@@ -61,8 +54,7 @@ const SettingsScreen = ({ navigation }) => {
                         value={isDarkMode}
                     />
                 </View>
-
-                {/* Section: Preferences */}
+                {}
                 <Text style={styles.sectionHeader}>
                     {language === 'en' ? 'PREFERENCES' : 'PREFERENSI'}
                 </Text>
@@ -86,8 +78,7 @@ const SettingsScreen = ({ navigation }) => {
                         <Icon name="chevron-forward" size={16} color={colors.textSecondary} />
                     </View>
                 </TouchableOpacity>
-
-                {/* Section: About */}
+                {}
                 <Text style={styles.sectionHeader}>
                     {language === 'en' ? 'ABOUT' : 'TENTANG'}
                 </Text>
@@ -104,12 +95,10 @@ const SettingsScreen = ({ navigation }) => {
                         v{APP_VERSION} (Luxury Build)
                     </Text>
                 </View>
-
             </ScrollView>
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -138,7 +127,7 @@ const styles = StyleSheet.create({
         padding: spacing.lg,
     },
     sectionHeader: {
-        color: '#D4AF37', // Always Gold
+        color: '#D4AF37', 
         fontSize: 12,
         fontWeight: 'bold',
         letterSpacing: 1.5,
@@ -175,5 +164,4 @@ const styles = StyleSheet.create({
         fontSize: 14,
     }
 });
-
 export default SettingsScreen;

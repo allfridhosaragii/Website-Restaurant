@@ -64,7 +64,7 @@ class OrderController extends Controller
         DB::table('activity_logs')->insert([
             'user_id' => $userId,
             'action' => 'create_order',
-            'description' => "Membuat pesanan baru #" . $orderNumber,
+            'description' => "Membuat pesanan baru 
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
             'created_at' => now(),

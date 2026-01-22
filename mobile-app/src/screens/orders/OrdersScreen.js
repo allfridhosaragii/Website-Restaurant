@@ -4,20 +4,16 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors } from '../../theme/colors';
-
 const BASE_URL = 'https://website-restaurant.up.railway.app/api';
-
 const OrdersScreen = ({ navigation }) => {
     const [activeTab, setActiveTab] = useState('menu');
     const [orders, setOrders] = useState([]);
     const [reservations, setReservations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
-
     useEffect(() => {
         fetchData();
     }, []);
-
     const fetchData = async () => {
         try {
             const token = await AsyncStorage.getItem('auth_token');
@@ -25,23 +21,18 @@ const OrdersScreen = ({ navigation }) => {
                 setLoading(false);
                 return;
             }
-
             const config = {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Accept': 'application/json'
                 }
             };
-
             const [ordersRes, reservationsRes] = await Promise.all([
                 axios.get(`${BASE_URL}/orders`, config).catch(() => ({ data: [] })),
                 axios.get(`${BASE_URL}/reservations`, config).catch(() => ({ data: [] }))
             ]);
-
-            // API returns { success: true, orders: [...] } and { success: true, reservations: [...] }
             const ordersData = ordersRes.data?.orders || [];
             const reservationsData = reservationsRes.data?.reservations || [];
-
             setOrders(Array.isArray(ordersData) ? ordersData : []);
             setReservations(Array.isArray(reservationsData) ? reservationsData : []);
         } catch (error) {
@@ -50,22 +41,18 @@ const OrdersScreen = ({ navigation }) => {
             setLoading(false);
         }
     };
-
     const onRefresh = useCallback(() => {
         setRefreshing(true);
         fetchData().finally(() => setRefreshing(false));
     }, []);
-
     const formatDate = (dateString) => {
         if (!dateString) return '-';
         const date = new Date(dateString);
         return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     };
-
     const formatPrice = (price) => {
         return `Rp ${parseInt(price || 0).toLocaleString('id-ID')}`;
     };
-
     const getStatusColor = (status) => {
         switch (status?.toLowerCase()) {
             case 'completed':
@@ -83,7 +70,6 @@ const OrdersScreen = ({ navigation }) => {
                 return { bg: '#E3F2FD', text: '#1565C0' };
         }
     };
-
     const renderMenuOrder = ({ item }) => {
         const statusColor = getStatusColor(item.status);
         return (
@@ -111,11 +97,9 @@ const OrdersScreen = ({ navigation }) => {
             </TouchableOpacity>
         );
     };
-
     const renderReservation = ({ item }) => {
         const statusColor = getStatusColor(item.status);
         const hasDeposit = item.deposit_amount > 0;
-
         return (
             <TouchableOpacity style={styles.card} activeOpacity={0.8}>
                 <View style={styles.cardHeader}>
@@ -132,9 +116,7 @@ const OrdersScreen = ({ navigation }) => {
                         </Text>
                     </View>
                 </View>
-
                 <View style={styles.divider} />
-
                 <View style={styles.reservationDetails}>
                     <Text style={styles.detailText}>
                         <Icon name="time-outline" size={14} color="#666" /> {item.reservation_time || item.time}
@@ -148,8 +130,7 @@ const OrdersScreen = ({ navigation }) => {
                         </Text>
                     )}
                 </View>
-
-                {/* Deposit Section */}
+                {}
                 <View style={styles.depositInfoContainer}>
                     <View style={styles.depositHeader}>
                         <Text style={styles.depositLabel}>Deposit (QRIS)</Text>
@@ -159,7 +140,6 @@ const OrdersScreen = ({ navigation }) => {
                         <Text style={[styles.depositStatus, { color: item.deposit_status === 'paid' ? 'green' : '#F57F17' }]}>
                             Status: {item.deposit_status ? item.deposit_status.toUpperCase() : 'PENDING'}
                         </Text>
-
                         {item.deposit_proof && (
                             <View style={styles.proofThumbnail}>
                                 <Icon name="image" size={12} color="white" />
@@ -171,7 +151,6 @@ const OrdersScreen = ({ navigation }) => {
             </TouchableOpacity>
         );
     };
-
     const renderEmpty = () => (
         <View style={styles.emptyContainer}>
             <Icon name={activeTab === 'menu' ? 'receipt-outline' : 'calendar-outline'} size={60} color="#CCC" />
@@ -180,7 +159,6 @@ const OrdersScreen = ({ navigation }) => {
             </Text>
         </View>
     );
-
     return (
         <View style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
@@ -201,7 +179,6 @@ const OrdersScreen = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-
             {loading ? (
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color={colors.primary} />
@@ -222,7 +199,6 @@ const OrdersScreen = ({ navigation }) => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#F9F9F9' },
     header: { padding: 20, paddingTop: 40, backgroundColor: '#FFF' },
@@ -258,8 +234,6 @@ const styles = StyleSheet.create({
     loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 60 },
     emptyText: { fontSize: 16, color: '#999', marginTop: 16 },
-
-    // New Styles for Reservation Card
     reservationDetails: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 16 },
     detailText: { fontSize: 13, color: '#555', alignItems: 'center' },
     depositInfoContainer: { backgroundColor: '#F5F5F5', padding: 12, borderRadius: 8, borderLeftWidth: 3, borderLeftColor: colors.primary },
@@ -269,5 +243,4 @@ const styles = StyleSheet.create({
     depositStatus: { fontSize: 11, fontWeight: 'bold', marginTop: 2 },
     proofThumbnail: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.primary, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12 },
 });
-
 export default OrdersScreen;

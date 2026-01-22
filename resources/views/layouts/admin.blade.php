@@ -4,15 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    
-    <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#0C2A36">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Culinaire Admin">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
     <link rel="apple-touch-icon" href="{{ asset('icons/icon-192x192.png') }}">
-    
     <title>@yield('title', 'Dashboard') - Culinaire Admin</title>
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,34 +19,26 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    
-    <!-- View Transitions API -->
     <meta name="view-transition" content="same-origin">
     <style>
         /* View Transitions - Smooth page navigation */
         @view-transition {
             navigation: auto;
         }
-        
         ::view-transition-old(root) {
             animation: fade-out 0.25s ease-out forwards;
         }
-        
         ::view-transition-new(root) {
             animation: fade-in 0.25s ease-in forwards;
         }
-        
         @keyframes fade-out {
             from { opacity: 1; transform: scale(1); }
             to { opacity: 0; transform: scale(0.98); }
         }
-        
         @keyframes fade-in {
             from { opacity: 0; transform: scale(1.02); }
             to { opacity: 1; transform: scale(1); }
         }
-        
-
     </style>
     @stack('styles')
 </head>
@@ -200,12 +189,9 @@
     <script src="{{ asset('js/cursor.js') }}"></script>
     <script src="{{ asset('js/performance-core.js') }}"></script>
     @stack('scripts')
-    
-    <!-- Real-time Maintenance Mode Detection for Admin -->
     <script>
         (function() {
             let maintenanceCheckInterval;
-            
             // Check maintenance status
             async function checkMaintenanceStatus() {
                 try {
@@ -214,11 +200,9 @@
                         cache: 'no-store'
                     });
                     const data = await response.json();
-                    
                     if (data.maintenance) {
                         // Stop polling
                         clearInterval(maintenanceCheckInterval);
-                        
                         // Redirect to landing page
                         window.location.href = '/';
                     }
@@ -226,19 +210,13 @@
                     console.log('Maintenance check failed:', error);
                 }
             }
-            
             // Start polling every 5 seconds
             maintenanceCheckInterval = setInterval(checkMaintenanceStatus, 5000);
-            
             // Check immediately on page load
             checkMaintenanceStatus();
         })();
     </script>
-
-    <!-- Error Tracker with Screenshot -->
     <script src="{{ asset('js/error-tracker.js') }}" defer></script>
-
-    <!-- PWA Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {

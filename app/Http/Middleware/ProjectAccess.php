@@ -11,19 +11,13 @@ class ProjectAccess
         if (!Auth::check()) {
             return redirect('/login');
         }
-
         $user = Auth::user();
-
-        // Super admin always has access
         if ($user->isSuperAdmin()) {
             return $next($request);
         }
-
-        // Check if admin has 'project' permission
         if ($user->isAdmin() && $user->hasAdminPermission('project')) {
             return $next($request);
         }
-
         return redirect('/');
     }
 }

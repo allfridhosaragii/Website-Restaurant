@@ -9,13 +9,11 @@
     --card-border: rgba(12, 42, 54, 0.08);
     --glass-bg: rgba(255, 255, 255, 0.7);
 }
-
 [data-theme="dark"] {
     --card-bg: rgba(22, 37, 43, 0.85);
     --card-border: rgba(255, 255, 255, 0.08);
     --glass-bg: rgba(12, 42, 54, 0.6);
 }
-
 .app-settings-header {
     margin-bottom: 2.5rem;
 }
@@ -29,7 +27,6 @@
     align-items: center;
     gap: 1rem;
 }
-
 .app-card {
     background: var(--card-bg);
     backdrop-filter: blur(12px);
@@ -41,7 +38,6 @@
     margin-bottom: 2rem;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
 .app-card-header {
     padding: 1.75rem;
     border-bottom: 1px solid var(--card-border);
@@ -57,11 +53,9 @@
     color: var(--text-muted);
     font-size: 0.9rem;
 }
-
 .app-card-body {
     padding: 1.75rem;
 }
-
 .app-upload-zone {
     border: 2px dashed var(--card-border);
     border-radius: 1.25rem;
@@ -101,7 +95,6 @@
     margin-bottom: 1.5rem;
     display: inline-block;
 }
-
 .history-table {
     border-collapse: separate;
     border-spacing: 0 0.5rem;
@@ -129,7 +122,6 @@
 }
 .history-table tbody tr td:first-child { border-top-left-radius: 1rem; border-bottom-left-radius: 1rem; }
 .history-table tbody tr td:last-child { border-top-right-radius: 1rem; border-bottom-right-radius: 1rem; }
-
 .history-item-name {
     font-weight: 600;
     color: var(--text-primary);
@@ -138,7 +130,6 @@
     font-size: 0.8rem;
     color: var(--text-muted);
 }
-
 .empty-history {
     padding: 4rem 2rem;
     text-align: center;
@@ -150,7 +141,6 @@
     margin-bottom: 1rem;
     display: block;
 }
-
 .progress {
     background-color: rgba(0, 0, 0, 0.05) !important;
     box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
@@ -161,7 +151,6 @@
     background: var(--accent-gradient);
     box-shadow: 0 0 15px rgba(200, 155, 58, 0.3);
 }
-
 .btn-primary {
     background: var(--accent-gradient);
     border: none;
@@ -213,21 +202,18 @@
 <div class="app-settings-header">
     <h1><i class="bi bi-phone"></i> Pengaturan Aplikasi</h1>
 </div>
-
 @if(session('success'))
 <div class="alert alert-success alert-dismissible fade show" role="alert">
     <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 </div>
 @endif
-
 @if(session('error'))
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
     <i class="bi bi-exclamation-circle me-2"></i>{{ session('error') }}
     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 </div>
 @endif
-
     <div class="col-lg-8">
         <div class="app-card">
             <div class="app-card-header">
@@ -251,7 +237,6 @@
                     </div>
                 </div>
                 @endif
-                
                 <div class="app-form-group">
                     <label class="app-form-label mb-3">Pilar Utama Aplikasi (File APK)</label>
                     <div class="app-upload-zone" id="uploadZone" onclick="document.getElementById('apkFile').click()">
@@ -263,7 +248,6 @@
                         </div>
                     </div>
                     <input type="file" name="apk_file" id="apkFile" accept=".apk" style="display: none;">
-                    
                     <div id="filePreview" style="display: none;" class="mt-4">
                         <div class="p-3 rounded-3 border d-flex align-items-center gap-3 bg-light bg-opacity-10">
                             <i class="bi bi-file-earmark-zip fw-bold text-accent" style="font-size: 1.5rem;"></i>
@@ -276,7 +260,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div id="uploadProgressContainer" style="display: none;" class="mt-4">
                         <div class="d-flex justify-content-between mb-2">
                             <span class="fw-bold" id="uploadStatusText">Mempersiapkan...</span>
@@ -295,7 +278,6 @@
             </div>
         </div>
     </div>
-    
     <div class="col-lg-4">
         <div class="app-card">
             <div class="app-card-header">
@@ -337,7 +319,6 @@
                 </div>
             </div>
         </div>
-
         <div class="app-card mt-4">
             <div class="app-card-header d-flex justify-content-between align-items-center">
                 <div>
@@ -353,12 +334,13 @@
                             <tr>
                                 <th>Pengguna</th>
                                 <th>File / IP</th>
+                                <th>Perangkat</th>
                                 <th class="text-end">Waktu</th>
                             </tr>
                         </thead>
                         <tbody id="liveDownloadBody">
                             <tr>
-                                <td colspan="3" class="text-center py-5">
+                                <td colspan="4" class="text-center py-5">
                                     <div class="spinner-border text-accent spinner-border-sm me-2"></div>
                                     Memuat aktivitas terbaru...
                                 </td>
@@ -371,7 +353,6 @@
     </div>
 </div>
 @endsection
-
 @push('scripts')
 <script>
 const uploadZone = document.getElementById('uploadZone');
@@ -384,21 +365,17 @@ const uploadProgressContainer = document.getElementById('uploadProgressContainer
 const uploadProgressBar = document.getElementById('uploadProgressBar');
 const uploadPercentage = document.getElementById('uploadPercentage');
 const uploadStatusText = document.getElementById('uploadStatusText');
-
 // Drag and drop
 uploadZone.addEventListener('dragover', (e) => {
     e.preventDefault();
     uploadZone.classList.add('dragover');
 });
-
 uploadZone.addEventListener('dragleave', () => {
     uploadZone.classList.remove('dragover');
 });
-
 uploadZone.addEventListener('drop', (e) => {
     e.preventDefault();
     uploadZone.classList.remove('dragover');
-    
     const files = e.dataTransfer.files;
     if (files.length > 0 && files[0].name.endsWith('.apk')) {
         fileInput.files = files;
@@ -407,26 +384,22 @@ uploadZone.addEventListener('drop', (e) => {
         alert('Hanya file APK yang diperbolehkan');
     }
 });
-
 // File input change
 fileInput.addEventListener('change', (e) => {
     if (e.target.files.length > 0) {
         showFilePreview(e.target.files[0]);
     }
 });
-
 function showFilePreview(file) {
     fileName.textContent = file.name;
     fileSize.textContent = formatFileSize(file.size);
     filePreview.style.display = 'block';
 }
-
 function formatFileSize(bytes) {
     if (bytes < 1024) return bytes + ' B';
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
 }
-
 // Direct Upload Logic
 btnUpload.addEventListener('click', async () => {
     const file = fileInput.files[0];
@@ -434,12 +407,10 @@ btnUpload.addEventListener('click', async () => {
         alert('Silakan pilih file APK terlebih dahulu');
         return;
     }
-
     try {
         btnUpload.disabled = true;
         uploadProgressContainer.style.display = 'block';
         uploadStatusText.textContent = 'Menyiapkan upload...';
-        
         // 1. Dapatkan Signed URL dari Laravel
         const urlResponse = await fetch('/admin/application/generate-upload-url', {
             method: 'POST',
@@ -449,19 +420,14 @@ btnUpload.addEventListener('click', async () => {
             },
             body: JSON.stringify({ filename: file.name })
         });
-
         const urlData = await urlResponse.json();
         if (!urlData.success) throw new Error(urlData.message);
-
         const uploadUrl = urlData.upload_url;
         const newFilename = urlData.filename;
-
         // 2. Upload langsung ke Supabase pakai XHR (biar ada progress)
         uploadStatusText.textContent = 'Mengunggah file ke Cloud...';
-        
         const xhr = new XMLHttpRequest();
         xhr.open('PUT', uploadUrl, true);
-        
         // Supabase expects the file in the body for PUT
         xhr.upload.onprogress = (e) => {
             if (e.lengthComputable) {
@@ -470,7 +436,6 @@ btnUpload.addEventListener('click', async () => {
                 uploadPercentage.textContent = percent + '%';
             }
         };
-
         xhr.onload = async () => {
             if (xhr.status >= 200 && xhr.status < 300) {
                 // 3. Finalisasi di Laravel
@@ -486,7 +451,6 @@ btnUpload.addEventListener('click', async () => {
                         size: formatFileSize(file.size)
                     })
                 });
-
                 if (finalResponse.ok) {
                     uploadStatusText.textContent = 'Berhasil!';
                     setTimeout(() => {
@@ -500,20 +464,16 @@ btnUpload.addEventListener('click', async () => {
                 throw new Error('Gagal mengunggah file ke Supabase storage');
             }
         };
-
         xhr.onerror = () => {
             throw new Error('Koneksi terputus saat mengunggah');
         };
-
         xhr.send(file);
-
     } catch (error) {
         alert('Error: ' + error.message);
         btnUpload.disabled = false;
         uploadProgressContainer.style.display = 'none';
     }
 });
-
 // Live Tracking Logic
 function timeAgo(dateStr) {
     const date = new Date(dateStr);
@@ -524,23 +484,28 @@ function timeAgo(dateStr) {
     if (diff < 86400) return Math.floor(diff / 3600) + ' jam lalu';
     return Math.floor(diff / 86400) + ' hari lalu';
 }
-
 async function fetchLiveDownloads() {
     try {
         const res = await fetch('/admin/application/api/downloads');
         const data = await res.json();
-        
         if (data.success) {
             const tbody = document.getElementById('liveDownloadBody');
             const badge = document.getElementById('downloadBadge');
-            
             badge.textContent = data.data.length + ' log';
-            
             if (data.data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-5 text-muted">Belum ada aktivitas unduhan</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-5 text-muted">Belum ada aktivitas unduhan</td></tr>';
                 return;
             }
-
+            
+            function getDeviceIcon(type) {
+                switch(type?.toLowerCase()) {
+                    case 'mobile': return 'bi-phone';
+                    case 'tablet': return 'bi-tablet';
+                    case 'desktop': return 'bi-laptop';
+                    default: return 'bi-device-hdd';
+                }
+            }
+            
             tbody.innerHTML = data.data.map(a => `
                 <tr class="activity-row">
                     <td>
@@ -550,6 +515,13 @@ async function fetchLiveDownloads() {
                     <td>
                         <div class="small fw-semibold">${a.description.replace('Mendownload file: ', '')}</div>
                         <code class="small text-accent">${a.ip_address}</code>
+                    </td>
+                    <td>
+                        <div class="small">
+                            <i class="bi ${getDeviceIcon(a.device_type)} me-1"></i>
+                            ${a.device_name || 'Unknown'}
+                        </div>
+                        <div class="small text-muted">${a.browser || ''} ${a.os ? '• ' + a.os : ''}</div>
                     </td>
                     <td class="text-end">
                         <span class="text-muted small">${timeAgo(a.created_at)}</span>
@@ -561,7 +533,6 @@ async function fetchLiveDownloads() {
         console.error('Failed to fetch live downloads:', err);
     }
 }
-
 // Initial pull and interval
 fetchLiveDownloads();
 setInterval(fetchLiveDownloads, 5000);

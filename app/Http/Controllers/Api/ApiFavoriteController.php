@@ -1,23 +1,16 @@
 <?php
-
 namespace App\Http\Controllers\Api;
-
 use App\Http\Controllers\Controller;
 use App\Models\Favorite;
 use Illuminate\Http\Request;
-
 class ApiFavoriteController extends Controller
 {
-    /**
-     * List user's favorites
-     */
     public function index(Request $request)
     {
         $favorites = Favorite::where('user_id', $request->user()->id)
             ->with('menu')
             ->orderBy('created_at', 'desc')
             ->get();
-        
         return response()->json([
             'success' => true,
             'favorites' => $favorites->map(function ($favorite) {
@@ -39,15 +32,9 @@ class ApiFavoriteController extends Controller
             'count' => $favorites->count(),
         ]);
     }
-
-    /**
-     * Toggle favorite status for a menu
-     */
     public function toggle(Request $request, $menuId)
     {
         $user = $request->user();
-        
-        // Check if menu exists
         $menu = \DB::table('menus')->where('id', $menuId)->first();
         if (!$menu) {
             return response()->json([
@@ -55,11 +42,9 @@ class ApiFavoriteController extends Controller
                 'message' => 'Menu not found',
             ], 404);
         }
-        
         $favorite = Favorite::where('user_id', $user->id)
             ->where('menu_id', $menuId)
             ->first();
-        
         if ($favorite) {
             $favorite->delete();
             return response()->json([

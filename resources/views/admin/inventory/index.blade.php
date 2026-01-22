@@ -1,6 +1,5 @@
 @extends('layouts.admin')
 @section('title', 'Stok Harian')
-
 @push('styles')
 <style>
     .inventory-card {
@@ -23,7 +22,6 @@
         font-size: 0.8rem;
         opacity: 0.7;
     }
-    
     .stock-table {
         width: 100%;
         border-collapse: separate;
@@ -47,7 +45,6 @@
     .stock-table tbody tr:hover {
         background: var(--surface-light);
     }
-    
     .menu-thumb {
         width: 50px;
         height: 50px;
@@ -55,7 +52,6 @@
         object-fit: cover;
         background: var(--surface-light);
     }
-    
     .stock-badge {
         display: inline-flex;
         align-items: center;
@@ -69,7 +65,6 @@
     .stock-badge.info { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
     .stock-badge.warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
     .stock-badge.danger { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
-    
     .stock-controls {
         display: flex;
         align-items: center;
@@ -101,7 +96,6 @@
     .stock-btn.minus { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
     .stock-btn.plus { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
     .stock-btn.reset { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
-    
     .availability-toggle {
         position: relative;
         width: 50px;
@@ -124,7 +118,6 @@
         transition: all 0.3s;
     }
     .availability-toggle.active::after { left: 27px; }
-    
     .filter-bar {
         display: flex;
         gap: 12px;
@@ -140,7 +133,6 @@
         color: var(--text-primary);
         font-size: 0.9rem;
     }
-    
     .btn-reset-all {
         padding: 10px 20px;
         border-radius: 10px;
@@ -155,7 +147,6 @@
         gap: 8px;
     }
     .btn-reset-all:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4); }
-    
     .category-badge {
         display: inline-block;
         padding: 4px 10px;
@@ -167,7 +158,6 @@
     }
 </style>
 @endpush
-
 @section('content')
 <section class="section bg-cream">
     <div class="container-fluid">
@@ -183,8 +173,6 @@
                 Reset Semua Stok
             </button>
         </div>
-
-        {{-- Stats Cards --}}
         <div class="row g-3 mb-4">
             <div class="col-6 col-md-3">
                 <div class="inventory-card">
@@ -211,8 +199,6 @@
                 </div>
             </div>
         </div>
-
-        {{-- Filter & Table --}}
         <div class="card">
             <div class="card-body">
                 <form method="GET" class="filter-bar">
@@ -229,7 +215,6 @@
                         <option value="out" {{ request('status') == 'out' ? 'selected' : '' }}>Habis</option>
                     </select>
                 </form>
-
                 <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
                     <table class="stock-table">
                         <thead>
@@ -311,15 +296,12 @@
     </div>
 </section>
 @endsection
-
 @push('scripts')
 <script>
 const csrfToken = '{{ csrf_token() }}';
-
 async function updateStock(menuId) {
     const dailyStock = document.getElementById('stock-' + menuId).value;
     const maxStock = document.getElementById('max-stock-' + menuId).value;
-
     try {
         const res = await fetch(`/admin/inventory/${menuId}/update`, {
             method: 'POST',
@@ -340,7 +322,6 @@ async function updateStock(menuId) {
         console.error('Failed to update stock:', e);
     }
 }
-
 async function adjustStock(menuId, action) {
     try {
         const res = await fetch(`/admin/inventory/${menuId}/adjust`, {
@@ -359,7 +340,6 @@ async function adjustStock(menuId, action) {
         console.error('Failed to adjust stock:', e);
     }
 }
-
 async function toggleAvailability(menuId) {
     try {
         const res = await fetch(`/admin/inventory/${menuId}/toggle`, {
@@ -378,10 +358,8 @@ async function toggleAvailability(menuId) {
         console.error('Failed to toggle availability:', e);
     }
 }
-
 async function resetAllStock() {
     if (!confirm('Reset semua stok menu ke nilai maksimum?')) return;
-
     try {
         const res = await fetch('/admin/inventory/reset-all', {
             method: 'POST',
@@ -398,15 +376,12 @@ async function resetAllStock() {
         console.error('Failed to reset all stock:', e);
     }
 }
-
 function updateRowUI(menu) {
     document.getElementById('stock-' + menu.id).value = menu.daily_stock;
     document.getElementById('max-stock-' + menu.id).value = menu.max_daily_stock;
-    
     const statusEl = document.getElementById('status-' + menu.id);
     statusEl.className = 'stock-badge ' + menu.stock_color;
     statusEl.textContent = menu.stock_status;
-    
     const toggle = document.getElementById('toggle-' + menu.id);
     toggle.classList.toggle('active', menu.is_available);
 }

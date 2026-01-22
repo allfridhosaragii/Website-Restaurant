@@ -1,4 +1,3 @@
-{{-- App Promotion Floating Button --}}
 <div id="appPromoButtonContainer" class="app-promo-btn-container" style="display: none;">
     <button id="appPromoBtn" class="app-promo-btn" onclick="openAppPromoModal()">
         <span class="app-promo-ripple"></span>
@@ -17,8 +16,6 @@
         </div>
     </button>
 </div>
-
-{{-- App Promotion Modal --}}
 <div id="appPromoModal" class="app-modal">
     <div class="app-modal-backdrop" onclick="closeAppPromoModal()"></div>
     <div class="app-modal-card">
@@ -28,7 +25,6 @@
                 <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
         </button>
-        
         <div class="app-modal-header">
             <div class="app-modal-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -39,7 +35,6 @@
             <h2 class="app-modal-title">Culinaire App</h2>
             <p class="app-modal-subtitle">Pengalaman Premium di Genggaman Anda</p>
         </div>
-        
         <div class="app-modal-content">
             <div class="app-benefits-list">
                 <div class="app-benefit-card" style="animation-delay: 0.1s">
@@ -88,12 +83,10 @@
                     </svg>
                 </div>
             </div>
-            
             @php
                 $activeApk = \App\Models\CmsSetting::get('active_apk_filename');
                 $supabaseUrl = env('SUPABASE_URL');
                 $bucket = env('SUPABASE_BUCKET');
-                
                 if ($activeApk && $supabaseUrl && $bucket) {
                     $downloadUrl = "{$supabaseUrl}/storage/v1/object/public/{$bucket}/apks/{$activeApk}";
                 } else {
@@ -114,7 +107,6 @@
                         <div class="app-btn-subtitle">File APK (Android)</div>
                     </div>
                 </a>
-                
                 <div class="app-bonus-info">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="20 12 20 22 4 22 4 12"></polyline>
@@ -125,13 +117,11 @@
                     </svg>
                     <span>Bonus 5.000 poin untuk pengguna baru!</span>
                 </div>
-                
                 <button class="app-dismiss-btn" onclick="closeAppPromoModal()">Nanti Saja</button>
             </div>
         </div>
     </div>
 </div>
-
 <style>
     /* App Promo Floating Button & Modal */
     .app-promo-btn-container {
@@ -145,18 +135,15 @@
                     transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         pointer-events: none; /* Initially not clickable */
     }
-    
     .app-promo-btn-container.is-visible {
         opacity: 1;
         transform: translateX(0) scale(1);
         pointer-events: auto; /* Clickable when visible */
     }
-    
     /* On menu page, position above cart button */
     body.menu-page .app-promo-btn-container {
         bottom: 150px; /* Increased to avoid cart */
     }
-    
     .app-promo-btn {
         position: relative;
         width: 60px;
@@ -172,25 +159,20 @@
         transition: all 0.3s ease;
         -webkit-tap-highlight-color: transparent; /* Fix mobile tap highlight */
     }
-    
     .app-promo-btn.pulse-active {
         animation: promoPulse 2s ease-in-out infinite;
     }
-    
     @keyframes promoPulse {
         0%, 100% { box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4); }
         50% { box-shadow: 0 10px 40px rgba(212, 175, 55, 0.7); }
     }
-    
     .app-promo-btn:hover {
         transform: scale(1.05);
         box-shadow: 0 15px 40px rgba(212, 175, 55, 0.6);
     }
-    
     .app-promo-btn:active {
         transform: scale(0.95);
     }
-    
     .app-promo-ripple {
         position: absolute;
         inset: 0;
@@ -200,18 +182,15 @@
         pointer-events: none;
         z-index: -1;
     }
-    
     @keyframes promoPing {
         0% { transform: scale(1); opacity: 0.3; }
         75%, 100% { transform: scale(2); opacity: 0; }
     }
-    
     .app-promo-icon {
         color: white;
         z-index: 10;
         position: relative;
     }
-    
     .app-promo-badge {
         position: absolute;
         top: -4px;
@@ -227,12 +206,10 @@
         z-index: 11;
         animation: promoBounce 1s infinite;
     }
-    
     @keyframes promoBounce {
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-5px); }
     }
-    
     .app-promo-tooltip {
         position: absolute;
         right: 100%;
@@ -250,7 +227,6 @@
         text-align: left;
         z-index: 100;
     }
-    
     .app-promo-tooltip::after {
         content: '';
         position: absolute;
@@ -260,23 +236,19 @@
         border: 6px solid transparent;
         border-left-color: white;
     }
-    
     .app-promo-btn:hover .app-promo-tooltip {
         opacity: 1;
     }
-    
     .app-promo-tooltip-title {
         font-size: 14px;
         font-weight: 600;
         color: #1F2937;
         margin-bottom: 4px;
     }
-    
     .app-promo-tooltip-desc {
         font-size: 12px;
         color: #6B7280;
     }
-    
     /* Modal Styles */
     .app-modal {
         position: fixed;
@@ -284,11 +256,9 @@
         z-index: 10000;
         display: none;
     }
-    
     .app-modal.show {
         display: block;
     }
-    
     /* Overlay fix */
     .app-modal-overlay {
         position: fixed;
@@ -299,7 +269,6 @@
     .app-modal-overlay.show {
         display: block;
     }
-    
     .app-modal-backdrop {
         position: fixed;
         inset: 0;
@@ -308,11 +277,9 @@
         opacity: 0;
         transition: opacity 0.2s ease-out;
     }
-    
     .app-modal.show .app-modal-backdrop {
         opacity: 1;
     }
-    
     .app-modal-wrapper {
         position: fixed;
         top: 50%;
@@ -324,7 +291,6 @@
         z-index: 10001;
         pointer-events: none;
     }
-    
     .app-modal-card {
         background: white;
         border-radius: 24px;
@@ -334,7 +300,6 @@
         transform: translateY(20px) scale(0.95);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         pointer-events: auto;
-        
         /* Center modal card */
         position: fixed;
         top: 50%;
@@ -344,12 +309,10 @@
         margin: 0;
         margin-right: -50%;
     }
-    
     .app-modal.show .app-modal-card {
         opacity: 1;
         transform: translate(-50%, -50%) scale(1);
     }
-    
     /* Header & Content styles same as before */
     .app-modal-header {
         background: linear-gradient(135deg, #8B1538 0%, #6B0F2A 50%, #4A0A1C 100%);
@@ -358,7 +321,6 @@
         overflow: hidden;
         text-align: center;
     }
-    
     .app-modal-circle-1 {
         position: absolute;
         top: -80px;
@@ -368,7 +330,6 @@
         background: rgba(255, 255, 255, 0.05);
         border-radius: 50%;
     }
-    
     .app-modal-circle-2 {
         position: absolute;
         bottom: -64px;
@@ -378,7 +339,6 @@
         background: rgba(255, 255, 255, 0.05);
         border-radius: 50%;
     }
-    
     .app-modal-close {
         position: absolute;
         top: 24px;
@@ -391,11 +351,9 @@
         transition: color 0.2s;
         padding: 4px;
     }
-    
     .app-modal-close:hover {
         color: white;
     }
-    
     .app-modal-icon-container {
         display: inline-flex;
         background: rgba(255, 255, 255, 0.1);
@@ -404,11 +362,9 @@
         border-radius: 16px;
         margin-bottom: 16px;
     }
-    
     .app-modal-icon-container svg {
         color: white;
     }
-    
     .app-modal-title {
         font-family: Georgia, serif;
         font-size: 24px;
@@ -416,24 +372,20 @@
         color: white;
         margin-bottom: 8px;
     }
-    
     .app-modal-subtitle {
         font-size: 14px;
         color: rgba(255, 255, 255, 0.8);
         margin: 0;
     }
-    
     .app-modal-content {
         padding: 24px;
     }
-    
     .app-modal-benefits {
         display: flex;
         flex-direction: column;
         gap: 16px;
         margin-bottom: 24px;
     }
-    
     .app-benefit-card {
         display: flex;
         gap: 12px;
@@ -445,12 +397,10 @@
         transform: translateX(-20px);
         transition: all 0.3s ease-out;
     }
-    
     .app-modal.show .app-benefit-card {
         opacity: 1;
         transform: translateX(0);
     }
-    
     .app-benefit-icon-wrapper {
         background: linear-gradient(135deg, #8B1538 0%, #6B0F2A 100%);
         padding: 8px;
@@ -460,33 +410,27 @@
         align-items: center;
         justify-content: center;
     }
-    
     .app-benefit-icon-wrapper svg {
         color: white;
     }
-    
     .app-benefit-text {
         flex: 1;
     }
-    
     .app-benefit-title {
         font-size: 14px;
         font-weight: 600;
         color: #1F2937;
         margin-bottom: 4px;
     }
-    
     .app-benefit-desc {
         font-size: 12px;
         color: #6B7280;
         line-height: 1.4;
     }
-    
     .app-benefit-check {
         color: #10B981;
         flex-shrink: 0;
     }
-    
     .app-download-btn {
         display: flex;
         align-items: center;
@@ -500,25 +444,21 @@
         text-decoration: none;
         transition: all 0.3s ease;
     }
-    
     .app-download-btn:hover {
         transform: scale(1.02);
         box-shadow: 0 10px 15px rgba(0,0,0,0.2);
         color: white;
     }
-    
     .app-btn-title {
         font-size: 14px;
         font-weight: 700;
         line-height: 1.2;
     }
-    
     .app-btn-subtitle {
         font-size: 12px;
         opacity: 0.8;
         line-height: 1.2;
     }
-    
     .app-bonus-info {
         display: flex;
         align-items: center;
@@ -529,7 +469,6 @@
         font-size: 12px;
         font-weight: 600;
     }
-    
     .app-dismiss-btn {
         width: 100%;
         padding: 12px;
@@ -542,11 +481,9 @@
         cursor: pointer;
         transition: color 0.2s;
     }
-    
     .app-dismiss-btn:hover {
         color: #1F2937;
     }
-    
     /* Responsive */
     @media (max-width: 768px) {
         .app-promo-btn-container {
@@ -560,7 +497,6 @@
             display: none;
         }
     }
-    
     @media (max-width: 480px) {
         .app-promo-btn-container {
             bottom: 16px;
@@ -586,12 +522,10 @@
             height: 12px;
         }
     }
-    
     /* Utility to stop pulse */
     .pulse-stop {
         animation: none !important;
     }
-    
     /* Scroll hide/show animation */
     .app-promo-btn-container.scroll-hidden {
         opacity: 0.2 !important; /* Keep somewhat visible so users know it's there */
@@ -599,7 +533,6 @@
         pointer-events: none;
     }
 </style>
-
 <script>
     window.trackDownload = function(filename) {
         fetch('/api/app-download-log', {
@@ -608,7 +541,10 @@
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
             },
-            body: JSON.stringify({ filename: filename })
+            body: JSON.stringify({ 
+                filename: filename,
+                user_id: {{ auth()->id() ?? 'null' }}
+            })
         }).catch(err => console.error('Failed to log download:', err));
     };
 
@@ -617,20 +553,15 @@
         const promoBtn = document.getElementById('appPromoButtonContainer');
         const mainBtn = document.getElementById('appPromoBtn');
         const modal = document.getElementById('appPromoModal');
-        
         if (!promoBtn || !mainBtn || !modal) return;
-        
         // Ensure display is block first (but invisible via opacity)
         promoBtn.style.display = 'block';
-        
         // Show button after 2s with nice transition
         setTimeout(() => {
             promoBtn.classList.add('is-visible');
-            
             // Check session logic
             if (!sessionStorage.getItem('appPromoShown')) {
                 mainBtn.classList.add('pulse-active');
-                
                 // Auto-show modal after 5s
                 setTimeout(() => {
                     // Only auto-show if user hasn't interacted yet
@@ -640,62 +571,50 @@
                 }, 5000);
             }
         }, 2000);
-        
         // Simplified scroll logic
         let scrollTimeout = null;
-        
         window.addEventListener('scroll', function() {
             // Add scroll-hidden class
             promoBtn.classList.add('scroll-hidden');
-            
             // Clear existing timeout
             if (scrollTimeout) {
                 clearTimeout(scrollTimeout);
             }
-            
             // Remove class after scroll stops
             scrollTimeout = setTimeout(function() {
                 promoBtn.classList.remove('scroll-hidden');
             }, 300); // Faster recovery
         }, { passive: true });
-        
         window.openAppPromoModal = function() {
             if (modal) {
                 modal.classList.add('show');
                 document.body.style.overflow = 'hidden';
-                
                 // Stop pulse
                 mainBtn.classList.remove('pulse-active');
                 mainBtn.classList.add('pulse-stop');
-                
                 // Set interaction flag
                 sessionStorage.setItem('appPromoInteracted', 'true');
             }
         };
-        
         window.closeAppPromoModal = function() {
             if (modal) {
                 // Animate out
                 const backdrop = modal.querySelector('.app-modal-backdrop');
                 const card = modal.querySelector('.app-modal-card');
-                
                 if (backdrop) backdrop.style.opacity = '0';
                 if (card) {
                     card.style.opacity = '0';
                     card.style.transform = 'translate(-50%, -50%) translateY(20px)';
                 }
-                
                 setTimeout(() => {
                     modal.classList.remove('show');
                     document.body.style.overflow = '';
-                    
                     // Reset styles
                     if (backdrop) backdrop.style.opacity = '';
                     if (card) {
                         card.style.opacity = '';
                         card.style.transform = '';
                     }
-                    
                     // Set shown flag
                     sessionStorage.setItem('appPromoShown', 'true');
                 }, 300);

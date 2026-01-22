@@ -1,15 +1,12 @@
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet, Image, Dimensions } from 'react-native';
 import { colors } from '../theme/colors';
-
 const { width } = Dimensions.get('window');
-
 const PROMOS = [
     { id: 1, title: 'Diskon 30% Hari Ini!', desc: 'Untuk menu pasta & steak', color: '#800020' },
     { id: 2, title: 'Buy 1 Get 1 Free', desc: 'Minuman dingin spesial', color: '#1A1A1A' },
     { id: 3, title: 'Paket Hemat Keluarga', desc: 'Mulai dari Rp 150rb', color: '#D4AF37' },
 ];
-
 const PromoBanner = () => {
     return (
         <View style={styles.container}>
@@ -24,7 +21,7 @@ const PromoBanner = () => {
                                 <Text style={styles.badgeText}>Klaim</Text>
                             </View>
                         </View>
-                        {/* Placeholder for image */}
+                        {}
                         <View style={styles.circle} />
                     </View>
                 ))}
@@ -32,7 +29,6 @@ const PromoBanner = () => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         marginBottom: 20,
@@ -94,5 +90,4 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255,255,255,0.1)',
     },
 });
-
 export default PromoBanner;

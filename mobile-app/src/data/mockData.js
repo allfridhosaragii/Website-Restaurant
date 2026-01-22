@@ -1,4 +1,3 @@
-// Fallback data when API is unavailable or empty
 export const MOCK_MENUS = [
     {
         id: 1,
@@ -67,5 +66,4 @@ export const MOCK_MENUS = [
         is_favorite: false
     }
 ];
-
 export const MOCK_CATEGORIES = ['main-course', 'seafood', 'dessert', 'beverage'];
