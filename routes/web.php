@@ -462,3 +462,4 @@ Route::get('/migrate-supabase', function () {
     \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
     return 'Migration ke Supabase berhasil! Silakan buka halaman utama.';
 });
+});
