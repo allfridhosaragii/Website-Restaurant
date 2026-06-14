@@ -57,7 +57,7 @@ class ErrorLog extends Model
             }
             return self::create($data);
         } catch (\Throwable $ex) {
-            \Log::error('Failed to log error: ' . $ex->getMessage());
+            error_log('Failed to log error: ' . $ex->getMessage());
             return null;
         }
     }
