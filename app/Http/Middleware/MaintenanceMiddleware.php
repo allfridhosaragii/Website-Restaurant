@@ -58,11 +58,16 @@ class MaintenanceMiddleware
     }
     protected function isMaintenanceMode(): bool
     {
+        static $cached = null;
+        if ($cached !== null) {
+            return $cached;
+        }
         try {
             $setting = CmsSetting::where('key', 'maintenance_mode')->first();
-            return $setting && $setting->value === 'true';
+            $cached = $setting && $setting->value === 'true';
         } catch (\Exception $e) {
-            return false;
+            $cached = false;
         }
+        return $cached;
     }
 }
