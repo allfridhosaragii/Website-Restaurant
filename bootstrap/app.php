@@ -47,16 +47,6 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
-        $exceptions->render(function (\Throwable $e, $request) {
-            http_response_code(500);
-            echo "<h1>TRUE ORIGINAL EXCEPTION:</h1>";
-            echo "<b>Message:</b> " . $e->getMessage() . "<br>";
-            echo "<b>Class:</b> " . get_class($e) . "<br>";
-            echo "<b>File:</b> " . $e->getFile() . ":" . $e->getLine() . "<br>";
-            echo "<pre>" . $e->getTraceAsString() . "</pre>";
-            exit;
-        });
-
         // Redirect 404 pages to landing page (only for web requests, not API)
         $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, $request) {
             if ($request->expectsJson() || $request->is('api/*')) {
@@ -65,3 +55,25 @@ return Application::configure(basePath: dirname(__DIR__))
             return redirect('/');
         });
     })->create();
+
+if (isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL'])) {
+    $app->useStoragePath('/tmp/storage');
+    $app->useBootstrapPath('/tmp/bootstrap');
+    
+    $directories = [
+        '/tmp/storage/app',
+        '/tmp/storage/framework/cache/data',
+        '/tmp/storage/framework/sessions',
+        '/tmp/storage/framework/views',
+        '/tmp/storage/logs',
+        '/tmp/bootstrap/cache',
+    ];
+    
+    foreach ($directories as $dir) {
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+    }
+}
+
+return $app;
