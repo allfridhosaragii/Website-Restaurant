@@ -56,7 +56,7 @@ class ErrorLog extends Model
                 $data['request_data'] = array_slice($requestData, 0, 20); 
             }
             return self::create($data);
-        } catch (\Exception $ex) {
+        } catch (\Throwable $ex) {
             \Log::error('Failed to log error: ' . $ex->getMessage());
             return null;
         }
