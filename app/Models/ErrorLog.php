@@ -71,7 +71,7 @@ class ErrorLog extends Model
     }
     public function getMarkdownAttribute()
     {
-        $md = "
+        $md = "**Error Log Details**\n\n";
         $md .= "**Message:** `{$this->message}`\n";
         $md .= "**File:** `{$this->file}:{$this->line}`\n";
         $md .= "**URL:** [{$this->url}]({$this->url})\n";
@@ -80,9 +80,9 @@ class ErrorLog extends Model
         if ($this->screenshot_url) {
             $md .= "**Screenshot:** [View Screenshot]({$this->screenshot_url})\n";
         }
-        $md .= "\n
+        $md .= "\n**Stack Trace:**\n```\n{$this->trace}\n```\n";
         if ($this->request_data) {
-            $md .= "\n
+            $md .= "\n**Request Data:**\n```json\n" . json_encode($this->request_data, JSON_PRETTY_PRINT) . "\n```\n";
         }
         return $md;
     }
