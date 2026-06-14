@@ -40,7 +40,7 @@ return Application::configure(basePath: dirname(__DIR__))
             
             if (!in_array(get_class($e), $skipTypes)) {
                 try {
-                    \App\Models\ErrorLog::logException($e, request());
+                    // \App\Models\ErrorLog::logException($e, request());
                 } catch (\Exception $logError) {
                     // Fail silently
                 }
