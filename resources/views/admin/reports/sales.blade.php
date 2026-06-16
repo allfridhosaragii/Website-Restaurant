@@ -83,7 +83,7 @@
                                     <td><span class="badge bg-secondary">#{{ $order->id }}</span></td>
                                     <td>{{ $order->created_at->format('d M Y H:i') }}</td>
                                     <td>
-                                        @if($order->order_type == 'dine_in')
+                                        @if($order->type == 'dine_in')
                                             <span class="badge bg-primary bg-opacity-10 text-primary">Dine In</span>
                                         @else
                                             <span class="badge bg-warning bg-opacity-10 text-warning">Takeaway</span>
@@ -91,7 +91,7 @@
                                     </td>
                                     <td>{{ $order->customer ? $order->customer->name : 'Walk-in' }}</td>
                                     <td>{{ $order->cashier ? $order->cashier->name : '-' }}</td>
-                                    <td class="text-end fw-bold">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</td>
+                                    <td class="text-end fw-bold">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
                                 </tr>
                                 @empty
                                 <tr>

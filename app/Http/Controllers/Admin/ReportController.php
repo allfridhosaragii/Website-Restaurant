@@ -16,7 +16,7 @@ class ReportController extends Controller
         
         $totalPenjualanHariIni = Order::where('status', 'completed')
             ->whereDate('created_at', $today)
-            ->sum('total_amount');
+            ->sum('total');
             
         $totalTransaksi = Order::where('status', 'completed')
             ->whereDate('created_at', $today)
@@ -35,7 +35,7 @@ class ReportController extends Controller
         
         $salesThisWeek = Order::where('status', 'completed')
             ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
-            ->selectRaw('DATE(created_at) as date, SUM(total_amount) as total')
+            ->selectRaw('DATE(created_at) as date, SUM(total) as total')
             ->groupBy('date')
             ->orderBy('date')
             ->get();
@@ -82,7 +82,7 @@ class ReportController extends Controller
         // Chart Data
         $salesChartData = Order::where('status', 'completed')
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->selectRaw('DATE(created_at) as date, SUM(total_amount) as total')
+            ->selectRaw('DATE(created_at) as date, SUM(total) as total')
             ->groupBy('date')
             ->orderBy('date')
             ->get();
@@ -155,7 +155,7 @@ class ReportController extends Controller
 
         $peakHours = Order::where('status', 'completed')
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->selectRaw('HOUR(created_at) as hour, COUNT(*) as total_orders, SUM(total_amount) as total_sales')
+            ->selectRaw('HOUR(created_at) as hour, COUNT(*) as total_orders, SUM(total) as total_sales')
             ->groupBy('hour')
             ->orderBy('hour')
             ->get();
@@ -239,7 +239,7 @@ class ReportController extends Controller
             ->where('status', 'completed')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->whereNotNull('cashier_id')
-            ->selectRaw('cashier_id, SUM(total_amount) as total_sales, COUNT(*) as total_orders')
+            ->selectRaw('cashier_id, SUM(total) as total_sales, COUNT(*) as total_orders')
             ->groupBy('cashier_id')
             ->orderByDesc('total_sales')
             ->get();
@@ -278,7 +278,7 @@ class ReportController extends Controller
             ->where('status', 'completed')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->whereNotNull('table_id')
-            ->selectRaw('table_id, SUM(total_amount) as total_sales, COUNT(*) as total_orders')
+            ->selectRaw('table_id, SUM(total) as total_sales, COUNT(*) as total_orders')
             ->groupBy('table_id')
             ->orderByDesc('total_sales')
             ->get();

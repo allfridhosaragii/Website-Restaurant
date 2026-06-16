@@ -43,15 +43,15 @@
         <tbody>
             @php $totalRevenue = 0; $no = 1; @endphp
             @forelse($sales as $order)
-            @php $totalRevenue += $order->total_amount; @endphp
+            @php $totalRevenue += $order->total; @endphp
             <tr>
                 <td class="text-center">{{ $no++ }}</td>
                 <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
                 <td>#{{ $order->id }}</td>
-                <td>{{ $order->order_type == 'dine_in' ? 'Dine In' : 'Takeaway' }}</td>
+                <td>{{ $order->type == 'dine_in' ? 'Dine In' : 'Takeaway' }}</td>
                 <td>{{ $order->customer ? $order->customer->name : 'Walk-in' }}</td>
                 <td>{{ $order->cashier ? $order->cashier->name : '-' }}</td>
-                <td class="text-right">{{ number_format($order->total_amount, 0, ',', '.') }}</td>
+                <td class="text-right">{{ number_format($order->total, 0, ',', '.') }}</td>
             </tr>
             @empty
             <tr>
