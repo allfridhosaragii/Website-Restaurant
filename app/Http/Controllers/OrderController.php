@@ -152,10 +152,6 @@ class OrderController extends Controller
     }
     public function show($id)
     {
-        $userId = Auth::id();
-        $order = DB::table('orders')
-            ->where('id', $id)
-            ->where('user_id', $userId)
         $order = \App\Models\Order::with(['items.menu', 'reviews', 'payments'])->where('user_id', auth()->id())->findOrFail($id);
         return view('customer.orders.show', compact('order'));
     }

@@ -474,7 +474,7 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::put('/table-layouts/{id}', [\App\Http\Controllers\Admin\AdminTableLayoutController::class, 'update']);
     Route::delete('/table-layouts/{id}', [\App\Http\Controllers\Admin\AdminTableLayoutController::class, 'destroy']);
     
-    Route::post('/tables/{id}/move', [\App\Http\Controllers\Admin\AdminTableController::class, 'moveTable']);
+    Route::post('/tables/{id}/move', [\App\Http\Controllers\Admin\AdminOrderController::class, 'moveTable']);
 
     // QR Codes for Tables
     Route::post('/tables/{id}/qr', [\App\Http\Controllers\Admin\TableQrController::class, 'generate']);

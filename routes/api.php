@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\Admin\ApiAdminMenuController;
 use App\Http\Controllers\Api\Admin\ApiAdminReportController;
 use App\Http\Controllers\Api\Admin\ApiAdminCmsController;
 use App\Http\Controllers\Api\PosController;
+use App\Http\Controllers\Api\ApiPointController;
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [ApiAuthController::class, 'register']);

@@ -83,7 +83,7 @@ class PaymentController extends Controller
             DB::table('activity_logs')->insert([
                 'user_id' => $order->user_id,
                 'action' => 'payment_success',
-                'description' => "Pembayaran berhasil untuk pesanan 
+                'description' => "Pembayaran berhasil untuk pesanan {$orderNumber}",
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
                 'created_at' => now(),

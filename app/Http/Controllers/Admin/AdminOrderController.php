@@ -204,7 +204,7 @@ class AdminOrderController extends Controller
         DB::table('activity_logs')->insert([
             'user_id' => auth()->id(),
             'action' => 'mark_order_paid',
-            'description' => "Menandai pesanan 
+            'description' => "Menandai pesanan {$order->order_number} sebagai lunas",
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
             'created_at' => now(),
