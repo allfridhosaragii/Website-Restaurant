@@ -21,7 +21,7 @@
             </li>
             @if(auth()->user()->role == 'waiter' || auth()->user()->is_admin)
             <li class="sidebar-nav-item">
-                <a href="{{ url('/waiter') }}" class="sidebar-nav-link {{ request()->is('waiter*') ? 'active' : '' }}">
+                <a href="{{ url('/admin/waiter') }}" class="sidebar-nav-link {{ request()->is('admin/waiter*') ? 'active' : '' }}">
                     <i class="bi bi-person-badge"></i>
                     <span>Sistem Waiter</span>
                 </a>
