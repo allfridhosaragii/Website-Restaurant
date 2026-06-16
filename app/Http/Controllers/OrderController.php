@@ -100,7 +100,7 @@ class OrderController extends Controller
                 'payment_method' => 'deposit',
                 'amount' => $discountResult['total'],
                 'paid_at' => now(),
-                'processed_by' => clone $userId,
+                'processed_by' => $userId,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
