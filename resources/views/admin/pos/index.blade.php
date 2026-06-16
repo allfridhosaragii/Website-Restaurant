@@ -166,11 +166,7 @@ document.addEventListener('alpine:init', () => {
 
         initPos() {
             // Fetch Menus
-            axios.get('/api/pos/menus', {
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('token') // Assuming token is here, or session based auth
-                }
-            })
+            axios.get('/admin/pos-api/menus')
             .then(res => {
                 if(res.data.success) {
                     this.menus = res.data.data;
@@ -179,11 +175,7 @@ document.addEventListener('alpine:init', () => {
             .catch(err => console.error("Error fetching menus", err));
 
             // Fetch Tables
-            axios.get('/api/pos/tables', {
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
-                }
-            })
+            axios.get('/admin/pos-api/tables')
             .then(res => {
                 if(res.data.success) {
                     this.tables = res.data.data;
@@ -259,13 +251,8 @@ document.addEventListener('alpine:init', () => {
                 }))
             };
 
-            // Needs Bearer token or CSRF token depending on API vs Web
-            // Assuming we use api routes, we might need bearer token
-            axios.post('/api/pos/checkout', payload, {
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
-                }
-            })
+            // Using web routes so we don't need bearer token, Laravel handles CSRF and Session automatically via Axios
+            axios.post('/admin/pos-api/checkout', payload)
             .then(res => {
                 if(res.data.success) {
                     alert('Pesanan ' + res.data.order_number + ' Berhasil Diproses!');

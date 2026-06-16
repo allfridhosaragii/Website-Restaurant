@@ -379,6 +379,13 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::get('/pos', function () {
         return view('admin.pos.index');
     })->name('admin.pos.index');
+
+    // POS API Endpoints (Using web session for auth)
+    Route::prefix('pos-api')->group(function () {
+        Route::get('/menus', [\App\Http\Controllers\Api\PosController::class, 'getMenus']);
+        Route::get('/tables', [\App\Http\Controllers\Api\PosController::class, 'getTables']);
+        Route::post('/checkout', [\App\Http\Controllers\Api\PosController::class, 'checkout']);
+    });
     Route::get('/orders', [AdminOrderController::class, 'index']);
     Route::get('/orders/{id}', [AdminOrderController::class, 'show']);
     Route::put('/orders/{id}/status', [AdminOrderController::class, 'updateStatus']);

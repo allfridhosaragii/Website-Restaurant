@@ -229,12 +229,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/cms/maintenance', [ApiAdminCmsController::class, 'toggleMaintenance']);
     });
 
-    Route::prefix('pos')->group(function () {
-        Route::get('/menus', [PosController::class, 'getMenus']);
-        Route::get('/tables', [PosController::class, 'getTables']);
-        Route::post('/checkout', [PosController::class, 'checkout']);
-    });
-});
+
 
 Route::get('/migrate-supabase', function () {
     \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
