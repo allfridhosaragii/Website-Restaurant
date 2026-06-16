@@ -374,6 +374,11 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::delete('/menus/{slug}', [AdminMenuController::class, 'destroy']);
     Route::get('/users', [AdminUserController::class, 'index']);
     Route::put('/users/{id}/status', [AdminUserController::class, 'updateStatus']);
+    
+    // POS Route
+    Route::get('/pos', function () {
+        return view('admin.pos.index');
+    })->name('admin.pos.index');
     Route::get('/orders', [AdminOrderController::class, 'index']);
     Route::get('/orders/{id}', [AdminOrderController::class, 'show']);
     Route::put('/orders/{id}/status', [AdminOrderController::class, 'updateStatus']);

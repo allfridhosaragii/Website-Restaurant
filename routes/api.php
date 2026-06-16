@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\Admin\ApiAdminUserController;
 use App\Http\Controllers\Api\Admin\ApiAdminMenuController;
 use App\Http\Controllers\Api\Admin\ApiAdminReportController;
 use App\Http\Controllers\Api\Admin\ApiAdminCmsController;
+use App\Http\Controllers\Api\PosController;
+
 Route::prefix('auth')->group(function () {
     Route::post('/register', [ApiAuthController::class, 'register']);
     Route::post('/login', [ApiAuthController::class, 'login']);
@@ -225,6 +227,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/menus/{slug}', [ApiAdminMenuController::class, 'destroy']);
         Route::get('/cms', [ApiAdminCmsController::class, 'index']);
         Route::post('/cms/maintenance', [ApiAdminCmsController::class, 'toggleMaintenance']);
+    });
+
+    Route::prefix('pos')->group(function () {
+        Route::get('/menus', [PosController::class, 'getMenus']);
+        Route::get('/tables', [PosController::class, 'getTables']);
+        Route::post('/checkout', [PosController::class, 'checkout']);
     });
 });
 
