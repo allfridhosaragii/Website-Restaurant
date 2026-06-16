@@ -8,8 +8,8 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check() || (!auth()->user()->isAdmin() && !auth()->user()->isViewer())) {
-            abort(403, 'Unauthorized. Admin access required.');
+        if (!auth()->check() || (!auth()->user()->isAdmin() && !in_array(auth()->user()->role, ['cashier', 'waiter', 'manager', 'viewer']))) {
+            abort(403, 'Unauthorized. Admin/Staff access required.');
         }
         if (auth()->user()->isOffline()) {
             Auth::logout();

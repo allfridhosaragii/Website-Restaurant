@@ -46,12 +46,21 @@ class User extends Authenticatable
     }
     public function hasAdminPermission(string $key): bool
     {
-        if ($this->isSuperAdmin()) {
+        if ($this->isSuperAdmin() || $this->role === 'admin' || $this->role === 'manager') {
             return true;
         }
+        
+        if ($this->role === 'waiter') {
+            return in_array($key, ['pos', 'waiter']);
+        }
+        
+        if ($this->role === 'cashier') {
+            return in_array($key, ['pos', 'orders', 'reservations']);
+        }
+
         $permission = $this->adminPermissions()->where('permission_key', $key)->first();
         if (!$permission) {
-            return true;
+            return false;
         }
         return $permission->is_enabled;
     }

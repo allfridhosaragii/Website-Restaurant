@@ -38,9 +38,19 @@ class AuthController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        if ($user->is_admin) {
+        if ($user->isAdmin() || in_array($user->role, ['admin', 'manager'])) {
             return redirect('/admin/dashboard');
         }
+        if ($user->role === 'cashier') {
+            return redirect('/admin/pos');
+        }
+        if ($user->role === 'waiter') {
+            return redirect('/admin/waiter');
+        }
+        if ($user->role === 'customer') {
+            return redirect('/customer/dashboard');
+        }
+
         if ($user->isSuspended()) {
             return redirect('/')->with('warning', 'Peringatan: Akun Anda sedang dalam status suspend karena terdeteksi adanya aktivitas yang melanggar ketentuan layanan. Harap perbaiki perilaku Anda atau akun akan diblokir permanen.');
         }
