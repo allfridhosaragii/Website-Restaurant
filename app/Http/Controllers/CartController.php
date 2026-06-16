@@ -8,9 +8,13 @@ class CartController extends Controller
 {
     public function index()
     {
-        $cartItems = CartItem::with('menu')
-            ->where('user_id', Auth::id())
-            ->get();
+        $query = CartItem::with('menu');
+        if (Auth::check()) {
+            $query->where('user_id', Auth::id());
+        } else {
+            $query->where('session_id', request()->session()->getId());
+        }
+        $cartItems = $query->get();
         $total = $cartItems->sum(function ($item) {
             $basePrice = $item->menu->price;
             $modifierPrice = 0;
@@ -50,10 +54,13 @@ class CartController extends Controller
                 $signature = md5($menuId . '[]');
             }
 
-            $cartItem = CartItem::where('user_id', Auth::id())
-                ->where('menu_id', $menuId)
-                ->where('signature', $signature)
-                ->first();
+            $query = CartItem::where('menu_id', $menuId)->where('signature', $signature);
+            if (Auth::check()) {
+                $query->where('user_id', Auth::id());
+            } else {
+                $query->where('session_id', $request->session()->getId());
+            }
+            $cartItem = $query->first();
             
             $menu = Menu::find($menuId);
             if (!$menu) {
@@ -77,14 +84,23 @@ class CartController extends Controller
                 $cartItem->save();
             } else {
                 $cartItem = CartItem::create([
-                    'user_id' => Auth::id(),
+                    'user_id' => Auth::check() ? Auth::id() : null,
+                    'session_id' => Auth::check() ? null : $request->session()->getId(),
                     'menu_id' => $menuId,
                     'quantity' => $quantity,
                     'signature' => $signature,
                     'modifiers' => $modifiers
                 ]);
             }
-            $count = CartItem::where('user_id', Auth::id())->sum('quantity');
+            
+            $countQuery = CartItem::query();
+            if (Auth::check()) {
+                $countQuery->where('user_id', Auth::id());
+            } else {
+                $countQuery->where('session_id', $request->session()->getId());
+            }
+            $count = $countQuery->sum('quantity');
+
             return response()->json([
                 'success' => true,
                 'message' => 'Item added to cart',
@@ -100,9 +116,14 @@ class CartController extends Controller
     }
     public function remove($id)
     {
-        $cartItem = CartItem::where('user_id', Auth::id())
-            ->where('id', $id)
-            ->first();
+        $query = CartItem::where('id', $id);
+        if (Auth::check()) {
+            $query->where('user_id', Auth::id());
+        } else {
+            $query->where('session_id', request()->session()->getId());
+        }
+        $cartItem = $query->first();
+
         if (!$cartItem) {
             return response()->json([
                 'success' => false,
@@ -110,7 +131,15 @@ class CartController extends Controller
             ], 404);
         }
         $cartItem->delete();
-        $count = CartItem::where('user_id', Auth::id())->sum('quantity');
+        
+        $countQuery = CartItem::query();
+        if (Auth::check()) {
+            $countQuery->where('user_id', Auth::id());
+        } else {
+            $countQuery->where('session_id', request()->session()->getId());
+        }
+        $count = $countQuery->sum('quantity');
+
         return response()->json([
             'success' => true,
             'message' => 'Item removed from cart',
@@ -122,9 +151,15 @@ class CartController extends Controller
         $request->validate([
             'quantity' => 'required|integer|min:1'
         ]);
-        $cartItem = CartItem::where('user_id', Auth::id())
-            ->where('id', $id)
-            ->first();
+        
+        $query = CartItem::where('id', $id);
+        if (Auth::check()) {
+            $query->where('user_id', Auth::id());
+        } else {
+            $query->where('session_id', $request->session()->getId());
+        }
+        $cartItem = $query->first();
+
         if (!$cartItem) {
             return response()->json([
                 'success' => false,
@@ -142,7 +177,15 @@ class CartController extends Controller
 
         $cartItem->quantity = $request->quantity;
         $cartItem->save();
-        $count = CartItem::where('user_id', Auth::id())->sum('quantity');
+        
+        $countQuery = CartItem::query();
+        if (Auth::check()) {
+            $countQuery->where('user_id', Auth::id());
+        } else {
+            $countQuery->where('session_id', $request->session()->getId());
+        }
+        $count = $countQuery->sum('quantity');
+
         return response()->json([
             'success' => true,
             'message' => 'Quantity updated',
@@ -152,9 +195,14 @@ class CartController extends Controller
     }
     public function count()
     {
-        $count = Auth::check() 
-            ? CartItem::where('user_id', Auth::id())->sum('quantity')
-            : 0;
+        $countQuery = CartItem::query();
+        if (Auth::check()) {
+            $countQuery->where('user_id', Auth::id());
+        } else {
+            $countQuery->where('session_id', request()->session()->getId());
+        }
+        $count = $countQuery->sum('quantity');
+        
         return response()->json([
             'success' => true,
             'count' => $count
@@ -162,7 +210,14 @@ class CartController extends Controller
     }
     public function clear()
     {
-        CartItem::where('user_id', Auth::id())->delete();
+        $query = CartItem::query();
+        if (Auth::check()) {
+            $query->where('user_id', Auth::id());
+        } else {
+            $query->where('session_id', request()->session()->getId());
+        }
+        $query->delete();
+        
         return response()->json([
             'success' => true,
             'message' => 'Cart cleared',

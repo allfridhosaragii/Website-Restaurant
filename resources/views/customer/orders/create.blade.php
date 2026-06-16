@@ -225,9 +225,16 @@
                                 <span data-i18n="total">{{ __('messages.total') }}</span>
                                 <span class="text-primary" id="totalAmount">Rp 0</span>
                             </div>
+                            @if(!auth()->check())
+                            <button class="btn btn-primary btn-lg w-100" id="checkoutBtn" disabled data-bs-toggle="modal" data-bs-target="#guestCheckoutModal">
+                                <i class="bi bi-cart-check me-2"></i><span data-i18n="checkout">{{ __('messages.checkout') ?? 'Checkout' }}</span>
+                            </button>
+                            <button class="d-none" id="payButton"></button>
+                            @else
                             <button class="btn btn-primary btn-lg w-100" id="payButton" disabled>
                                 <i class="bi bi-credit-card me-2"></i><span data-i18n="pay_now">{{ __('messages.pay_now') }}</span>
                             </button>
+                            @endif
                             <div class="text-center mt-3">
                                 <small class="text-muted">
                                     <i class="bi bi-shield-check me-1"></i><span data-i18n="secure_payment">{{ __('messages.secure_payment') }}</span>
@@ -240,6 +247,39 @@
         </div>
     </div>
 </section>
+
+<!-- Guest Checkout Modal -->
+<div class="modal fade" id="guestCheckoutModal" tabindex="-1" aria-labelledby="guestCheckoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title" id="guestCheckoutModalLabel">Detail Pesanan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info py-2">
+                    <small><i class="bi bi-info-circle me-1"></i> Anda memesan sebagai Tamu. Silakan isi data di bawah ini.</small>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Nama Lengkap</label>
+                    <input type="text" class="form-control" id="guestName" placeholder="Masukkan nama Anda" required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Nomor HP</label>
+                    <input type="text" class="form-control" id="guestPhone" placeholder="Contoh: 081234567890" required>
+                </div>
+                <p class="text-center text-muted mb-0"><small>Atau <a href="{{ route('login') }}">Login</a> untuk mendapatkan Poin!</small></p>
+            </div>
+            <div class="modal-footer border-top-0 pt-0">
+                <button type="button" class="btn btn-primary w-100" id="confirmGuestCheckoutBtn">
+                    <i class="bi bi-credit-card me-2"></i>Lanjutkan Pembayaran
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END Guest Checkout Modal -->
+
 @endsection
 @push('styles')
 <style>
@@ -384,7 +424,10 @@
         subtotalEl.textContent = formatRupiah(subtotal);
         taxEl.textContent = formatRupiah(tax);
         totalEl.textContent = formatRupiah(total);
-        payBtn.disabled = false;
+        
+        if (payBtn) payBtn.disabled = false;
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        if (checkoutBtn) checkoutBtn.disabled = false;
     }
     // Update cart item quantity
     window.updateCartItemQty = function(signature, change) {
@@ -634,13 +677,24 @@
             });
         });
     });
-    // Pay button
-    document.getElementById('payButton').addEventListener('click', function() {
-        const btn = this;
+    // Process Payment Submit
+    function submitOrder(btn, isGuest = false) {
         if (Object.keys(cart).length === 0 || Object.values(cart).every(item => item.qty === 0)) {
             alert('Keranjang masih kosong!');
             return;
         }
+
+        let guestName = null;
+        let guestPhone = null;
+        if (isGuest) {
+            guestName = document.getElementById('guestName').value;
+            guestPhone = document.getElementById('guestPhone').value;
+            if (!guestName || !guestPhone) {
+                alert('Nama dan Nomor HP wajib diisi!');
+                return;
+            }
+        }
+
         // Prepare order data
         const items = Object.entries(cart)
             .filter(([sig, item]) => item.qty > 0)
@@ -650,15 +704,25 @@
                 modifiers: item.modifiers || []
             }));
         const paymentMethod = document.getElementById('paymentMethod') ? document.getElementById('paymentMethod').value : 'gateway';
+        
+        let sessionTable = "{{ session('table_id') }}";
+        let finalTable = selectedOrderType === 'dine_in' ? selectedTable : null;
+        if (sessionTable && selectedOrderType === 'dine_in') {
+            finalTable = sessionTable;
+        }
+
         const orderData = {
             type: selectedOrderType,
-            table_number: selectedOrderType === 'dine_in' ? selectedTable : null,
+            table_number: finalTable,
             items: items,
             notes: document.getElementById('orderNotes').value,
             voucher_code: document.getElementById('voucherCode').value,
-            payment_method: paymentMethod
+            payment_method: paymentMethod,
+            guest_name: guestName,
+            guest_phone: guestPhone
         };
         // Disable button and show loading
+        const originalText = btn.innerHTML;
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memproses...';
         // Submit order via AJAX
@@ -675,10 +739,10 @@
         .then(data => {
             if (data.success) {
                 // Show success message
-                alert('✅ Pesanan berhasil dibuat!\\n\\nNomor Pesanan: ' + data.order_number + '\\nTotal: Rp ' + data.total.toLocaleString('id-ID'));
+                alert('✅ Pesanan berhasil dibuat!\n\nNomor Pesanan: ' + data.order_number + '\nTotal: Rp ' + data.total.toLocaleString('id-ID'));
                 // Redirect based on payment method
                 if (paymentMethod === 'deposit') {
-                    window.location.href = '/customer/orders';
+                    window.location.href = '/track/' + data.order_number;
                 } else {
                     window.location.href = '/customer/payment/' + data.order_id + '/pay';
                 }
@@ -690,9 +754,24 @@
             console.error('Error:', error);
             alert('❌ Gagal membuat pesanan: ' + error.message);
             btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-credit-card me-2"></i>Bayar Sekarang';
+            btn.innerHTML = originalText;
         });
-    });
+    }
+
+    // Pay button
+    const mainPayBtn = document.getElementById('payButton');
+    if (mainPayBtn) {
+        mainPayBtn.addEventListener('click', function() {
+            submitOrder(this, false);
+        });
+    }
+
+    const guestCheckoutBtn = document.getElementById('confirmGuestCheckoutBtn');
+    if (guestCheckoutBtn) {
+        guestCheckoutBtn.addEventListener('click', function() {
+            submitOrder(this, true);
+        });
+    }
     // Initialize - load cart from server first
     loadCartFromServer();
 })();

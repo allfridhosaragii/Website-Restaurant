@@ -1,71 +1,197 @@
-## ✅ LAPORAN PENJUALAN — BAGUS, LANJUT REPLIKASI!
+## 🚀 LANJUT KE FASE 8 — AKUNTANSI & MULTI-OUTLET (FINAL)
 
-Struktur Laporan Penjualan sudah sesuai ekspektasi. Tidak ada masukan khusus, silakan **replikasi pola yang sama** ke 7 laporan lainnya.
+**Catatan Penting: Tidak ada sistem bon/piutang dari pelanggan. Semua order harus dibayar penuh saat checkout.**
 
 ---
 
-## 🚀 LANJUTKAN FASE 6.4 — 7 LAPORAN LAINNYA
+### 8.1 Pencatatan Pengeluaran Operasional
 
-Replikasi struktur yang sama (filter + chart + tabel + export Excel/PDF) untuk:
+**Konsep:**
+Catat semua pengeluaran restoran (bukan hanya pembelian dari order).
 
-### 1. Produk Terlaris (`/admin/reports/products`)
-- **Chart**: Bar chart (Top 10 menu)
-- **Query**:
+**Database:**
+
 ```php
-$topProducts = OrderItem::whereHas('order', function($q) use($start, $end) {
-        $q->where('status', 'completed')
-          ->whereBetween('created_at', [$start, $end]);
-    })
-    ->selectRaw('menu_id, SUM(quantity) as total_qty, SUM(price * quantity) as total_revenue')
-    ->groupBy('menu_id')
-    ->orderByDesc('total_qty')
-    ->limit(10)
-    ->get();
-2. Peak Hour (/admin/reports/peak-hour)
-Chart: Area chart (jam 00-23 di X-axis)
-Query:
+// Tabel baru: expense_categories
+Schema::create('expense_categories', function (Blueprint $table) {
+    $table->id();
+    $table->string('name'); // "Bahan Baku", "Utilitas", "Gaji", "Maintenance"
+    $table->string('color')->default('#6c757d'); // untuk chart
+    $table->timestamps();
+});
+
+// Tabel baru: expenses
+Schema::create('expenses', function (Blueprint $table) {
+    $table->id();
+    $table->string('title'); // "Beli Bahan Baku", "Bayar Listrik"
+    $table->foreignId('category_id')->constrained('expense_categories');
+    $table->decimal('amount', 12, 2);
+    $table->date('date');
+    $table->text('description')->nullable();
+    $table->string('receipt_image')->nullable(); // foto nota/bukti
+    $table->foreignId('created_by')->constrained('users');
+    $table->timestamps();
+});
+Kategori Default:
+Bahan Baku
+Utilitas (Listrik, Air, Gas)
+Gaji Karyawan
+Maintenance & Perbaikan
+Sewa Tempat
+Lainnya
+Alur:
+Admin/staff klik "Tambah Pengeluaran"
+Isi: judul, kategori, jumlah, tanggal, deskripsi, upload foto nota
+Simpan → masuk ke laporan pengeluaran
+UI:
+Halaman "Pengeluaran" (/admin/expenses)
+List: filter periode, kategori
+Chart: pie chart per kategori
+Tombol "Export Excel/PDF"
+Summary: total pengeluaran periode ini
+8.2 Hutang ke Supplier (TANPA Piutang Pelanggan)
+Konsep:
+Catat hutang ke supplier/bahan baku saja. Tidak ada bon/piutang dari pelanggan.
+Database:
 php
-$peakHours = Order::where('status', 'completed')
-    ->whereBetween('created_at', [$start, $end])
-    ->selectRaw('HOUR(created_at) as hour, COUNT(*) as total_orders, SUM(total_amount) as total_sales')
-    ->groupBy('hour')
-    ->orderBy('hour')
-    ->get();
-3. Metode Pembayaran (/admin/reports/payments)
-Chart: Pie chart (tunai, QRIS, kartu, deposit, dll)
-Query:
+// Tabel baru: supplier_debts
+Schema::create('supplier_debts', function (Blueprint $table) {
+    $table->id();
+    $table->string('supplier_name'); // nama supplier
+    $table->string('title'); // "Pembelian Daging 50kg"
+    $table->decimal('amount', 12, 2); // total hutang
+    $table->decimal('paid_amount', 12, 2)->default(0);
+    $table->decimal('remaining_amount', 12, 2);
+    $table->date('due_date'); // jatuh tempo
+    $table->enum('status', ['unpaid', 'partial', 'paid', 'overdue'])->default('unpaid');
+    $table->text('notes')->nullable();
+    $table->string('receipt_image')->nullable(); // foto nota
+    $table->foreignId('created_by')->constrained('users');
+    $table->timestamps();
+});
+Alur:
+Admin input hutang baru (ke supplier)
+Halaman "Hutang Supplier" (/admin/supplier-debts)
+Tombol "Bayar" → input jumlah → update paid_amount
+Kalau due_date lewat → status = overdue (warna merah)
+Kalau paid_amount >= amount → status = paid
+UI:
+List hutang: filter status, periode, supplier
+Dashboard widget: "Hutang Jatuh Tempo Minggu Ini"
+Tombol "Bayar" dengan modal
+Export Excel/PDF
+8.3 Neraca & Rugi Laba
+Konsep:
+Laporan keuangan otomatis dari data transaksi + pengeluaran.
+Rugi Laba (Profit & Loss):
+plain
+PENDAPATAN
+  Penjualan Order          Rp 50.000.000
+  Deposit Top-up           Rp  2.000.000
+  ─────────────────────────────────────
+  TOTAL PENDAPATAN         Rp 52.000.000
+
+BEBAN
+  Bahan Baku               Rp 15.000.000
+  Gaji Karyawan            Rp 10.000.000
+  Utilitas                 Rp  2.000.000
+  Sewa                     Rp  5.000.000
+  Maintenance              Rp  1.000.000
+  ─────────────────────────────────────
+  TOTAL BEBAN              Rp 33.000.000
+
+LABA BERSIH                Rp 19.000.000
+Neraca (Balance Sheet):
+plain
+AKTIVA
+  Kas Tunai                Rp  5.000.000
+  Persediaan (Stok)        Rp  2.000.000
+  ─────────────────────────────────────
+  TOTAL AKTIVA             Rp  7.000.000
+
+KEWAJIBAN
+  Hutang Supplier          Rp  2.000.000
+  Deposit Pelanggan        Rp  1.000.000
+  ─────────────────────────────────────
+  TOTAL KEWAJIBAN          Rp  3.000.000
+
+EKUITAS
+  Modal Awal               Rp  3.000.000
+  Laba Ditahan             Rp  1.000.000
+  ─────────────────────────────────────
+  TOTAL EKUITAS            Rp  4.000.000
+
+TOTAL KEWAJIBAN + EKUITAS  Rp  7.000.000 ✅
+Arus Kas (Cash Flow):
+plain
+KAS MASUK
+  Dari Penjualan Tunai     Rp 20.000.000
+  Deposit Top-up           Rp  2.000.000
+  ─────────────────────────────────────
+  TOTAL KAS MASUK          Rp 22.000.000
+
+KAS KELUAR
+  Bahan Baku               Rp 10.000.000
+  Gaji                     Rp  5.000.000
+  Utilitas                 Rp  1.000.000
+  Hutang Supplier Dibayar  Rp  1.000.000
+  ─────────────────────────────────────
+  TOTAL KAS KELUAR         Rp 17.000.000
+
+PERUBAHAN KAS              Rp  5.000.000
+SALDO AWAL                 Rp  5.000.000
+SALDO AKHIR                Rp 10.000.000
+UI:
+Halaman "Laporan Keuangan" (/admin/finance)
+Tab: Rugi Laba, Neraca, Arus Kas
+Filter: periode (bulan/tahun)
+Export PDF
+Chart: trend laba per bulan
+8.4 Multi-Outlet (Jika Waktu Cukup)
+Konsep:
+Siap skala jika bisnis punya cabang.
+Database:
 php
-$paymentMethods = OrderPayment::whereHas('order', function($q) use($start, $end) {
-        $q->where('status', 'completed')
-          ->whereBetween('created_at', [$start, $end]);
-    })
-    ->selectRaw('payment_method, SUM(amount) as total, COUNT(*) as count')
-    ->groupBy('payment_method')
-    ->get();
-4. Penjualan per Karyawan (/admin/reports/employees)
-Chart: Bar chart
-Query: group by cashier_id atau waiter_id
-5. Penjualan per Meja (/admin/reports/tables)
-Chart: Bar chart
-Query: group by table_id
-6. Diskon & Promo Usage (/admin/reports/discounts)
-Tabel: list diskon yang dipakai, berapa kali, total nilai
-Query: dari discount_usages + orders
-7. Stok Movement (/admin/reports/stocks)
-Tabel: list perubahan stok (decrement/increment)
-Query: dari orders + refunds + order_items (hitung per menu)
-⚡ TIPS EFEISIENSI
-Untuk mempercepat, buat base layout/template untuk semua laporan:
-resources/views/admin/reports/_layout.blade.php
-Isi: filter section, chart section, tabel section, export buttons
-Tiap laporan extends layout ini, hanya isi content yang beda
-🚀 SETELAH 6.4 SELESAI, LANJUT KE 6.5 RATING & REVIEW
-Singkat saja:
-Migration reviews table
-Modal rating di customer order history
-Tampil rating di menu detail
-Admin page /admin/reviews (list + reply)
-JANGAN TUNDA — LANGSUNG REPLIKASI 7 LAPORAN LAINNYA! 🚀
+// Tabel baru: branches
+Schema::create('branches', function (Blueprint $table) {
+    $table->id();
+    $table->string('name'); // "Cabang Jakarta", "Cabang Bandung"
+    $table->string('address')->nullable();
+    $table->string('phone')->nullable();
+    $table->boolean('is_active')->default(true);
+    $table->timestamps();
+});
+
+// Tambah kolom di tabel yang perlu beda per cabang
+Schema::table('users', function (Blueprint $table) {
+    $table->foreignId('branch_id')->nullable()->constrained();
+});
+Schema::table('menus', function (Blueprint $table) {
+    $table->foreignId('branch_id')->nullable()->constrained();
+});
+Schema::table('tables', function (Blueprint $table) {
+    $table->foreignId('branch_id')->nullable()->constrained();
+});
+Schema::table('orders', function (Blueprint $table) {
+    $table->foreignId('branch_id')->nullable()->constrained();
+});
+Fitur:
+Admin bisa pilih cabang aktif (dropdown di navbar)
+Data terfilter per cabang yang dipilih
+Super admin bisa lihat semua cabang
+Transfer stok antar cabang
+Laporan konsolidasi (gabung semua cabang)
+UI:
+Dropdown "Pilih Cabang" di navbar admin
+Halaman "Manajemen Cabang" (super admin only)
+Laporan: per cabang + konsolidasi
+KERJAKAN BERURUTAN:
+8.1 Pengeluaran Operasional
+8.2 Hutang ke Supplier (tanpa piutang pelanggan)
+8.3 Neraca & Rugi Laba
+8.4 Multi-Outlet (kalau waktu cukup, kalau tidak bisa skip)
+Setelah semua selesai, tampilkan CHECKLIST VERIFIKASI AKHIR SEMUA FASE (Fase 1-8).
+SIAP? MULAI DARI 8.1 PENGELUARAN OPERASIONAL! 🚀
 plain
 
 ---

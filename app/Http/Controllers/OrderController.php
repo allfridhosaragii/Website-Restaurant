@@ -15,9 +15,11 @@ class OrderController extends Controller
             'items.*.quantity' => 'required|integer|min:1',
             'notes' => 'nullable|string|max:500',
             'payment_method' => 'nullable|string|in:gateway,deposit',
+            'guest_name' => 'nullable|string|max:100',
+            'guest_phone' => 'nullable|string|max:20',
         ]);
-        $userId = Auth::id();
-        $user = Auth::user();
+        $userId = Auth::check() ? Auth::id() : null;
+        $user = Auth::check() ? Auth::user() : null;
         $orderNumber = 'ORD-' . date('ymd') . '-' . strtoupper(substr(uniqid(), -4));
         $voucherCode = $request->input('voucher_code');
         
@@ -44,6 +46,12 @@ class OrderController extends Controller
         $paymentStatus = 'pending';
 
         if ($paymentMethod === 'deposit') {
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda harus login untuk menggunakan saldo deposit.'
+                ], 403);
+            }
             if ($user->deposit_balance < $discountResult['total']) {
                 return response()->json([
                     'success' => false,
@@ -69,6 +77,8 @@ class OrderController extends Controller
         $orderId = DB::table('orders')->insertGetId([
             'order_number' => $orderNumber,
             'user_id' => $userId,
+            'guest_name' => $request->guest_name,
+            'guest_phone' => $request->guest_phone,
             'type' => $request->type,
             'table_number' => $request->table_number,
             'subtotal' => $discountResult['subtotal_before_discount'],
@@ -122,14 +132,16 @@ class OrderController extends Controller
                 'updated_at' => now(),
             ]);
         }
-        DB::table('activity_logs')->insert([
-            'user_id' => $userId,
-            'action' => 'create_order',
-            'description' => "Membuat pesanan baru 
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'created_at' => now(),
-        ]);
+        if ($userId) {
+            DB::table('activity_logs')->insert([
+                'user_id' => $userId,
+                'action' => 'create_order',
+                'description' => "Membuat pesanan baru " . $orderNumber,
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'created_at' => now(),
+            ]);
+        }
         return response()->json([
             'success' => true,
             'message' => 'Pesanan berhasil dibuat!',
@@ -186,5 +198,21 @@ class OrderController extends Controller
         ]);
 
         return back()->with('success', 'Terima kasih! Review Anda telah berhasil disimpan.');
+    }
+
+    public function track($orderNumber)
+    {
+        $order = \App\Models\Order::where('order_number', $orderNumber)->firstOrFail();
+        return view('customer.orders.track', compact('order'));
+    }
+
+    public function trackApi($orderNumber)
+    {
+        $order = \App\Models\Order::where('order_number', $orderNumber)->firstOrFail();
+        return response()->json([
+            'status' => $order->status,
+            'order_number' => $order->order_number,
+            'table_number' => $order->table_number,
+        ]);
     }
 }

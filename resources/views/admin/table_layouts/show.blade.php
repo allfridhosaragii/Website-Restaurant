@@ -74,7 +74,24 @@
         cursor: pointer;
         z-index: 10;
     }
-    .table-element:hover .delete-btn {
+    .qr-btn {
+        position: absolute;
+        top: -8px;
+        left: -8px;
+        background: #198754;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 10;
+    }
+    .table-element:hover .delete-btn, .table-element:hover .qr-btn {
         display: flex;
     }
 </style>
@@ -110,8 +127,11 @@
                                 width: {{ $table->width * 50 }}px; 
                                 height: {{ $table->height * 50 }}px;">
                         
-                        <button class="delete-btn" onclick="deleteTable({{ $table->id }})">
+                        <button class="delete-btn" onclick="deleteTable({{ $table->id }})" title="Hapus Meja">
                             <i class="bi bi-x"></i>
+                        </button>
+                        <button class="qr-btn" onclick="manageQr({{ $table->id }}, '{{ $table->number }}', '{{ $table->qr_code_token }}')" title="Manajemen QR">
+                            <i class="bi bi-qr-code"></i>
                         </button>
                         
                         <span class="table-label">{{ $table->number }}</span>
@@ -172,6 +192,36 @@
                 </div>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Manage QR Modal -->
+<div class="modal fade" id="manageQrModal" tabindex="-1">
+    <div class="modal-dialog text-center">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">QR Code - Meja <span id="qrTableNumber"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="qrContent">
+                    <p class="text-muted mb-4">QR Code belum di-generate untuk meja ini.</p>
+                </div>
+                
+                <div class="mt-4 d-flex justify-content-center gap-2">
+                    <form id="generateQrForm" method="POST" action="">
+                        @csrf
+                        <button type="submit" class="btn btn-success" id="generateQrBtn">
+                            <i class="bi bi-arrow-repeat"></i> Generate QR
+                        </button>
+                    </form>
+                    
+                    <a href="#" id="downloadQrBtn" class="btn btn-primary d-none">
+                        <i class="bi bi-download"></i> Download PNG
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -247,6 +297,37 @@
                 location.reload();
             }
         });
+    };
+
+    // Manage QR Modal
+    let qrModal = null;
+    if (typeof bootstrap !== 'undefined') {
+        qrModal = new bootstrap.Modal(document.getElementById('manageQrModal'));
+    }
+    
+    window.manageQr = function(tableId, tableNumber, qrToken) {
+        document.getElementById('qrTableNumber').textContent = tableNumber;
+        document.getElementById('generateQrForm').action = `/admin/tables/${tableId}/qr`;
+        
+        const contentDiv = document.getElementById('qrContent');
+        const downloadBtn = document.getElementById('downloadQrBtn');
+        const generateBtn = document.getElementById('generateQrBtn');
+        
+        if (qrToken) {
+            contentDiv.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.origin + '/qr/' + qrToken)}" alt="QR Code Meja ${tableNumber}" class="img-fluid rounded border p-2">
+                                   <p class="mt-2 text-primary font-monospace small">${window.location.origin}/qr/${qrToken}</p>`;
+            downloadBtn.href = `/admin/tables/${tableId}/qr/download`;
+            downloadBtn.classList.remove('d-none');
+            generateBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Regenerate QR';
+            generateBtn.classList.replace('btn-success', 'btn-warning');
+        } else {
+            contentDiv.innerHTML = `<p class="text-muted mb-4">QR Code belum di-generate untuk meja ini.</p>`;
+            downloadBtn.classList.add('d-none');
+            generateBtn.innerHTML = '<i class="bi bi-qr-code"></i> Generate QR';
+            generateBtn.classList.replace('btn-warning', 'btn-success');
+        }
+        
+        if (qrModal) qrModal.show();
     };
 
     // Drag and Drop Logic

@@ -237,6 +237,44 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.po
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Public QR Route
+Route::get('/qr/{token}', function ($token) {
+    $table = \App\Models\Table::where('qr_code_token', $token)->firstOrFail();
+    session(['table_id' => $table->number]);
+    return redirect('/customer/orders/create');
+});
+
+// Track Order Public Route
+Route::get('/track/{order_number}', [\App\Http\Controllers\OrderController::class, 'track'])->name('track.order');
+Route::get('/api/track/{order_number}', [\App\Http\Controllers\OrderController::class, 'trackApi']);
+
+// Customer Routes (Guest Allowed)
+Route::prefix('customer')->group(function () {
+    Route::get('/orders/create', function () {
+        $menus = \App\Models\Menu::with('modifiers.options')
+                    ->withAvg(['reviews' => function($q) { $q->where('is_approved', true); }], 'rating')
+                    ->withCount(['reviews' => function($q) { $q->where('is_approved', true); }])
+                    ->where('is_available', true)
+                    ->orderBy('category')
+                    ->get();
+        return view('customer.orders.create', compact('menus'));
+    });
+    Route::post('/orders', [\App\Http\Controllers\OrderController::class, 'store']);
+    
+    // Cart Routes
+    Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index']);
+    Route::post('/cart/add', [\App\Http\Controllers\CartController::class, 'add']);
+    Route::delete('/cart/{id}', [\App\Http\Controllers\CartController::class, 'remove']);
+    Route::put('/cart/{id}', [\App\Http\Controllers\CartController::class, 'update']);
+    Route::get('/cart/count', [\App\Http\Controllers\CartController::class, 'count']);
+    Route::delete('/cart', [\App\Http\Controllers\CartController::class, 'clear']);
+    
+    // Payment Routes (Guests need to pay too)
+    Route::get('/payment/return', [\App\Http\Controllers\PaymentController::class, 'return']);
+    Route::get('/payment/{id}/pay', [\App\Http\Controllers\PaymentController::class, 'pay']);
+});
+
 Route::prefix('customer')->middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         $userId = auth()->id();
@@ -278,17 +316,7 @@ Route::prefix('customer')->middleware('auth')->group(function () {
         }
         return view('customer.orders.index', compact('orders'));
     });
-    Route::get('/orders/create', function () {
-        $menus = \App\Models\Menu::with('modifiers.options')
-                    ->withAvg(['reviews' => function($q) { $q->where('is_approved', true); }], 'rating')
-                    ->withCount(['reviews' => function($q) { $q->where('is_approved', true); }])
-                    ->where('is_available', true)
-                    ->orderBy('category')
-                    ->get();
-        return view('customer.orders.create', compact('menus'));
-    });
-    Route::post('/orders', [OrderController::class, 'store']);
-    Route::get('/orders/{id}', [OrderController::class, 'show']);
+    Route::get('/orders/{id}', [\App\Http\Controllers\OrderController::class, 'show']);
     Route::get('/orders/{id}/receipt/print', [\App\Http\Controllers\ReceiptController::class, 'print']);
     Route::get('/orders/{id}/receipt/whatsapp', [\App\Http\Controllers\ReceiptController::class, 'sendWhatsapp']);
     Route::get('/orders/{id}/receipt/email', [\App\Http\Controllers\ReceiptController::class, 'sendEmail']);
@@ -396,14 +424,7 @@ Route::prefix('customer')->middleware('auth')->group(function () {
         }
         return redirect()->back()->with('success', $message);
     });
-    Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index']);
-    Route::post('/cart/add', [\App\Http\Controllers\CartController::class, 'add']);
-    Route::delete('/cart/{id}', [\App\Http\Controllers\CartController::class, 'remove']);
-    Route::put('/cart/{id}', [\App\Http\Controllers\CartController::class, 'update']);
-    Route::get('/cart/count', [\App\Http\Controllers\CartController::class, 'count']);
-    Route::delete('/cart', [\App\Http\Controllers\CartController::class, 'clear']);
-    Route::get('/payment/return', [\App\Http\Controllers\PaymentController::class, 'return']);
-    Route::get('/payment/{id}/pay', [\App\Http\Controllers\PaymentController::class, 'pay']);
+    // moved out to guest route
 });
 Route::get('/dashboard', function () {
     if (auth()->check()) {
@@ -424,9 +445,22 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::get('/menus/{slug}/edit', [AdminMenuController::class, 'edit']);
     Route::put('/menus/{slug}', [AdminMenuController::class, 'update']);
     Route::delete('/menus/{slug}', [AdminMenuController::class, 'destroy']);
-    Route::get('/users', [AdminUserController::class, 'index']);
-    Route::put('/users/{id}/status', [AdminUserController::class, 'updateStatus']);
+    Route::get('/users', [\App\Http\Controllers\Admin\AdminUserController::class, 'index']);
+    Route::put('/users/{id}/status', [\App\Http\Controllers\Admin\AdminUserController::class, 'updateStatus']);
     
+    // Finance & Accounting (Phase 8)
+    Route::get('/finance', [\App\Http\Controllers\Admin\AdminFinanceController::class, 'index']);
+    
+    Route::get('/expenses', [\App\Http\Controllers\Admin\AdminExpenseController::class, 'index']);
+    Route::post('/expenses', [\App\Http\Controllers\Admin\AdminExpenseController::class, 'store']);
+    Route::delete('/expenses/{id}', [\App\Http\Controllers\Admin\AdminExpenseController::class, 'destroy']);
+    Route::post('/expenses/categories', [\App\Http\Controllers\Admin\AdminExpenseController::class, 'storeCategory']);
+    
+    Route::get('/supplier-debts', [\App\Http\Controllers\Admin\AdminSupplierDebtController::class, 'index']);
+    Route::post('/supplier-debts', [\App\Http\Controllers\Admin\AdminSupplierDebtController::class, 'store']);
+    Route::post('/supplier-debts/{id}/pay', [\App\Http\Controllers\Admin\AdminSupplierDebtController::class, 'pay']);
+    Route::delete('/supplier-debts/{id}', [\App\Http\Controllers\Admin\AdminSupplierDebtController::class, 'destroy']);
+
     // Deposits
     Route::get('/deposits', [\App\Http\Controllers\Admin\AdminDepositController::class, 'index']);
     Route::get('/deposits/{customer}', [\App\Http\Controllers\Admin\AdminDepositController::class, 'show']);
@@ -439,7 +473,11 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::put('/table-layouts/{id}', [\App\Http\Controllers\Admin\AdminTableLayoutController::class, 'update']);
     Route::delete('/table-layouts/{id}', [\App\Http\Controllers\Admin\AdminTableLayoutController::class, 'destroy']);
     
-    Route::post('/table-layouts/{id}/tables', [\App\Http\Controllers\Admin\AdminTableLayoutController::class, 'storeTable']);
+    Route::post('/tables/{id}/move', [\App\Http\Controllers\Admin\AdminTableController::class, 'moveTable']);
+
+    // QR Codes for Tables
+    Route::post('/tables/{id}/qr', [\App\Http\Controllers\Admin\TableQrController::class, 'generate']);
+    Route::get('/tables/{id}/qr/download', [\App\Http\Controllers\Admin\TableQrController::class, 'download']);
     Route::put('/table-layouts/{layoutId}/tables/{tableId}', [\App\Http\Controllers\Admin\AdminTableLayoutController::class, 'updateTable']);
     Route::delete('/table-layouts/{layoutId}/tables/{tableId}', [\App\Http\Controllers\Admin\AdminTableLayoutController::class, 'destroyTable']);
     

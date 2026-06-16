@@ -141,7 +141,29 @@
                     <span>Promo Buy X Get Y</span>
                 </a>
             </li>
-
+            <li class="sidebar-nav-item mt-4">
+                <small class="text-uppercase text-light opacity-50 px-3 mb-2 d-block" style="font-size: 0.7rem;">
+                    Keuangan & Akuntansi
+                </small>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{{ url('/admin/expenses') }}" class="sidebar-nav-link {{ request()->is('admin/expenses*') ? 'active' : '' }}">
+                    <i class="bi bi-wallet2"></i>
+                    <span>Pengeluaran Ops.</span>
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{{ url('/admin/supplier-debts') }}" class="sidebar-nav-link {{ request()->is('admin/supplier-debts*') ? 'active' : '' }}">
+                    <i class="bi bi-journal-minus"></i>
+                    <span>Hutang Supplier</span>
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{{ url('/admin/finance') }}" class="sidebar-nav-link {{ request()->is('admin/finance*') ? 'active' : '' }}">
+                    <i class="bi bi-bank"></i>
+                    <span>Laporan Keuangan</span>
+                </a>
+            </li>
             <li class="sidebar-nav-item mt-4">
                 <small class="text-uppercase text-light opacity-50 px-3 mb-2 d-block" style="font-size: 0.7rem;">
                     Laporan &amp; Analitik

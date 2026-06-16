@@ -18,6 +18,8 @@ class Table extends Model
         'width',
         'height',
         'status',
+        'qr_code_token',
+        'qr_generated_at',
     ];
     protected $casts = [
         'is_premium' => 'boolean',
