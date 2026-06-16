@@ -80,13 +80,18 @@ class ApiOrderController extends Controller
                 ]);
             }
             \App\Models\CartItem::where('user_id', $user->id)->delete();
-            $points = 1000;
+            $tier = $user->tier;
+            $multiplier = $tier ? $tier->point_multiplier : 1;
+            // Provide points based on total spent, e.g. 1 point per Rp 1.000
+            $basePoints = floor($total / 1000);
+            $points = max(100, $basePoints * $multiplier); // at least 100 points
+            
             $user->increment('points', $points);
             \App\Models\PointTransaction::create([
                 'user_id' => $user->id,
                 'points' => $points,
                 'type' => 'order',
-                'description' => 'Pembelian Menu (' . $orderNumber . ')',
+                'description' => 'Pembelian Menu (' . $orderNumber . ') - Multiplier: ' . $multiplier . 'x',
             ]);
             DB::commit();
             return response()->json([

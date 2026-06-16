@@ -55,6 +55,24 @@
                                     @enderror
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="stock" class="form-label">Stok <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control @error('stock') is-invalid @enderror" 
+                                           id="stock" name="stock" value="{{ old('stock', $menu->stock) }}" min="0" required>
+                                    @error('stock')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="min_stock" class="form-label">Batas Stok Minimum <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control @error('min_stock') is-invalid @enderror" 
+                                           id="min_stock" name="min_stock" value="{{ old('min_stock', $menu->min_stock) }}" min="0" required>
+                                    @error('min_stock')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
                             @if($menu->image_url)
                                 <div class="mb-3">
                                     <label class="form-label">Gambar Saat Ini</label>
@@ -136,6 +154,102 @@
                                     </label>
                                 </div>
                             </div>
+                            <div x-data="modifiersManager({{ json_encode($menu->modifiers) }})" class="mb-4">
+                                <hr class="my-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">Modifiers / Add-ons</h5>
+                                    <button type="button" @click="addModifier()" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-plus-circle me-1"></i>Tambah Modifier
+                                    </button>
+                                </div>
+                                <div class="alert alert-info py-2" x-show="modifiers.length === 0">
+                                    Menu ini belum memiliki modifier.
+                                </div>
+                                
+                                <template x-for="(modifier, mIndex) in modifiers" :key="mIndex">
+                                    <div class="card mb-3 border-primary shadow-sm">
+                                        <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
+                                            <h6 class="mb-0 text-primary">Modifier #<span x-text="mIndex + 1"></span></h6>
+                                            <button type="button" @click="removeModifier(mIndex)" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                        <div class="card-body py-3">
+                                            <div class="row">
+                                                <div class="col-md-4 mb-2">
+                                                    <label class="form-label small">Nama Group <span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control form-control-sm" x-model="modifier.name" placeholder="Contoh: Level Pedas" required>
+                                                    <input type="hidden" :name="`modifiers[${mIndex}][id]`" :value="modifier.id">
+                                                    <input type="hidden" :name="`modifiers[${mIndex}][name]`" :value="modifier.name">
+                                                </div>
+                                                <div class="col-md-3 mb-2">
+                                                    <label class="form-label small">Tipe</label>
+                                                    <select class="form-select form-select-sm" x-model="modifier.type">
+                                                        <option value="single">Single (Radio)</option>
+                                                        <option value="multiple">Multiple (Checkbox)</option>
+                                                    </select>
+                                                    <input type="hidden" :name="`modifiers[${mIndex}][type]`" :value="modifier.type">
+                                                </div>
+                                                <div class="col-md-2 mb-2">
+                                                    <label class="form-label small">Wajib Pilih</label>
+                                                    <div class="form-check form-switch mt-1">
+                                                        <input class="form-check-input" type="checkbox" x-model="modifier.is_required" :value="1">
+                                                    </div>
+                                                    <input type="hidden" :name="`modifiers[${mIndex}][is_required]`" :value="modifier.is_required ? 1 : 0">
+                                                </div>
+                                                <div class="col-md-3 mb-2" x-show="modifier.type === 'multiple'">
+                                                    <label class="form-label small">Max Select</label>
+                                                    <input type="number" class="form-control form-control-sm" x-model="modifier.max_select" min="1">
+                                                    <input type="hidden" :name="`modifiers[${mIndex}][max_select]`" :value="modifier.max_select">
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mt-3">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <label class="form-label mb-0 fw-bold">Options / Pilihan</label>
+                                                    <button type="button" @click="addOption(mIndex)" class="btn btn-sm btn-light border">
+                                                        <i class="bi bi-plus me-1"></i>Option
+                                                    </button>
+                                                </div>
+                                                
+                                                <table class="table table-sm table-bordered mb-0">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>Nama Pilihan</th>
+                                                            <th width="30%">Harga Tambahan (Rp)</th>
+                                                            <th width="10%"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <template x-for="(opt, oIndex) in modifier.options" :key="oIndex">
+                                                            <tr>
+                                                                <td>
+                                                                    <input type="text" class="form-control form-control-sm" x-model="opt.name" placeholder="Level 1" required>
+                                                                    <input type="hidden" :name="`modifiers[${mIndex}][options][${oIndex}][id]`" :value="opt.id">
+                                                                    <input type="hidden" :name="`modifiers[${mIndex}][options][${oIndex}][name]`" :value="opt.name">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="number" class="form-control form-control-sm" x-model="opt.price" min="0">
+                                                                    <input type="hidden" :name="`modifiers[${mIndex}][options][${oIndex}][price]`" :value="opt.price">
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <button type="button" @click="removeOption(mIndex, oIndex)" class="btn btn-sm btn-outline-danger">
+                                                                        <i class="bi bi-x"></i>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        </template>
+                                                        <tr x-show="modifier.options.length === 0">
+                                                            <td colspan="3" class="text-center text-muted py-2">Belum ada option.</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="bi bi-check-lg me-2"></i>Simpan Perubahan
@@ -230,6 +344,43 @@
         }
     });
 })();
+
+document.addEventListener('alpine:init', () => {
+    Alpine.data('modifiersManager', (initialModifiers) => ({
+        modifiers: initialModifiers || [],
+        
+        addModifier() {
+            this.modifiers.push({
+                id: null,
+                name: '',
+                type: 'single',
+                is_required: false,
+                max_select: 1,
+                options: [
+                    { id: null, name: '', price: 0 }
+                ]
+            });
+        },
+        
+        removeModifier(index) {
+            if (confirm('Hapus modifier ini?')) {
+                this.modifiers.splice(index, 1);
+            }
+        },
+        
+        addOption(modifierIndex) {
+            this.modifiers[modifierIndex].options.push({
+                id: null,
+                name: '',
+                price: 0
+            });
+        },
+        
+        removeOption(modifierIndex, optionIndex) {
+            this.modifiers[modifierIndex].options.splice(optionIndex, 1);
+        }
+    }));
+});
 </script>
 @endpush
 @endsection

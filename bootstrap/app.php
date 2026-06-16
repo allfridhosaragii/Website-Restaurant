@@ -19,6 +19,11 @@ $app = Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\MaintenanceMiddleware::class, // Global maintenance check
         ]);
         
+        // Named middleware aliases
+        $middleware->alias([
+            'role' => \App\Http\Middleware\RoleMiddleware::class,
+        ]);
+        
         // Exclude visitor tracking API routes from CSRF verification
         $middleware->validateCsrfTokens(except: [
             'api/maintenance-visitor/*',

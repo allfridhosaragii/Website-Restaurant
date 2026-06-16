@@ -65,13 +65,18 @@ class ApiReservationController extends Controller
             'notes' => $request->notes,
             'status' => 'pending',
         ]);
-        $points = 10000;
-        $request->user()->increment('points', $points);
+        $user = $request->user();
+        $tier = $user->tier;
+        $multiplier = $tier ? $tier->point_multiplier : 1;
+        $basePoints = 10000;
+        $points = $basePoints * $multiplier;
+        
+        $user->increment('points', $points);
         \App\Models\PointTransaction::create([
-            'user_id' => $request->user()->id,
+            'user_id' => $user->id,
             'points' => $points,
             'type' => 'reservation',
-            'description' => 'Reservasi Meja (Table ' . $request->table_id . ')',
+            'description' => 'Reservasi Meja (Table ' . $request->table_id . ') - Multiplier: ' . $multiplier . 'x',
         ]);
         return response()->json([
             'success' => true,

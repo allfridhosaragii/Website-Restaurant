@@ -52,7 +52,20 @@
                                     </div>
                                     @endif
                                     <div class="flex-grow-1">
-                                        <h6 class="mb-1">{{ $item->menu_name }}</h6>
+                                        <h6 class="mb-1">
+                                            {{ $item->menu_name }}
+                                            @if(isset($item->is_promo) && $item->is_promo)
+                                                <span class="badge bg-success ms-2" style="font-size: 0.65rem;">Promo: {{ $item->promo_name }}</span>
+                                            @endif
+                                        </h6>
+                                        @php $mods = $item->modifiers ? json_decode($item->modifiers, true) : null; @endphp
+                                        @if($mods && is_array($mods))
+                                            <div class="small text-muted mb-1">
+                                                @foreach($mods as $mod)
+                                                    <div>- {{ $mod['name'] }}: {{ $mod['option_name'] }} {!! $mod['price'] > 0 ? '(+Rp '.number_format($mod['price'], 0, ',', '.').')' : '' !!}</div>
+                                                @endforeach
+                                            </div>
+                                        @endif
                                         <small class="text-muted">{{ $item->quantity }}x @ Rp {{ number_format($item->price, 0, ',', '.') }}</small>
                                     </div>
                                     <div class="text-end">
@@ -94,8 +107,14 @@
                         <hr>
                         <div class="d-flex justify-content-between mb-2">
                             <span class="text-muted">Subtotal</span>
-                            <span>Rp {{ number_format($order->subtotal, 0, ',', '.') }}</span>
+                            <span>Rp {{ number_format($order->subtotal_before_discount ?? $order->subtotal, 0, ',', '.') }}</span>
                         </div>
+                        @if($order->discount_amount > 0)
+                        <div class="d-flex justify-content-between mb-2 text-danger">
+                            <span class="text-muted text-danger">Diskon</span>
+                            <span>- Rp {{ number_format($order->discount_amount, 0, ',', '.') }}</span>
+                        </div>
+                        @endif
                         <div class="d-flex justify-content-between mb-2">
                             <span class="text-muted">Pajak (10%)</span>
                             <span>Rp {{ number_format($order->tax, 0, ',', '.') }}</span>
@@ -129,6 +148,41 @@
                         @endif
                     </div>
                 </div>
+
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-printer me-2 text-primary"></i>Cetak & Bagikan</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        @if(in_array($order->status, ['completed', 'refunded']))
+                            <div class="d-grid gap-2">
+                                <a href="#" onclick="window.open('{{ url('/customer/orders/' . $order->id . '/receipt/print') }}', 'Cetak Struk', 'width=400,height=600'); return false;" class="btn btn-outline-primary">
+                                    <i class="bi bi-printer me-2"></i>Print Struk
+                                </a>
+                                <a href="{{ url('/customer/orders/' . $order->id . '/receipt/whatsapp') }}" target="_blank" class="btn btn-outline-success">
+                                    <i class="bi bi-whatsapp me-2"></i>Kirim ke WA Saya
+                                </a>
+                                <a href="{{ url('/customer/orders/' . $order->id . '/receipt/email') }}" class="btn btn-outline-danger">
+                                    <i class="bi bi-envelope me-2"></i>Kirim ke Email Saya
+                                </a>
+                            </div>
+                        @else
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-secondary disabled" title="Selesaikan pembayaran terlebih dahulu">
+                                    <i class="bi bi-printer me-2"></i>Print Struk
+                                </button>
+                                <button class="btn btn-outline-secondary disabled" title="Selesaikan pembayaran terlebih dahulu">
+                                    <i class="bi bi-whatsapp me-2"></i>Kirim WA
+                                </button>
+                                <button class="btn btn-outline-secondary disabled" title="Selesaikan pembayaran terlebih dahulu">
+                                    <i class="bi bi-envelope me-2"></i>Kirim Email
+                                </button>
+                            </div>
+                            <small class="text-muted mt-2 d-block">Hanya tersedia jika sudah lunas</small>
+                        @endif
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>

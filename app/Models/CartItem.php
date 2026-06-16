@@ -10,7 +10,14 @@ class CartItem extends Model
         'user_id',
         'menu_id',
         'quantity',
+        'signature',
+        'modifiers'
     ];
+
+    protected $casts = [
+        'modifiers' => 'array'
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

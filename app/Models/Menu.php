@@ -63,4 +63,9 @@ class Menu extends Model
         if ($this->daily_stock <= 10) return 'info';
         return 'success';
     }
+
+    public function modifiers()
+    {
+        return $this->hasMany(MenuModifier::class)->orderBy('sort_order');
+    }
 }

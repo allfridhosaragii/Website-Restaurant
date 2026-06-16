@@ -45,6 +45,9 @@ class AdminDashboardController extends Controller
             ->whereDate('created_at', today())
             ->orderBy('created_at', 'desc')
             ->get();
+            
+        $lowStockMenus = DB::table('menus')->whereRaw('stock <= min_stock')->get();
+
         return view('admin.dashboard', compact(
             'totalUsers',
             'todayUsers',
@@ -58,7 +61,8 @@ class AdminDashboardController extends Controller
             'monthRevenue',
             'recentOrders',
             'recentActivities',
-            'todayRegistrations'
+            'todayRegistrations',
+            'lowStockMenus'
         ));
     }
 }

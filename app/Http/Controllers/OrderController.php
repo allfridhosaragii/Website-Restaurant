@@ -14,49 +14,110 @@ class OrderController extends Controller
             'items.*.menu_id' => 'required|integer|exists:menus,id',
             'items.*.quantity' => 'required|integer|min:1',
             'notes' => 'nullable|string|max:500',
+            'payment_method' => 'nullable|string|in:gateway,deposit',
         ]);
         $userId = Auth::id();
+        $user = Auth::user();
         $orderNumber = 'ORD-' . date('ymd') . '-' . strtoupper(substr(uniqid(), -4));
-        $subtotal = 0;
-        $orderItems = [];
+        $voucherCode = $request->input('voucher_code');
+        
+        try {
+            $discountResult = \App\Services\DiscountService::applyDiscounts($request->items, $voucherCode, $user);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+
         foreach ($request->items as $item) {
             $menu = DB::table('menus')->find($item['menu_id']);
-            if ($menu) {
-                $itemSubtotal = $menu->price * $item['quantity'];
-                $subtotal += $itemSubtotal;
-                $orderItems[] = [
-                    'menu_id' => $menu->id,
-                    'menu_name' => $menu->name,
-                    'price' => $menu->price,
-                    'quantity' => $item['quantity'],
-                    'subtotal' => $itemSubtotal,
-                ];
+            if ($menu && $menu->stock < $item['quantity']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Stok tidak mencukupi untuk menu: {$menu->name}. Sisa stok: {$menu->stock}"
+                ], 400);
             }
         }
-        $tax = $subtotal * 0.10;
-        $total = $subtotal + $tax;
+
+        $paymentMethod = $request->input('payment_method', 'gateway');
+        $paymentStatus = 'pending';
+
+        if ($paymentMethod === 'deposit') {
+            if ($user->deposit_balance < $discountResult['total']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Saldo deposit tidak mencukupi. Silakan pilih metode pembayaran lain atau top-up saldo.'
+                ], 400);
+            }
+            // Deduct balance
+            DB::table('users')->where('id', $userId)->decrement('deposit_balance', $discountResult['total']);
+            
+            // Log transaction
+            DB::table('deposit_transactions')->insert([
+                'user_id' => $userId,
+                'type' => 'payment',
+                'amount' => $discountResult['total'],
+                'description' => 'Pembayaran pesanan ' . $orderNumber,
+                'balance_after' => $user->deposit_balance - $discountResult['total'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            $paymentStatus = 'paid';
+        }
+
         $orderId = DB::table('orders')->insertGetId([
             'order_number' => $orderNumber,
             'user_id' => $userId,
             'type' => $request->type,
             'table_number' => $request->table_number,
-            'subtotal' => $subtotal,
-            'tax' => $tax,
-            'total' => $total,
+            'subtotal' => $discountResult['subtotal_before_discount'],
+            'discount_id' => $discountResult['discount_id'],
+            'discount_amount' => $discountResult['discount_amount'],
+            'subtotal_before_discount' => $discountResult['subtotal_before_discount'],
+            'tax' => $discountResult['tax'],
+            'total' => $discountResult['total'],
             'status' => 'pending',
-            'payment_status' => 'pending',
+            'payment_status' => $paymentStatus,
             'notes' => $request->notes,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        foreach ($orderItems as $item) {
+
+        if ($paymentMethod === 'deposit') {
+            DB::table('order_payments')->insert([
+                'order_id' => $orderId,
+                'payment_method' => 'deposit',
+                'amount' => $discountResult['total'],
+                'paid_at' => now(),
+                'processed_by' => clone $userId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+        
+        // Increment usage count for applied discounts
+        foreach ($discountResult['applied_discounts'] as $appliedDisc) {
+            DB::table('discounts')->where('id', $appliedDisc->id)->increment('usage_count');
+            DB::table('discount_usages')->insert([
+                'discount_id' => $appliedDisc->id,
+                'user_id' => $userId,
+                'order_id' => $orderId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+        foreach ($discountResult['orderItems'] as $item) {
             DB::table('order_items')->insert([
                 'order_id' => $orderId,
                 'menu_id' => $item['menu_id'],
                 'menu_name' => $item['menu_name'],
-                'price' => $item['price'],
+                'price' => $item['price'], // Note: this is price after item discount
                 'quantity' => $item['quantity'],
-                'subtotal' => $item['subtotal'],
+                'subtotal' => $item['subtotal'] ?? 0,
+                'modifiers' => $item['modifiers'] ?? null,
+                'is_promo' => $item['is_promo'] ?? false,
+                'promo_name' => $item['promo_name'] ?? null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -74,7 +135,7 @@ class OrderController extends Controller
             'message' => 'Pesanan berhasil dibuat!',
             'order_number' => $orderNumber,
             'order_id' => $orderId,
-            'total' => $total,
+            'total' => $discountResult['total'],
         ]);
     }
     public function show($id)

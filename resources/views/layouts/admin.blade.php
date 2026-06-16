@@ -60,6 +60,103 @@
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-3 ms-auto">
+                    {{-- Shift Widget --}}
+                    <div id="shiftWidget" x-data="shiftWidget()" x-init="init()">
+                        {{-- Active Shift Badge --}}
+                        <template x-if="shiftActive">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="text-end d-none d-md-block">
+                                    <small class="text-success d-block fw-bold"><i class="bi bi-clock"></i> Shift Aktif</small>
+                                    <small class="text-muted" x-text="'Mulai ' + clockIn + ' · ' + duration"></small>
+                                </div>
+                                <button class="btn btn-sm btn-outline-danger" @click="openCloseModal()">
+                                    <i class="bi bi-stop-circle"></i> Tutup Shift
+                                </button>
+                            </div>
+                        </template>
+                        <template x-if="!shiftActive">
+                            <button class="btn btn-sm btn-success" @click="openStartModal()">
+                                <i class="bi bi-play-circle"></i> Mulai Shift
+                            </button>
+                        </template>
+
+                        {{-- Modal: Mulai Shift --}}
+                        <div class="modal" :class="{'d-block':showStartModal,'show':showStartModal}" :style="showStartModal?'background:rgba(0,0,0,0.5)':''">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-success text-white">
+                                        <h5 class="modal-title"><i class="bi bi-play-circle"></i> Mulai Shift</h5>
+                                        <button class="btn-close btn-close-white" @click="showStartModal=false"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Modal Awal Kas (Rp)</label>
+                                            <input type="number" class="form-control form-control-lg" x-model.number="openingCash" min="0" step="1000" placeholder="0">
+                                            <small class="text-muted">Jumlah uang tunai di laci kasir saat memulai shift.</small>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-secondary" @click="showStartModal=false">Batal</button>
+                                        <button class="btn btn-success" @click="startShift()" :disabled="isLoading">
+                                            <span x-show="!isLoading"><i class="bi bi-play-circle"></i> Mulai Shift</span>
+                                            <span x-show="isLoading"><i class="bi bi-hourglass-split"></i> Memproses...</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Modal: Tutup Shift --}}
+                        <div class="modal" :class="{'d-block':showCloseModal,'show':showCloseModal}" :style="showCloseModal?'background:rgba(0,0,0,0.5)':''">
+                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-danger text-white">
+                                        <h5 class="modal-title"><i class="bi bi-stop-circle"></i> Tutup Shift</h5>
+                                        <button class="btn-close btn-close-white" @click="showCloseModal=false"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="alert alert-info">
+                                            <div class="row text-center">
+                                                <div class="col-4">
+                                                    <div class="fw-bold fs-5" x-text="totalOrders"></div>
+                                                    <small>Total Order</small>
+                                                </div>
+                                                <div class="col-4">
+                                                    <div class="fw-bold fs-5" x-text="'Rp '+formatNum(totalRevenue)"></div>
+                                                    <small>Total Penjualan</small>
+                                                </div>
+                                                <div class="col-4">
+                                                    <div class="fw-bold fs-5" x-text="'Rp '+formatNum(expectedCash)"></div>
+                                                    <small>Estimasi Kas Tunai</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Kas Aktual di Laci (Rp)</label>
+                                            <input type="number" class="form-control form-control-lg" x-model.number="closingCash" min="0" step="1000">
+                                            <div class="mt-2" x-show="closingCash !== null && closingCash !== ''">
+                                                <small>Selisih: </small>
+                                                <strong :class="(closingCash - expectedCash) >= 0 ? 'text-success' : 'text-danger'"
+                                                        x-text="((closingCash - expectedCash) >= 0 ? '+' : '') + 'Rp ' + formatNum(closingCash - expectedCash)"></strong>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Catatan (Opsional)</label>
+                                            <textarea class="form-control" x-model="closeNotes" rows="2" placeholder="Catatan penutupan shift..."></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-secondary" @click="showCloseModal=false">Batal</button>
+                                        <button class="btn btn-danger" @click="closeShift()" :disabled="isLoading">
+                                            <span x-show="!isLoading"><i class="bi bi-stop-circle"></i> Tutup Shift</span>
+                                            <span x-show="isLoading"><i class="bi bi-hourglass-split"></i> Memproses...</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <button class="theme-toggle" id="themeToggle">
                         <i class="bi bi-moon-fill icon-moon"></i>
                         <i class="bi bi-sun-fill icon-sun"></i>
@@ -225,6 +322,94 @@
                     .catch(err => console.log('[PWA] SW registration failed:', err));
             });
         }
+    </script>
+    <script>
+    // Shift Widget Alpine Component
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('shiftWidget', () => ({
+            shiftActive: false,
+            clockIn: '',
+            duration: '',
+            totalOrders: 0,
+            totalRevenue: 0,
+            expectedCash: 0,
+            openingCash: 0,
+            closingCash: 0,
+            closeNotes: '',
+            showStartModal: false,
+            showCloseModal: false,
+            isLoading: false,
+
+            init() {
+                this.fetchStatus();
+                setInterval(() => { if (this.shiftActive) this.fetchStatus(); }, 60000);
+            },
+
+            async fetchStatus() {
+                try {
+                    const r = await fetch('/admin/shift/active');
+                    const d = await r.json();
+                    this.shiftActive = d.active;
+                    if (d.active) {
+                        this.clockIn = d.clock_in;
+                        this.duration = d.duration;
+                        this.totalOrders = d.total_orders;
+                        this.totalRevenue = d.total_revenue;
+                        this.expectedCash = d.expected_cash;
+                        this.openingCash = d.opening_cash;
+                    }
+                } catch(e) {}
+            },
+
+            openStartModal() { this.openingCash = 0; this.showStartModal = true; },
+
+            async startShift() {
+                this.isLoading = true;
+                try {
+                    const r = await fetch('/admin/shift/start', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content },
+                        body: JSON.stringify({ opening_cash: this.openingCash })
+                    });
+                    const d = await r.json();
+                    if (d.success) {
+                        this.showStartModal = false;
+                        await this.fetchStatus();
+                        alert('Shift dimulai pukul ' + d.clock_in + '! Selamat bekerja.');
+                    } else { alert('Error: ' + d.message); }
+                } catch(e) { alert('Gagal memulai shift.'); }
+                this.isLoading = false;
+            },
+
+            async openCloseModal() {
+                await this.fetchStatus();
+                this.closingCash = 0;
+                this.closeNotes = '';
+                this.showCloseModal = true;
+            },
+
+            async closeShift() {
+                this.isLoading = true;
+                try {
+                    const r = await fetch('/admin/shift/close', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content },
+                        body: JSON.stringify({ closing_cash: this.closingCash, notes: this.closeNotes })
+                    });
+                    const d = await r.json();
+                    if (d.success) {
+                        this.showCloseModal = false;
+                        this.shiftActive = false;
+                        const selisih = d.cash_difference;
+                        alert(`Shift ditutup!\nDurasi: ${d.duration}\nSelisih Kas: ${selisih >= 0 ? '+' : ''}Rp ${this.formatNum(selisih)}`);
+                    } else { alert('Error: ' + d.message); }
+                } catch(e) { alert('Gagal menutup shift.'); }
+                this.isLoading = false;
+            },
+
+            formatNum(n) { return new Intl.NumberFormat('id-ID').format(Math.round(n)); }
+        }));
+    });
     </script>
 </body>
 </html>

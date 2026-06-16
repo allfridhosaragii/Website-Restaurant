@@ -279,11 +279,17 @@ Route::prefix('customer')->middleware('auth')->group(function () {
         return view('customer.orders.index', compact('orders'));
     });
     Route::get('/orders/create', function () {
-        $menus = \DB::table('menus')->where('is_available', true)->orderBy('category')->get();
+        $menus = \App\Models\Menu::with('modifiers.options')
+                    ->where('is_available', true)
+                    ->orderBy('category')
+                    ->get();
         return view('customer.orders.create', compact('menus'));
     });
     Route::post('/orders', [OrderController::class, 'store']);
     Route::get('/orders/{id}', [OrderController::class, 'show']);
+    Route::get('/orders/{id}/receipt/print', [\App\Http\Controllers\ReceiptController::class, 'print']);
+    Route::get('/orders/{id}/receipt/whatsapp', [\App\Http\Controllers\ReceiptController::class, 'sendWhatsapp']);
+    Route::get('/orders/{id}/receipt/email', [\App\Http\Controllers\ReceiptController::class, 'sendEmail']);
     Route::get('/reservations', [ReservationController::class, 'index']);
     Route::get('/reservations/{id}', [ReservationController::class, 'show']);
     Route::get('/profile', function () {
@@ -313,7 +319,51 @@ Route::prefix('customer')->middleware('auth')->group(function () {
         $reservationPoints = $history->where('type', 'reservation')->sum('points_earned');
         $totalOrders = $history->where('type', 'order')->count();
         $acceptedReservations = $history->where('type', 'reservation')->count();
-        return view('customer.points', compact('points', 'history', 'orderPoints', 'reservationPoints', 'totalOrders', 'acceptedReservations'));
+        
+        $vouchers = \Illuminate\Support\Facades\DB::table('discounts')
+            ->where('user_id', $user->id)
+            ->where('is_active', true)
+            ->whereRaw('usage_count < usage_limit')
+            ->get();
+
+        return view('customer.points', compact('points', 'history', 'orderPoints', 'reservationPoints', 'totalOrders', 'acceptedReservations', 'vouchers'));
+    });
+    Route::post('/point/redeem', function () {
+        $user = auth()->user();
+        if ($user->points < 1000) {
+            return back()->with('error', 'Poin tidak cukup (minimal 1000 poin).');
+        }
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($user) {
+            // Deduct points
+            $user->decrement('points', 1000);
+            
+            // Log point transaction
+            \App\Models\PointTransaction::create([
+                'user_id' => $user->id,
+                'points' => -1000,
+                'type' => 'redeem',
+                'description' => 'Tukar 1000 poin untuk Voucher Rp 50.000'
+            ]);
+
+            // Create unique voucher
+            $code = 'RDM-' . strtoupper(\Illuminate\Support\Str::random(6));
+            \Illuminate\Support\Facades\DB::table('discounts')->insert([
+                'name' => 'Voucher Redeem Poin',
+                'type' => 'fixed',
+                'value' => 50000,
+                'scope' => 'order',
+                'voucher_code' => $code,
+                'usage_limit' => 1,
+                'max_usage_per_user' => 1,
+                'user_id' => $user->id,
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        });
+
+        return back()->with('success', 'Berhasil menukar poin dengan Voucher Rp 50.000! Cek daftar voucher Anda.');
     });
     Route::get('/favorite', function () {
         $favorites = \App\Models\Favorite::where('user_id', auth()->id())
@@ -375,21 +425,126 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::get('/users', [AdminUserController::class, 'index']);
     Route::put('/users/{id}/status', [AdminUserController::class, 'updateStatus']);
     
-    // POS Route
+    // Deposits
+    Route::get('/deposits', [\App\Http\Controllers\Admin\AdminDepositController::class, 'index']);
+    Route::get('/deposits/{customer}', [\App\Http\Controllers\Admin\AdminDepositController::class, 'show']);
+    Route::post('/deposits/{customer}/topup', [\App\Http\Controllers\Admin\AdminDepositController::class, 'topup']);
+    
+    // Table Layouts
+    Route::get('/table-layouts', [\App\Http\Controllers\Admin\AdminTableLayoutController::class, 'index']);
+    Route::post('/table-layouts', [\App\Http\Controllers\Admin\AdminTableLayoutController::class, 'store']);
+    Route::get('/table-layouts/{id}', [\App\Http\Controllers\Admin\AdminTableLayoutController::class, 'show']);
+    Route::put('/table-layouts/{id}', [\App\Http\Controllers\Admin\AdminTableLayoutController::class, 'update']);
+    Route::delete('/table-layouts/{id}', [\App\Http\Controllers\Admin\AdminTableLayoutController::class, 'destroy']);
+    
+    Route::post('/table-layouts/{id}/tables', [\App\Http\Controllers\Admin\AdminTableLayoutController::class, 'storeTable']);
+    Route::put('/table-layouts/{layoutId}/tables/{tableId}', [\App\Http\Controllers\Admin\AdminTableLayoutController::class, 'updateTable']);
+    Route::delete('/table-layouts/{layoutId}/tables/{tableId}', [\App\Http\Controllers\Admin\AdminTableLayoutController::class, 'destroyTable']);
+    
+    // Discounts
+    Route::get('/discounts', [\App\Http\Controllers\Admin\AdminDiscountController::class, 'index']);
+    Route::get('/discounts/create', [\App\Http\Controllers\Admin\AdminDiscountController::class, 'create']);
+    Route::post('/discounts', [\App\Http\Controllers\Admin\AdminDiscountController::class, 'store']);
+    Route::get('/discounts/{id}/edit', [\App\Http\Controllers\Admin\AdminDiscountController::class, 'edit']);
+    Route::put('/discounts/{id}', [\App\Http\Controllers\Admin\AdminDiscountController::class, 'update']);
+    Route::delete('/discounts/{id}', [\App\Http\Controllers\Admin\AdminDiscountController::class, 'destroy']);
+    
+    // Membership Tiers
+    Route::resource('membership_tiers', \App\Http\Controllers\Admin\MembershipTierController::class)->names('admin.membership_tiers');
+    
+    // Promos
+    Route::resource('promos', \App\Http\Controllers\Admin\PromoController::class)->names('admin.promos');
+    
     Route::get('/pos', function () {
-        return view('admin.pos.index');
+        $todayReservations = \App\Models\Reservation::with(['user', 'table'])
+            ->where('date', \Carbon\Carbon::today()->format('Y-m-d'))
+            ->whereNotIn('status', ['cancelled', 'rejected', 'completed', 'no_show'])
+            ->orderBy('time')
+            ->get();
+        return view('admin.pos.index', compact('todayReservations'));
     })->name('admin.pos.index');
+
+    Route::get('/pos/table-map', [\App\Http\Controllers\Admin\AdminTableLayoutController::class, 'kasirMap'])->name('admin.pos.table-map');
+    Route::get('/pos/table-map/data', [\App\Http\Controllers\Admin\AdminTableLayoutController::class, 'kasirMapData']);
 
     // POS API Endpoints (Using web session for auth)
     Route::prefix('pos-api')->group(function () {
         Route::get('/menus', [\App\Http\Controllers\Api\PosController::class, 'getMenus']);
         Route::get('/tables', [\App\Http\Controllers\Api\PosController::class, 'getTables']);
+        Route::get('/customers', [\App\Http\Controllers\Api\PosController::class, 'getCustomers']);
         Route::post('/checkout', [\App\Http\Controllers\Api\PosController::class, 'checkout']);
     });
     Route::get('/orders', [AdminOrderController::class, 'index']);
     Route::get('/orders/{id}', [AdminOrderController::class, 'show']);
+    Route::get('/orders/{id}/receipt/print', [\App\Http\Controllers\ReceiptController::class, 'print']);
+    Route::get('/orders/{id}/receipt/whatsapp', [\App\Http\Controllers\ReceiptController::class, 'sendWhatsapp']);
+    Route::get('/orders/{id}/receipt/email', [\App\Http\Controllers\ReceiptController::class, 'sendEmail']);
+    Route::get('/orders/{id}/split', [AdminOrderController::class, 'splitUI']);
+    Route::post('/orders/{id}/split', [AdminOrderController::class, 'processSplit']);
+    Route::post('/orders/{order_id}/items/{item_id}/void', [AdminOrderController::class, 'voidItem']);
+    Route::post('/orders/{id}/move-table', [AdminOrderController::class, 'moveTable']);
+    Route::post('/table-groups/merge', [\App\Http\Controllers\Admin\AdminTableGroupController::class, 'merge']);
+    Route::post('/orders/{id}/unmerge', [\App\Http\Controllers\Admin\AdminTableGroupController::class, 'unmerge']);
+    
+    // Reservation Calendar
+    Route::get('/reservations/calendar', [\App\Http\Controllers\Admin\AdminReservationCalendarController::class, 'index'])->name('admin.reservations.calendar');
+    Route::get('/reservations/calendar/data', [\App\Http\Controllers\Admin\AdminReservationCalendarController::class, 'data']);
+    Route::post('/reservations/{id}/calendar', [\App\Http\Controllers\Admin\AdminReservationCalendarController::class, 'update']);
+    Route::post('/reservations/{id}/check-in', [\App\Http\Controllers\Admin\AdminReservationCalendarController::class, 'checkIn'])->name('admin.reservations.check-in');
+    
+    // Kitchen Display System (KDS)
+    Route::get('/kitchen', [\App\Http\Controllers\KitchenController::class, 'index'])->name('kitchen.index');
+    Route::get('/kitchen/data', [\App\Http\Controllers\KitchenController::class, 'data']);
+    Route::post('/kitchen/items/{id}/status', [\App\Http\Controllers\KitchenController::class, 'updateStatus']);
+    
+    // Waiter System
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/waiter', [\App\Http\Controllers\WaiterController::class, 'index'])->name('waiter.index');
+        Route::get('/waiter/orders', [\App\Http\Controllers\WaiterController::class, 'myOrders'])->name('waiter.orders');
+        Route::get('/api/waiter/menus', [\App\Http\Controllers\WaiterController::class, 'getMenus']);
+        Route::get('/api/waiter/tables', [\App\Http\Controllers\WaiterController::class, 'getTables']);
+        Route::get('/api/waiter/customers', [\App\Http\Controllers\WaiterController::class, 'getCustomers']);
+        Route::post('/api/waiter/checkout', [\App\Http\Controllers\WaiterController::class, 'checkout']);
+    });
+
+    // Attendance Self-Service (employee)
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/attendance/me', [\App\Http\Controllers\AttendanceController::class, 'index'])->name('attendance.index');
+        Route::post('/attendance/check-in', [\App\Http\Controllers\AttendanceController::class, 'checkIn'])->name('attendance.checkin');
+        Route::post('/attendance/check-out', [\App\Http\Controllers\AttendanceController::class, 'checkOut'])->name('attendance.checkout');
+    });
+    
+    // Order Display (Nomor Antrian)
+    Route::get('/display', [\App\Http\Controllers\DisplayController::class, 'index'])->name('display.index');
+    Route::get('/display/data', [\App\Http\Controllers\DisplayController::class, 'data']);
+    
+    // Shift Management
+    Route::get('/shift/active', [\App\Http\Controllers\Admin\ShiftController::class, 'activeShift'])->name('admin.shift.active');
+    Route::post('/shift/start', [\App\Http\Controllers\Admin\ShiftController::class, 'start'])->name('admin.shift.start');
+    Route::post('/shift/close', [\App\Http\Controllers\Admin\ShiftController::class, 'close'])->name('admin.shift.close');
+    Route::get('/shifts', [\App\Http\Controllers\Admin\ShiftController::class, 'index'])->name('admin.shifts.index');
+    Route::get('/shifts/{shift}', [\App\Http\Controllers\Admin\ShiftController::class, 'show'])->name('admin.shifts.show');
+    
+    // Attendance (Admin)
+    Route::get('/attendance', [\App\Http\Controllers\AttendanceController::class, 'adminIndex'])->name('admin.attendances.index');
+
+    // Payroll
+    Route::get('/payroll', [\App\Http\Controllers\Admin\PayrollController::class, 'index'])->name('admin.payroll.index');
+    Route::post('/payroll/generate', [\App\Http\Controllers\Admin\PayrollController::class, 'generate'])->name('admin.payroll.generate');
+    Route::post('/payroll/{id}/approve', [\App\Http\Controllers\Admin\PayrollController::class, 'approve'])->name('admin.payroll.approve');
+    Route::post('/payroll/{id}/pay', [\App\Http\Controllers\Admin\PayrollController::class, 'pay'])->name('admin.payroll.pay');
+    Route::get('/payroll/{id}/slip', [\App\Http\Controllers\Admin\PayrollController::class, 'slip'])->name('admin.payroll.slip');
+    Route::post('/payroll/{id}/update', [\App\Http\Controllers\Admin\PayrollController::class, 'update'])->name('admin.payroll.update');
+    
+    Route::get('/orders/{id}/kitchen-print', [\App\Http\Controllers\Admin\AdminOrderController::class, 'kitchenPrint'])->name('admin.orders.kitchen-print');
+    
+    Route::get('/orders/{id}/refund', [\App\Http\Controllers\Admin\AdminRefundController::class, 'create']);
+    Route::post('/orders/{id}/refund', [\App\Http\Controllers\Admin\AdminRefundController::class, 'store']);
     Route::put('/orders/{id}/status', [AdminOrderController::class, 'updateStatus']);
     Route::post('/orders/{id}/mark-paid', [AdminOrderController::class, 'markAsPaid']);
+    Route::get('/refunds', [\App\Http\Controllers\Admin\AdminRefundController::class, 'index']);
+    Route::post('/refunds/{id}/approve', [\App\Http\Controllers\Admin\AdminRefundController::class, 'approve']);
+    Route::post('/refunds/{id}/reject', [\App\Http\Controllers\Admin\AdminRefundController::class, 'reject']);
     Route::get('/reservations', [AdminReservationController::class, 'index']);
     Route::get('/reservations/{id}', [AdminReservationController::class, 'show']);
     Route::put('/reservations/{id}/status', [AdminReservationController::class, 'updateStatus']);

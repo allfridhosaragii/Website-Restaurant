@@ -15,6 +15,28 @@
                 </div>
             </div>
         </div>
+        
+        @if(isset($lowStockMenus) && $lowStockMenus->isNotEmpty())
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i> Peringatan Stok Menipis</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="mb-0">
+                            @foreach($lowStockMenus as $lowMenu)
+                            <li>
+                                <strong>{{ $lowMenu->name }}</strong>: Sisa stok {{ $lowMenu->stock }} (Batas minimum: {{ $lowMenu->min_stock }})
+                            </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+        
         <div class="row g-4 mb-4">
             <div class="col-md-3">
                 <div class="card h-100 p-4 border-start border-4 border-success">

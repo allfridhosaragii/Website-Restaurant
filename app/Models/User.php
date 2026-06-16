@@ -19,6 +19,10 @@ class User extends Authenticatable
         'role',
         'profile_photo_path',
         'points',
+        'base_salary',
+        'membership_tier',
+        'total_spent',
+        'tier_upgraded_at',
     ];
     public function transactions()
     {
@@ -89,5 +93,17 @@ class User extends Authenticatable
         }
         $name = urlencode($this->name);
         return 'https://ui-avatars.com/api/?name='.$name.'&color=7F9CF5&background=EBF4FF';
+    }
+    public function isCashier(): bool { return $this->role === 'cashier'; }
+    public function isWaiter(): bool { return $this->role === 'waiter'; }
+    public function isManager(): bool { return $this->role === 'manager'; }
+    public function isCustomer(): bool { return !$this->is_admin && in_array($this->role, ['customer', null, '']); }
+    public function shifts() { return $this->hasMany(\App\Models\Shift::class); }
+    public function attendances() { return $this->hasMany(\App\Models\Attendance::class); }
+    public function activeShift() { return $this->shifts()->where('status', 'active')->first(); }
+
+    public function getTierAttribute()
+    {
+        return \App\Models\MembershipTier::whereRaw('LOWER(name) = ?', [strtolower($this->membership_tier ?? 'bronze')])->first();
     }
 }

@@ -22,6 +22,23 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
+
+        @if($lowStockMenus->isNotEmpty())
+        <div class="card border-danger mb-4">
+            <div class="card-header bg-danger text-white">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> Peringatan Stok Menipis
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    @foreach($lowStockMenus as $lowMenu)
+                    <li>
+                        <strong>{{ $lowMenu->name }}</strong>: Sisa stok {{ $lowMenu->stock }} (Batas minimum: {{ $lowMenu->min_stock }})
+                    </li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+        @endif
         <div class="card">
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -32,6 +49,7 @@
                                 <th>{{ __('messages.menu_name') }}</th>
                                 <th>{{ __('messages.menu_category') }}</th>
                                 <th>{{ __('messages.menu_price') }}</th>
+                                <th>Stok</th>
                                 <th>{{ __('messages.menu_status') }}</th>
                                 <th class="text-end">{{ __('messages.menu_action') }}</th>
                             </tr>
@@ -59,7 +77,15 @@
                                     <td><span class="badge bg-secondary">{{ $menu->category }}</span></td>
                                     <td><strong>Rp {{ number_format($menu->price, 0, ',', '.') }}</strong></td>
                                     <td>
-                                        @if($menu->is_available)
+                                        <strong>{{ $menu->stock }}</strong>
+                                        <br><small class="text-muted">Min: {{ $menu->min_stock }}</small>
+                                    </td>
+                                    <td>
+                                        @if($menu->stock <= 0)
+                                            <span class="badge bg-danger">Habis</span>
+                                        @elseif($menu->stock <= $menu->min_stock)
+                                            <span class="badge bg-warning text-dark">Menipis</span>
+                                        @elseif($menu->is_available)
                                             <span class="badge bg-success">{{ __('messages.status_available') }}</span>
                                         @else
                                             <span class="badge bg-danger">{{ __('messages.status_out_of_stock') }}</span>
@@ -81,7 +107,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center py-5">
+                                    <td colspan="7" class="text-center py-5">
                                         <i class="bi bi-inbox fs-1 text-muted"></i>
                                         <p class="text-muted mb-0">{{ __('messages.no_menu_list') }}</p>
                                         <a href="/admin/menus/create" class="btn btn-primary mt-3">{{ __('messages.add_first_menu') }}</a>

@@ -127,6 +127,60 @@
             </div>
             @endif
         </div>
+        
+        <div class="vouchers-section mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="section-title mb-0">
+                    <span class="title-icon"><i class="bi bi-ticket-perforated"></i></span>
+                    Voucher Saya
+                </h3>
+                <form action="/customer/point/redeem" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-warning" {{ $points < 1000 ? 'disabled' : '' }}>
+                        <i class="bi bi-gift me-2"></i>Tukar 1000 Poin (Voucher Rp 50k)
+                    </button>
+                </form>
+            </div>
+            
+            @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show">
+                <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            @endif
+            
+            @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show">
+                <i class="bi bi-exclamation-circle me-2"></i>{{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            @endif
+
+            @if(isset($vouchers) && $vouchers->count() > 0)
+            <div class="row g-3">
+                @foreach($vouchers as $voucher)
+                <div class="col-md-6">
+                    <div class="card bg-warning bg-opacity-10 border-warning border-opacity-50">
+                        <div class="card-body">
+                            <h5 class="card-title text-warning mb-1">{{ $voucher->name }}</h5>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fs-4 fw-bold text-dark">{{ $voucher->type == 'fixed' ? 'Rp '.number_format($voucher->value, 0, ',', '.') : $voucher->value.'%' }}</span>
+                                <span class="badge bg-warning text-dark fs-6 font-monospace">{{ $voucher->voucher_code }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            @else
+            <div class="empty-state py-4">
+                <div class="empty-icon mx-auto mb-3" style="width: 60px; height: 60px; background: #fff3cd; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #ffc107;">
+                    <i class="bi bi-ticket"></i>
+                </div>
+                <p class="text-muted mb-0 text-center">Anda belum memiliki voucher aktif. Kumpulkan poin dan tukarkan dengan voucher!</p>
+            </div>
+            @endif
+        </div>
     </div>
 </div>
 <style>

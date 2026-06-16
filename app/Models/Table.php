@@ -12,6 +12,12 @@ class Table extends Model
         'shape',
         'is_premium',
         'is_active',
+        'table_layout_id',
+        'position_x',
+        'position_y',
+        'width',
+        'height',
+        'status',
     ];
     protected $casts = [
         'is_premium' => 'boolean',
@@ -20,5 +26,9 @@ class Table extends Model
     public function reservations()
     {
         return $this->hasMany(Reservation::class, 'table_id');
+    }
+    public function layout()
+    {
+        return $this->belongsTo(TableLayout::class, 'table_layout_id');
     }
 }

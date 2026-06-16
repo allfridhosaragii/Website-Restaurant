@@ -20,8 +20,44 @@
                         </div>
                     </div>
                     <h5 class="mb-1">{{ Auth::user()->name ?? 'Customer' }}</h5>
-                    <p class="text-muted mb-3">{{ Auth::user()->email ?? 'email@example.com' }}</p>
-                    <span class="badge bg-success mb-3" data-i18n="member_active">{{ __('messages.member_active') }}</span>
+                    <p class="text-muted mb-2">{{ Auth::user()->email ?? 'email@example.com' }}</p>
+                    
+                    @php
+                        $user = Auth::user();
+                        $currentTier = $user->tier;
+                        $nextTier = $currentTier ? $currentTier->nextTier() : \App\Models\MembershipTier::where('sort_order', '>', 0)->orderBy('sort_order', 'asc')->first();
+                        $spent = $user->total_spent ?? 0;
+                        $progress = 100;
+                        if ($nextTier && $currentTier) {
+                            $range = $nextTier->min_spent - $currentTier->min_spent;
+                            $current = $spent - $currentTier->min_spent;
+                            $progress = min(100, max(0, ($current / $range) * 100));
+                        } elseif ($nextTier && !$currentTier) {
+                            $progress = min(100, max(0, ($spent / $nextTier->min_spent) * 100));
+                        }
+                    @endphp
+
+                    <div class="mb-3">
+                        <span class="badge" style="background-color: {{ $user->membership_tier == 'platinum' ? '#e5e4e2' : ($user->membership_tier == 'gold' ? '#ffd700' : ($user->membership_tier == 'silver' ? '#c0c0c0' : '#cd7f32')) }}; color: #000;">
+                            <i class="bi bi-star-fill me-1"></i> {{ strtoupper($user->membership_tier ?? 'BRONZE') }} VIP
+                        </span>
+                    </div>
+
+                    @if($nextTier)
+                    <div class="text-start mb-3 px-2">
+                        <div class="d-flex justify-content-between text-xs mb-1">
+                            <span class="text-muted" style="font-size: 0.75rem;">Total Belanja: Rp {{ number_format($spent, 0, ',', '.') }}</span>
+                            <span class="text-muted" style="font-size: 0.75rem;">Menuju {{ $nextTier->name }}</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ $progress }}%" aria-valuenow="{{ $progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="text-xs text-end mt-1 text-muted" style="font-size: 0.7rem;">
+                            Sisa Rp {{ number_format(max(0, $nextTier->min_spent - $spent), 0, ',', '.') }}
+                        </div>
+                    </div>
+                    @endif
+
                     <hr>
                     <div class="row text-center">
                         <div class="col-4">

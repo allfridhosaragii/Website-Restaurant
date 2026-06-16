@@ -19,6 +19,14 @@
                     <span>Point of Sale (POS)</span>
                 </a>
             </li>
+            @if(auth()->user()->role == 'waiter' || auth()->user()->is_admin)
+            <li class="sidebar-nav-item">
+                <a href="{{ url('/waiter') }}" class="sidebar-nav-link {{ request()->is('waiter*') ? 'active' : '' }}">
+                    <i class="bi bi-person-badge"></i>
+                    <span>Sistem Waiter</span>
+                </a>
+            </li>
+            @endif
             <li class="sidebar-nav-item mt-4">
                 <small class="text-uppercase text-light opacity-50 px-3 mb-2 d-block" style="font-size: 0.7rem;">
                     Manajemen Menu
@@ -29,6 +37,12 @@
                 <a href="{{ url('/admin/menus') }}" class="sidebar-nav-link {{ request()->is('admin/menus*') ? 'active' : '' }}">
                     <i class="bi bi-book"></i>
                     <span>Daftar Menu</span>
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{{ url('/admin/discounts') }}" class="sidebar-nav-link {{ request()->is('admin/discounts*') ? 'active' : '' }}">
+                    <i class="bi bi-tags"></i>
+                    <span>Manajemen Diskon</span>
                 </a>
             </li>
             @endif
@@ -79,15 +93,58 @@
             @endif
             @if(auth()->user()->hasAdminPermission('tables'))
             <li class="sidebar-nav-item">
-                <a href="{{ url('/admin/tables') }}" class="sidebar-nav-link {{ request()->is('admin/tables*') ? 'active' : '' }}">
+                <a href="{{ url('/admin/table-layouts') }}" class="sidebar-nav-link {{ request()->is('admin/table-layouts*') ? 'active' : '' }}">
                     <i class="bi bi-grid-3x3"></i>
-                    <span>Meja</span>
+                    <span>Manajemen Layout Meja</span>
                 </a>
             </li>
             @endif
             <li class="sidebar-nav-item mt-4">
                 <small class="text-uppercase text-light opacity-50 px-3 mb-2 d-block" style="font-size: 0.7rem;">
-                    Laporan & Analitik
+                    Karyawan
+                </small>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{{ url('/admin/shifts') }}" class="sidebar-nav-link {{ request()->is('admin/shifts*') ? 'active' : '' }}">
+                    <i class="bi bi-clock-history"></i>
+                    <span>Riwayat Shift</span>
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{{ url('/admin/attendance') }}" class="sidebar-nav-link {{ request()->is('admin/attendance*') ? 'active' : '' }}">
+                    <i class="bi bi-person-check"></i>
+                    <span>Absensi</span>
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{{ url('/admin/payroll') }}" class="sidebar-nav-link {{ request()->is('admin/payroll*') ? 'active' : '' }}">
+                    <i class="bi bi-cash-coin"></i>
+                    <span>Payroll</span>
+                </a>
+            </li>
+            </li>
+            
+            <li class="sidebar-nav-item mt-4">
+                <small class="text-uppercase text-light opacity-50 px-3 mb-2 d-block" style="font-size: 0.7rem;">
+                    CRM & Promo
+                </small>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{{ route('admin.membership_tiers.index') }}" class="sidebar-nav-link {{ request()->is('admin/membership_tiers*') ? 'active' : '' }}">
+                    <i class="bi bi-star"></i>
+                    <span>Membership Tiers</span>
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{{ route('admin.promos.index') }}" class="sidebar-nav-link {{ request()->is('admin/promos*') ? 'active' : '' }}">
+                    <i class="bi bi-gift"></i>
+                    <span>Promo Buy X Get Y</span>
+                </a>
+            </li>
+
+            <li class="sidebar-nav-item mt-4">
+                <small class="text-uppercase text-light opacity-50 px-3 mb-2 d-block" style="font-size: 0.7rem;">
+                    Laporan &amp; Analitik
                 </small>
             </li>
             @if(auth()->user()->hasAdminPermission('statistics'))
@@ -170,6 +227,12 @@
                 <a href="{{ url('/admin/users') }}" class="sidebar-nav-link {{ request()->is('admin/users*') ? 'active' : '' }}">
                     <i class="bi bi-people"></i>
                     <span>Pengguna</span>
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{{ url('/admin/deposits') }}" class="sidebar-nav-link {{ request()->is('admin/deposits*') ? 'active' : '' }}">
+                    <i class="bi bi-wallet2"></i>
+                    <span>Manajemen Deposit</span>
                 </a>
             </li>
             @endif

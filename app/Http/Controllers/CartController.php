@@ -12,7 +12,16 @@ class CartController extends Controller
             ->where('user_id', Auth::id())
             ->get();
         $total = $cartItems->sum(function ($item) {
-            return $item->menu->price * $item->quantity;
+            $basePrice = $item->menu->price;
+            $modifierPrice = 0;
+            if (is_array($item->modifiers)) {
+                foreach ($item->modifiers as $mod) {
+                    if (isset($mod['price'])) {
+                        $modifierPrice += $mod['price'];
+                    }
+                }
+            }
+            return ($basePrice + $modifierPrice) * $item->quantity;
         });
         return response()->json([
             'success' => true,
@@ -30,9 +39,39 @@ class CartController extends Controller
             ]);
             $menuId = $request->menu_id;
             $quantity = $request->quantity ?? 1;
+            
+            $modifiers = $request->input('modifiers', []);
+            // Sort modifiers to ensure consistent signature
+            if (!empty($modifiers)) {
+                // sort by modifier id or just json encode consistently
+                // We'll just json_encode it for signature, maybe hashing it
+                $signature = md5($menuId . json_encode($modifiers));
+            } else {
+                $signature = md5($menuId . '[]');
+            }
+
             $cartItem = CartItem::where('user_id', Auth::id())
                 ->where('menu_id', $menuId)
+                ->where('signature', $signature)
                 ->first();
+            
+            $menu = Menu::find($menuId);
+            if (!$menu) {
+                throw new \Exception('Menu tidak ditemukan');
+            }
+
+            $totalRequestedQty = $quantity;
+            if ($cartItem) {
+                $totalRequestedQty += $cartItem->quantity;
+            }
+
+            if ($menu->stock < $totalRequestedQty) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Stok tidak mencukupi. Sisa stok: {$menu->stock}"
+                ], 400);
+            }
+
             if ($cartItem) {
                 $cartItem->quantity += $quantity;
                 $cartItem->save();
@@ -40,7 +79,9 @@ class CartController extends Controller
                 $cartItem = CartItem::create([
                     'user_id' => Auth::id(),
                     'menu_id' => $menuId,
-                    'quantity' => $quantity
+                    'quantity' => $quantity,
+                    'signature' => $signature,
+                    'modifiers' => $modifiers
                 ]);
             }
             $count = CartItem::where('user_id', Auth::id())->sum('quantity');
@@ -90,6 +131,15 @@ class CartController extends Controller
                 'message' => 'Item not found'
             ], 404);
         }
+
+        $menu = Menu::find($cartItem->menu_id);
+        if ($menu && $menu->stock < $request->quantity) {
+            return response()->json([
+                'success' => false,
+                'message' => "Stok tidak mencukupi. Sisa stok: {$menu->stock}"
+            ], 400);
+        }
+
         $cartItem->quantity = $request->quantity;
         $cartItem->save();
         $count = CartItem::where('user_id', Auth::id())->sum('quantity');
