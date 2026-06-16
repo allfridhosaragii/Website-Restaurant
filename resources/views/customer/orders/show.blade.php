@@ -149,7 +149,7 @@
                     </div>
                 </div>
 
-                <div class="card">
+                <div class="card mb-4">
                     <div class="card-header bg-white">
                         <h5 class="mb-0"><i class="bi bi-printer me-2 text-primary"></i>Cetak & Bagikan</h5>
                     </div>
@@ -183,8 +183,114 @@
                     </div>
                 </div>
 
+                @if($order->status == 'completed')
+                <div class="card mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-star me-2 text-warning"></i>Rating & Review</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        @php
+                            $review = $order->reviews()->whereNull('menu_id')->first();
+                        @endphp
+                        
+                        @if($review)
+                            <div class="text-warning mb-2 fs-4">
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= $review->rating)
+                                        <i class="bi bi-star-fill"></i>
+                                    @else
+                                        <i class="bi bi-star"></i>
+                                    @endif
+                                @endfor
+                            </div>
+                            @if($review->comment)
+                                <p class="fst-italic text-muted">"{{ $review->comment }}"</p>
+                            @endif
+                            @if($review->admin_reply)
+                                <div class="bg-light p-3 rounded-3 mt-3 text-start">
+                                    <small class="text-primary fw-bold"><i class="bi bi-reply-fill"></i> Balasan Admin:</small>
+                                    <p class="mb-0 small mt-1">{{ $review->admin_reply }}</p>
+                                </div>
+                            @endif
+                            <small class="text-success d-block mt-3"><i class="bi bi-check-circle"></i> Anda sudah memberikan review</small>
+                        @else
+                            <p class="text-muted mb-3">Bagaimana pengalaman Anda dengan pesanan ini?</p>
+                            <button type="button" class="btn btn-warning w-100 fw-bold text-dark" data-bs-toggle="modal" data-bs-target="#reviewModal">
+                                <i class="bi bi-star-fill me-2"></i>Berikan Review
+                            </button>
+                        @endif
+                    </div>
+                </div>
+                @endif
+
             </div>
         </div>
     </div>
 </section>
+
+<!-- Review Modal -->
+@if($order->status == 'completed' && !$order->reviews()->whereNull('menu_id')->exists())
+<div class="modal fade" id="reviewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title">Berikan Review</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('customer.orders.review', $order->id) }}" method="POST">
+                @csrf
+                <div class="modal-body text-center pt-2">
+                    <p class="text-muted mb-4">Pesanan #{{ $order->order_number }}</p>
+                    
+                    <div class="rating-css mb-4">
+                        <div class="star-icon text-warning fs-1" style="display: flex; flex-direction: row-reverse; justify-content: center;">
+                            <input type="radio" name="rating" value="5" id="rating5" class="d-none" required>
+                            <label for="rating5" class="bi bi-star" style="cursor:pointer; padding: 0 5px;"></label>
+                            
+                            <input type="radio" name="rating" value="4" id="rating4" class="d-none">
+                            <label for="rating4" class="bi bi-star" style="cursor:pointer; padding: 0 5px;"></label>
+                            
+                            <input type="radio" name="rating" value="3" id="rating3" class="d-none">
+                            <label for="rating3" class="bi bi-star" style="cursor:pointer; padding: 0 5px;"></label>
+                            
+                            <input type="radio" name="rating" value="2" id="rating2" class="d-none">
+                            <label for="rating2" class="bi bi-star" style="cursor:pointer; padding: 0 5px;"></label>
+                            
+                            <input type="radio" name="rating" value="1" id="rating1" class="d-none">
+                            <label for="rating1" class="bi bi-star" style="cursor:pointer; padding: 0 5px;"></label>
+                        </div>
+                    </div>
+                    
+                    <div class="text-start">
+                        <label class="form-label">Komentar (Opsional)</label>
+                        <textarea name="comment" class="form-control" rows="3" placeholder="Bagikan pengalaman Anda..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Nanti Saja</button>
+                    <button type="submit" class="btn btn-primary px-4">Kirim Review</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* CSS for simple star rating hover effect */
+    .rating-css .star-icon label:hover,
+    .rating-css .star-icon label:hover ~ label,
+    .rating-css .star-icon input:checked ~ label {
+        color: #ffc107 !important;
+    }
+    .rating-css .star-icon label::before {
+        content: "\f586"; /* bi-star */
+    }
+    .rating-css .star-icon label:hover::before,
+    .rating-css .star-icon label:hover ~ label::before,
+    .rating-css .star-icon input:checked ~ label::before {
+        content: "\f588"; /* bi-star-fill */
+    }
+</style>
+@endif
+
 @endsection

@@ -147,28 +147,23 @@
                     Laporan &amp; Analitik
                 </small>
             </li>
-            @if(auth()->user()->hasAdminPermission('statistics'))
+            @if(auth()->user()->hasAdminPermission('statistics') || auth()->user()->hasAdminPermission('reports'))
             <li class="sidebar-nav-item">
-                <a href="{{ url('/admin/statistik') }}" class="sidebar-nav-link {{ request()->is('admin/statistik*') ? 'active' : '' }}">
-                    <i class="bi bi-graph-up"></i>
-                    <span>Statistik</span>
-                </a>
-            </li>
+                    <a href="{{ url('/admin/report') }}" class="sidebar-nav-link {{ request()->is('admin/report*') ? 'active' : '' }}">
+                        <i class="bi bi-file-earmark-bar-graph"></i> <span>Laporan</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{{ url('/admin/reviews') }}" class="sidebar-nav-link {{ request()->is('admin/reviews*') ? 'active' : '' }}">
+                        <i class="bi bi-star"></i> <span>Rating & Review</span>
+                    </a>
+                </li>
             @endif
             @if(auth()->user()->hasAdminPermission('developer'))
             <li class="sidebar-nav-item">
                 <a href="{{ url('/admin/developer') }}" class="sidebar-nav-link {{ request()->is('admin/developer') ? 'active' : '' }}">
                     <i class="bi bi-code-slash"></i>
                     <span>{{ __('messages.developer') }}</span>
-                </a>
-            </li>
-            @endif
-
-            @if(auth()->user()->hasAdminPermission('reports'))
-            <li class="sidebar-nav-item">
-                <a href="{{ url('/admin/report') }}" class="sidebar-nav-link {{ request()->is('admin/report*') ? 'active' : '' }}">
-                    <i class="bi bi-file-earmark-text"></i>
-                    <span>Laporan</span>
                 </a>
             </li>
             @endif

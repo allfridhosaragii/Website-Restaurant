@@ -144,15 +144,47 @@ class OrderController extends Controller
         $order = DB::table('orders')
             ->where('id', $id)
             ->where('user_id', $userId)
-            ->first();
-        if (!$order) {
-            abort(404);
-        }
-        $order->items = DB::table('order_items')
-            ->join('menus', 'order_items.menu_id', '=', 'menus.id')
-            ->where('order_items.order_id', $order->id)
-            ->select('order_items.*', 'menus.image_url')
-            ->get();
+        $order = \App\Models\Order::with(['items.menu', 'reviews', 'payments'])->where('user_id', auth()->id())->findOrFail($id);
         return view('customer.orders.show', compact('order'));
+    }
+
+    public function submitReview(Request $request, $id)
+    {
+        $order = \App\Models\Order::with('items')->where('user_id', auth()->id())->findOrFail($id);
+        
+        if ($order->status != 'completed') {
+            return back()->with('error', 'Hanya pesanan yang sudah selesai yang bisa direview.');
+        }
+
+        if ($order->reviews()->exists()) {
+            return back()->with('error', 'Anda sudah memberikan review untuk pesanan ini.');
+        }
+
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'nullable|string|max:1000'
+        ]);
+
+        $menuIds = $order->items->pluck('menu_id')->unique();
+
+        foreach ($menuIds as $menuId) {
+            \App\Models\Review::create([
+                'user_id' => auth()->id(),
+                'order_id' => $order->id,
+                'menu_id' => $menuId,
+                'rating' => $request->rating,
+                'comment' => $request->comment,
+            ]);
+        }
+        
+        // Buat 1 record tanpa menu_id untuk rating keseluruhan pesanan
+        \App\Models\Review::create([
+            'user_id' => auth()->id(),
+            'order_id' => $order->id,
+            'rating' => $request->rating,
+            'comment' => $request->comment,
+        ]);
+
+        return back()->with('success', 'Terima kasih! Review Anda telah berhasil disimpan.');
     }
 }

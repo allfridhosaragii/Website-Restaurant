@@ -110,6 +110,14 @@
                                     @endif
                                     <div class="grow">
                                         <h6 class="mb-1">{{ $menu->name }}</h6>
+                                        <div class="mb-1">
+                                            @if($menu->reviews_count > 0)
+                                                <small class="text-warning fw-bold"><i class="bi bi-star-fill"></i> {{ number_format($menu->reviews_avg_rating, 1) }}</small>
+                                                <small class="text-muted">({{ $menu->reviews_count }})</small>
+                                            @else
+                                                <small class="text-muted fst-italic">Belum ada rating</small>
+                                            @endif
+                                        </div>
                                         <small class="text-muted d-block mb-2">{{ Str::limit($menu->description, 40) }}</small>
                                         <strong class="text-primary">Rp {{ number_format($menu->price, 0, ',', '.') }}</strong>
                                         <div class="d-none menu-modifiers-data">{{ json_encode($menu->modifiers) }}</div>

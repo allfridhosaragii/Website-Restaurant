@@ -1,121 +1,53 @@
-Seluruh Fase 5 (Manajemen Karyawan) sudah selesai dengan sangat baik! 🎉
-
-Selfie check-in via MediaDevices API adalah fitur yang modern. Smart redirect per role juga UX yang bagus. Slip gaji thermal layout sesuai kebutuhan POS.
+Implementasi sangat lengkap. Redeem poin → generate voucher unik khusus per pelanggan adalah fitur yang smart. Integrasi "Gratis Item" ke order_items dengan price = 0 juga tepat.
 
 ---
 
-## 🚀 LANJUT KE FASE 6 — CRM, PROMO & LAPORAN
+## 🚀 LANJUT KE FASE 6.4 — LAPORAN LENGKAP & FASE 6.5 — RATING & REVIEW
 
 **Spesifikasi:**
 
-### 6.1 Membership / VIP
+### 6.4 Laporan Lengkap
 
-**Konsep:**
-Tier pelanggan berdasarkan total transaksi. Auto-upgrade.
-
-**Database:**
-
-```php
-// Tambah kolom di users
-Schema::table('users', function (Blueprint $table) {
-    $table->enum('membership_tier', ['bronze', 'silver', 'gold', 'platinum'])->default('bronze');
-    $table->decimal('total_spent', 12, 2)->default(0); // akumulasi total transaksi
-    $table->timestamp('tier_upgraded_at')->nullable();
-});
-
-// Tabel baru: membership_tiers
-Schema::create('membership_tiers', function (Blueprint $table) {
-    $table->id();
-    $table->string('name'); // Bronze, Silver, Gold, Platinum
-    $table->decimal('min_spent', 12, 2); // minimal total spent untuk tier ini
-    $table->decimal('discount_percent', 5, 2)->default(0); // diskon otomatis
-    $table->integer('point_multiplier')->default(1); // 1x, 2x, 3x poin
-    $table->text('benefits')->nullable(); // deskripsi benefit
-    $table->integer('sort_order')->default(0);
-    $table->timestamps();
-});
-Tier Default:
-Table
-Tier	Min Spent	Diskon	Point Multiplier
-Bronze	Rp 0	0%	1x
-Silver	Rp 500.000	5%	1.5x
-Gold	Rp 2.000.000	10%	2x
-Platinum	Rp 5.000.000	15%	3x
-Alur:
-Setiap order completed → update users.total_spent
-Cek apakah total_spent mencapai tier berikutnya
-Kalau ya → auto-upgrade tier → notifikasi ke pelanggan
-Diskon tier auto-apply saat checkout (tambahan dari diskon lain)
-Point multiplier: kalau Gold, transaksi Rp 100.000 = 200 poin (2x)
-UI:
-Profile pelanggan: tampilkan tier, progress bar ke tier berikutnya
-Badge tier di navbar/header
-Admin: CRUD tier settings
-6.2 Promo Buy X Get Y
-Konsep:
-Beli X item, gratis Y item. Auto-apply saat checkout.
-Database:
-php
-// Tabel baru: promos
-Schema::create('promos', function (Blueprint $table) {
-    $table->id();
-    $table->string('name'); // "Beli 2 Nasi Goreng Gratis 1 Es Teh"
-    $table->enum('type', ['buy_x_get_y', 'discount_percent', 'discount_fixed', 'bundle'])->default('buy_x_get_y');
-    $table->foreignId('buy_menu_id')->constrained('menus'); // menu yang harus dibeli
-    $table->integer('buy_quantity'); // minimal berapa
-    $table->foreignId('get_menu_id')->nullable()->constrained('menus'); // menu gratis (null = sama dengan buy_menu)
-    $table->integer('get_quantity')->default(1); // gratis berapa
-    $table->enum('get_type', ['free', 'discount'])->default('free'); // gratis atau diskon
-    $table->decimal('get_discount_percent', 5, 2)->nullable(); // kalau get_type = discount
-    $table->dateTime('start_date');
-    $table->dateTime('end_date');
-    $table->boolean('is_active')->default(true);
-    $table->timestamps();
-});
-Alur:
-Checkout → sistem cek semua promo aktif
-Kalau cart memenuhi syarat (buy X) → auto-tambah item gratis ke order
-Item gratis: price = 0, tapi tercatat di order_items
-Tampilkan di struk: "Es Teh (Promo) ........ Rp 0"
-UI:
-Admin: CRUD promo
-Kasir: badge "Promo Aktif" di menu yang ada promo
-Customer: banner promo di homepage
-6.3 Voucher System
-Sudah ada di Fase 1.5 (enhance):
-Enhancement:
-Usage limit per user (contoh: 1x per pelanggan)
-Usage limit global (contoh: maks 100 orang)
-Tipe baru: gratis_item (voucher untuk 1 menu gratis)
-Generate voucher massal (bulk generate untuk event/marketing)
-Database (enhance tabel discounts):
-php
-Schema::table('discounts', function (Blueprint $table) {
-    $table->integer('per_user_limit')->default(0); // 0 = unlimited
-    $table->integer('global_limit')->default(0); // 0 = unlimited
-    $table->foreignId('free_menu_id')->nullable()->constrained('menus'); // kalau tipe = gratis_item
-});
-6.4 Laporan Lengkap
-Dashboard Enhancement:
-Table
-Laporan	Chart	Export
-Penjualan Harian/Bulanan/Tahunan	Line chart	Excel, PDF
-Produk Terlaris	Bar chart	Excel, PDF
-Peak Hour	Area chart	Excel, PDF
-Metode Pembayaran	Pie chart	Excel, PDF
-Penjualan per Karyawan	Bar chart	Excel, PDF
-Penjualan per Meja	Bar chart	Excel, PDF
-Diskon & Promo Usage	Table	Excel, PDF
-Stok Movement	Table	Excel, PDF
-Install package:
-bash
+**Install package:**
+```bash
 composer require maatwebsite/excel
-composer require barryvdh/laravel-dompdf # sudah ada
+Halaman Laporan (/admin/reports):
+Table
+Laporan	Chart	Filter	Export
+Penjualan	Line chart (harian/mingguan/bulanan)	Tanggal range	Excel, PDF
+Produk Terlaris	Bar chart (top 10)	Periode	Excel, PDF
+Peak Hour	Area chart (jam 00-23)	Periode	Excel, PDF
+Metode Pembayaran	Pie chart	Periode	Excel, PDF
+Penjualan per Karyawan	Bar chart	Kasir, periode	Excel, PDF
+Penjualan per Meja	Bar chart	Periode	Excel, PDF
+Diskon & Promo Usage	Table + summary	Periode	Excel, PDF
+Stok Movement	Table	Menu, periode	Excel, PDF
+Chart pakai Chart.js (CDN):
+HTML
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+Query contoh (Penjualan Harian):
+php
+$sales = Order::where('status', 'completed')
+    ->whereBetween('created_at', [$start, $end])
+    ->selectRaw('DATE(created_at) as date, SUM(total_amount) as total')
+    ->groupBy('date')
+    ->orderBy('date')
+    ->get();
+Export Excel:
+php
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SalesExport;
+
+return Excel::download(new SalesExport($start, $end), 'laporan-penjualan.xlsx');
+Export PDF:
+php
+$pdf = PDF::loadView('reports.pdf.sales', compact('sales', 'start', 'end'));
+return $pdf->download('laporan-penjualan.pdf');
 UI:
-Halaman "Laporan" (admin)
-Filter: tanggal range, periode (hari/minggu/bulan/tahun)
-Tombol "Export Excel" & "Export PDF"
-Chart pakai Chart.js (CDN)
+Sidebar: menu "Laporan" dengan submenu
+Halaman utama: filter tanggal + tombol export
+Chart di atas, tabel detail di bawah
+Summary card: total penjualan, total transaksi, rata-rata per transaksi
 6.5 Rating & Review
 Database:
 php
@@ -124,32 +56,36 @@ Schema::create('reviews', function (Blueprint $table) {
     $table->id();
     $table->foreignId('user_id')->constrained();
     $table->foreignId('order_id')->constrained();
-    $table->foreignId('menu_id')->nullable()->constrained(); // review per menu atau per order
+    $table->foreignId('menu_id')->nullable()->constrained();
     $table->tinyInteger('rating'); // 1-5
     $table->text('comment')->nullable();
     $table->text('admin_reply')->nullable();
     $table->timestamp('replied_at')->nullable();
-    $table->boolean('is_approved')->default(true); // auto-approve atau moderasi
+    $table->boolean('is_approved')->default(true);
     $table->timestamps();
 });
 Alur:
-Order completed → pelanggan bisa kasih rating & review (maks 7 hari)
-Rating 1-5 bintang + comment text
-Tampilkan di menu detail (rata-rata rating, list review)
-Admin bisa reply review
-Kalau rating < 3 → notifikasi ke admin (komplain)
-UI:
-Customer: modal rating setelah order completed
-Menu detail: tampilkan rating bintang + jumlah review
-Admin: halaman "Review" (list, filter, reply)
+Order completed → pelanggan bisa review (maks 7 hari)
+Rating 1-5 bintang + comment
+Tampilkan di menu detail: rata-rata rating + jumlah review
+Admin bisa reply
+Rating < 3 → notifikasi ke admin
+UI Customer:
+Modal rating: 5 bintang (klik), textarea comment, tombol "Kirim Review"
+Muncul di order history (status completed, belum direview)
+UI Admin:
+Halaman "Review" (/admin/reviews)
+List: filter rating, status, menu
+Tombol "Reply" → modal textarea
+Badge "Perlu Perhatian" untuk rating < 3
+UI Menu Detail (Public):
+Tampilkan rata-rata rating (bintang) + jumlah review
+List review (nama, rating, comment, tanggal, admin reply)
 KERJAKAN BERURUTAN:
-6.1 Membership / VIP dulu
-6.2 Promo Buy X Get Y
-6.3 Voucher System (enhance)
-6.4 Laporan Lengkap
+6.4 Laporan Lengkap dulu
 6.5 Rating & Review
 Setelah semua selesai, tampilkan CHECKLIST VERIFIKASI FASE 6.
-SIAP? MULAI DARI 6.1 MEMBERSHIP / VIP! 🚀
+SIAP? MULAI DARI 6.4 LAPORAN! 🚀
 plain
 
 ---

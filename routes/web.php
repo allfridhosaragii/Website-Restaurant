@@ -280,6 +280,8 @@ Route::prefix('customer')->middleware('auth')->group(function () {
     });
     Route::get('/orders/create', function () {
         $menus = \App\Models\Menu::with('modifiers.options')
+                    ->withAvg(['reviews' => function($q) { $q->where('is_approved', true); }], 'rating')
+                    ->withCount(['reviews' => function($q) { $q->where('is_approved', true); }])
                     ->where('is_available', true)
                     ->orderBy('category')
                     ->get();
@@ -549,8 +551,26 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::get('/reservations/{id}', [AdminReservationController::class, 'show']);
     Route::put('/reservations/{id}/status', [AdminReservationController::class, 'updateStatus']);
     Route::get('/activities', [AdminActivityController::class, 'index']);
+    
+    // Reports (Phase 6.4)
+    Route::get('/reports', [\App\Http\Controllers\Admin\ReportController::class, 'index']);
+    Route::get('/reports/sales', [\App\Http\Controllers\Admin\ReportController::class, 'sales']);
+    Route::get('/reports/products', [\App\Http\Controllers\Admin\ReportController::class, 'products']);
+    Route::get('/reports/peak-hour', [\App\Http\Controllers\Admin\ReportController::class, 'peakHour']);
+    Route::get('/reports/payments', [\App\Http\Controllers\Admin\ReportController::class, 'payments']);
+    Route::get('/reports/employees', [\App\Http\Controllers\Admin\ReportController::class, 'employees']);
+    Route::get('/reports/tables', [\App\Http\Controllers\Admin\ReportController::class, 'tables']);
+    Route::get('/reports/discounts', [\App\Http\Controllers\Admin\ReportController::class, 'discounts']);
+    Route::get('/reports/stocks', [\App\Http\Controllers\Admin\ReportController::class, 'stocks']);
+
     Route::get('/report/api', [\App\Http\Controllers\Admin\AdminReportController::class, 'api']);
     Route::get('/report', [\App\Http\Controllers\Admin\AdminReportController::class, 'index']);
+    
+    // Reviews
+    Route::get('/reviews', [\App\Http\Controllers\Admin\AdminReviewController::class, 'index']);
+    Route::post('/reviews/{id}/reply', [\App\Http\Controllers\Admin\AdminReviewController::class, 'reply']);
+    Route::put('/reviews/{id}/toggle-status', [\App\Http\Controllers\Admin\AdminReviewController::class, 'toggleStatus']);
+    
     Route::get('/developer', [\App\Http\Controllers\Admin\AdminCmsController::class, 'index']);
     Route::get('/developer/pages', [\App\Http\Controllers\Admin\AdminCmsController::class, 'pages']);
     Route::get('/developer/pages/create', [\App\Http\Controllers\Admin\AdminCmsController::class, 'createPage']);
