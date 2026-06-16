@@ -228,7 +228,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/cms', [ApiAdminCmsController::class, 'index']);
         Route::post('/cms/maintenance', [ApiAdminCmsController::class, 'toggleMaintenance']);
     });
-
+});
 
 
 Route::get('/migrate-supabase', function () {

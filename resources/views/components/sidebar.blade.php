@@ -13,6 +13,12 @@
                     <span>Dashboard</span>
                 </a>
             </li>
+            <li class="sidebar-nav-item">
+                <a href="{{ url('/admin/pos') }}" class="sidebar-nav-link {{ request()->is('admin/pos*') ? 'active' : '' }}">
+                    <i class="bi bi-calculator"></i>
+                    <span>Point of Sale (POS)</span>
+                </a>
+            </li>
             <li class="sidebar-nav-item mt-4">
                 <small class="text-uppercase text-light opacity-50 px-3 mb-2 d-block" style="font-size: 0.7rem;">
                     Manajemen Menu
