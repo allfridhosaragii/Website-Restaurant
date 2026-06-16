@@ -10,7 +10,7 @@ class Menu extends Model
         'description',
         'price',
         'image_url',
-        'category',
+        'category_id',
         'is_available',
         'slug',
         'daily_stock',
@@ -67,5 +67,15 @@ class Menu extends Model
     public function modifiers()
     {
         return $this->hasMany(MenuModifier::class)->orderBy('sort_order');
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

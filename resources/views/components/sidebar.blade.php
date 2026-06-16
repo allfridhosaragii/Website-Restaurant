@@ -171,7 +171,7 @@
             </li>
             @if(auth()->user()->hasAdminPermission('statistics') || auth()->user()->hasAdminPermission('reports'))
             <li class="sidebar-nav-item">
-                    <a href="{{ url('/admin/report') }}" class="sidebar-nav-link {{ request()->is('admin/report*') ? 'active' : '' }}">
+                    <a href="{{ url('/admin/reports') }}" class="sidebar-nav-link {{ request()->is('admin/reports*') ? 'active' : '' }}">
                         <i class="bi bi-file-earmark-bar-graph"></i> <span>Laporan</span>
                     </a>
                 </li>

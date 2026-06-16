@@ -440,6 +440,7 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     Route::get('/profile', [\App\Http\Controllers\Admin\AdminProfileController::class, 'index']);
     Route::put('/profile', [\App\Http\Controllers\Admin\AdminProfileController::class, 'update']);
     Route::get('/menus', [AdminMenuController::class, 'index']);
+    Route::resource('categories', \App\Http\Controllers\Admin\AdminCategoryController::class);
     Route::get('/menus/create', [AdminMenuController::class, 'create']);
     Route::post('/menus', [AdminMenuController::class, 'store']);
     Route::get('/menus/{slug}/edit', [AdminMenuController::class, 'edit']);
