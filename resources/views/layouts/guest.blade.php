@@ -213,7 +213,7 @@
             // Check maintenance status
             async function checkMaintenanceStatus() {
                 try {
-                    const response = await fetch('/api/maintenance-status', {
+                    const response = await fetch('/maintenance-status/check', {
                         headers: { 'Accept': 'application/json' },
                         cache: 'no-store'
                     });

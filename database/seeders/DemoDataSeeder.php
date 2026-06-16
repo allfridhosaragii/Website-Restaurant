@@ -42,18 +42,18 @@ class DemoDataSeeder extends Seeder
 
         // 3. Menus
         $menusData = [
-            ['name' => 'Nasi Goreng Spesial', 'price' => 25000, 'category' => $categories[0], 'image_url' => 'https://res.cloudinary.com/dh9ysyfit/image/upload/v1766594949/placeholder_food.png'],
-            ['name' => 'Mie Ayam Jamur', 'price' => 20000, 'category' => $categories[0], 'image_url' => 'https://res.cloudinary.com/dh9ysyfit/image/upload/v1766594949/placeholder_food.png'],
-            ['name' => 'Ayam Penyet', 'price' => 22000, 'category' => $categories[0], 'image_url' => 'https://res.cloudinary.com/dh9ysyfit/image/upload/v1766594949/placeholder_food.png'],
-            ['name' => 'Sate Ayam', 'price' => 30000, 'category' => $categories[0], 'image_url' => 'https://res.cloudinary.com/dh9ysyfit/image/upload/v1766594949/placeholder_food.png'],
-            ['name' => 'Es Teh Manis', 'price' => 5000, 'category' => $categories[1], 'image_url' => 'https://res.cloudinary.com/dh9ysyfit/image/upload/v1766594949/placeholder_drink.png'],
-            ['name' => 'Jus Alpukat', 'price' => 15000, 'category' => $categories[1], 'image_url' => 'https://res.cloudinary.com/dh9ysyfit/image/upload/v1766594949/placeholder_drink.png'],
-            ['name' => 'Kopi Hitam', 'price' => 10000, 'category' => $categories[1], 'image_url' => 'https://res.cloudinary.com/dh9ysyfit/image/upload/v1766594949/placeholder_drink.png'],
-            ['name' => 'Puding Coklat', 'price' => 12000, 'category' => $categories[2], 'image_url' => 'https://res.cloudinary.com/dh9ysyfit/image/upload/v1766594949/placeholder_dessert.png'],
-            ['name' => 'Es Krim Sundae', 'price' => 18000, 'category' => $categories[2], 'image_url' => 'https://res.cloudinary.com/dh9ysyfit/image/upload/v1766594949/placeholder_dessert.png'],
-            ['name' => 'Kentang Goreng', 'price' => 15000, 'category' => $categories[3], 'image_url' => 'https://res.cloudinary.com/dh9ysyfit/image/upload/v1766594949/placeholder_snack.png'],
-            ['name' => 'Pisang Bakar', 'price' => 15000, 'category' => $categories[3], 'image_url' => 'https://res.cloudinary.com/dh9ysyfit/image/upload/v1766594949/placeholder_snack.png'],
-            ['name' => 'Paket Ayam Geprek', 'price' => 28000, 'category' => $categories[4], 'image_url' => 'https://res.cloudinary.com/dh9ysyfit/image/upload/v1766594949/placeholder_food.png'],
+            ['name' => 'Nasi Goreng Spesial', 'price' => 25000, 'category' => $categories[0], 'image_url' => 'https://via.placeholder.com/400x300.png?text=Menu'],
+            ['name' => 'Mie Ayam Jamur', 'price' => 20000, 'category' => $categories[0], 'image_url' => 'https://via.placeholder.com/400x300.png?text=Menu'],
+            ['name' => 'Ayam Penyet', 'price' => 22000, 'category' => $categories[0], 'image_url' => 'https://via.placeholder.com/400x300.png?text=Menu'],
+            ['name' => 'Sate Ayam', 'price' => 30000, 'category' => $categories[0], 'image_url' => 'https://via.placeholder.com/400x300.png?text=Menu'],
+            ['name' => 'Es Teh Manis', 'price' => 5000, 'category' => $categories[1], 'image_url' => 'https://via.placeholder.com/400x300.png?text=Menu'],
+            ['name' => 'Jus Alpukat', 'price' => 15000, 'category' => $categories[1], 'image_url' => 'https://via.placeholder.com/400x300.png?text=Menu'],
+            ['name' => 'Kopi Hitam', 'price' => 10000, 'category' => $categories[1], 'image_url' => 'https://via.placeholder.com/400x300.png?text=Menu'],
+            ['name' => 'Puding Coklat', 'price' => 12000, 'category' => $categories[2], 'image_url' => 'https://via.placeholder.com/400x300.png?text=Menu'],
+            ['name' => 'Es Krim Sundae', 'price' => 18000, 'category' => $categories[2], 'image_url' => 'https://via.placeholder.com/400x300.png?text=Menu'],
+            ['name' => 'Kentang Goreng', 'price' => 15000, 'category' => $categories[3], 'image_url' => 'https://via.placeholder.com/400x300.png?text=Menu'],
+            ['name' => 'Pisang Bakar', 'price' => 15000, 'category' => $categories[3], 'image_url' => 'https://via.placeholder.com/400x300.png?text=Menu'],
+            ['name' => 'Paket Ayam Geprek', 'price' => 28000, 'category' => $categories[4], 'image_url' => 'https://via.placeholder.com/400x300.png?text=Menu'],
         ];
 
         $menus = [];

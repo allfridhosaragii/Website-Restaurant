@@ -29,7 +29,7 @@ Route::get('/maintenance/preview', function () {
     }
     return view('maintenance');
 })->withoutMiddleware([\App\Http\Middleware\MaintenanceMiddleware::class]);
-Route::get('/api/maintenance-status', function () {
+Route::get('/maintenance-status/check', function () {
     $setting = \App\Models\CmsSetting::where('key', 'maintenance_mode')->first();
     $isMaintenanceMode = $setting && $setting->value === 'true';
     return response()->json([
