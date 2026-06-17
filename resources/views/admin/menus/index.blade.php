@@ -24,18 +24,41 @@
         @endif
 
         @if($lowStockMenus->isNotEmpty())
-        <div class="card border-danger mb-4">
-            <div class="card-header bg-danger text-white">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i> Peringatan Stok Menipis
+        <div class="alert alert-danger d-flex align-items-center justify-content-between mb-4 shadow-sm" role="alert">
+            <div>
+                <i class="bi bi-exclamation-triangle-fill fs-4 me-2"></i> 
+                <strong>Peringatan Stok Menipis!</strong> Ada {{ $lowStockMenus->count() }} menu yang stoknya hampir atau sudah habis.
             </div>
-            <div class="card-body">
-                <ul class="mb-0">
-                    @foreach($lowStockMenus as $lowMenu)
-                    <li>
-                        <strong>{{ $lowMenu->name }}</strong>: Sisa stok {{ $lowMenu->stock }} (Batas minimum: {{ $lowMenu->min_stock }})
-                    </li>
-                    @endforeach
-                </ul>
+            <button type="button" class="btn btn-sm btn-danger rounded-pill px-3 fw-bold" data-bs-toggle="modal" data-bs-target="#lowStockModal">
+                Lihat Detail
+            </button>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="lowStockModal" tabindex="-1" aria-labelledby="lowStockModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content border-danger">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="lowStockModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i> Detail Stok Menipis</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-0">
+                        <ul class="list-group list-group-flush">
+                            @foreach($lowStockMenus as $lowMenu)
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong class="text-dark">{{ $lowMenu->name }}</strong><br>
+                                    <small class="text-muted">Batas minimum: {{ $lowMenu->min_stock }}</small>
+                                </div>
+                                <span class="badge bg-danger rounded-pill px-3 py-2">Sisa {{ $lowMenu->stock }}</span>
+                            </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    </div>
+                </div>
             </div>
         </div>
         @endif
