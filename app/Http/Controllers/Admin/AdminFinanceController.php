@@ -13,6 +13,10 @@ class AdminFinanceController extends Controller
 {
     public function index(Request $request)
     {
+        if (!auth()->user()->hasAdminPermission('finance')) {
+            abort(403, 'Unauthorized. Owner access required.');
+        }
+
         $month = $request->input('month', date('m'));
         $year = $request->input('year', date('Y'));
 

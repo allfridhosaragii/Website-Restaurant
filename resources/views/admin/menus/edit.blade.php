@@ -33,15 +33,24 @@
                                 @enderror
                             </div>
                             <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="price" class="form-label">Harga (Rp) <span class="text-danger">*</span></label>
+                                <div class="col-md-4 mb-3">
+                                    <label for="price" class="form-label">Harga Offline (Rp) <span class="text-danger">*</span></label>
                                     <input type="number" class="form-control @error('price') is-invalid @enderror" 
                                            id="price" name="price" value="{{ old('price', $menu->price) }}" min="0" required>
                                     @error('price')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
+                                    <label for="price_online" class="form-label">Harga Online (Rp)</label>
+                                    <input type="number" class="form-control @error('price_online') is-invalid @enderror" 
+                                           id="price_online" name="price_online" value="{{ old('price_online', $menu->price_online) }}" min="0">
+                                    <small class="text-muted">Opsional. Kosongkan jika sama.</small>
+                                    @error('price_online')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-4 mb-3">
                                     <label for="category" class="form-label">Kategori <span class="text-danger">*</span></label>
                                     <select class="form-select @error('category') is-invalid @enderror" 
                                             id="category" name="category" required>

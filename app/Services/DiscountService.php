@@ -7,7 +7,7 @@ use Carbon\Carbon;
 
 class DiscountService
 {
-    public static function applyDiscounts($items, $voucherCode = null, $user = null)
+    public static function applyDiscounts($items, $voucherCode = null, $user = null, $isOnline = false)
     {
         $now = now();
         $currentTime = $now->format('H:i:s');
@@ -60,7 +60,7 @@ class DiscountService
             $menu = DB::table('menus')->find($item['menu_id']);
             if (!$menu) continue;
 
-            $basePrice = $menu->price;
+            $basePrice = ($isOnline && isset($menu->price_online)) ? $menu->price_online : $menu->price;
             
             // Calculate modifier price
             $modifierPrice = 0;
@@ -167,13 +167,14 @@ class DiscountService
                 $orderDiscountAmount = 0;
                 $freeMenu = DB::table('menus')->find($bestOrderDiscount->free_menu_id);
                 if ($freeMenu) {
+                    $freePrice = ($isOnline && isset($freeMenu->price_online)) ? $freeMenu->price_online : $freeMenu->price;
                     $orderItems[] = [
                         'menu_id' => $freeMenu->id,
                         'menu_name' => $freeMenu->name . ' (Voucher Gratis)',
                         'quantity' => 1,
                         'price' => 0,
-                        'original_price' => $freeMenu->price,
-                        'discount_amount' => $freeMenu->price,
+                        'original_price' => $freePrice,
+                        'discount_amount' => $freePrice,
                         'subtotal' => 0,
                         'total' => 0,
                         'modifiers' => null,

@@ -16,7 +16,7 @@ class CartController extends Controller
         }
         $cartItems = $query->get();
         $total = $cartItems->sum(function ($item) {
-            $basePrice = $item->menu->price;
+            $basePrice = $item->menu->price_online ?? $item->menu->price;
             $modifierPrice = 0;
             if (is_array($item->modifiers)) {
                 foreach ($item->modifiers as $mod) {

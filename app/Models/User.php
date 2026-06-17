@@ -46,7 +46,15 @@ class User extends Authenticatable
     }
     public function hasAdminPermission(string $key): bool
     {
-        if ($this->isSuperAdmin() || $this->role === 'admin' || $this->role === 'manager') {
+        if ($this->isSuperAdmin() || $this->role === 'admin') {
+            return true;
+        }
+
+        if ($this->role === 'manager') {
+            // Manager cannot access live dashboard and finance
+            if (in_array($key, ['dashboard_live', 'finance'])) {
+                return false;
+            }
             return true;
         }
         
@@ -55,7 +63,7 @@ class User extends Authenticatable
         }
         
         if ($this->role === 'cashier') {
-            return in_array($key, ['pos', 'orders', 'reservations']);
+            return in_array($key, ['pos', 'orders', 'reservations', 'shifts']);
         }
 
         $permission = $this->adminPermissions()->where('permission_key', $key)->first();

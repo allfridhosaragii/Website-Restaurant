@@ -9,6 +9,7 @@ class Menu extends Model
         'name',
         'description',
         'price',
+        'price_online',
         'image_url',
         'category_id',
         'is_available',
@@ -20,6 +21,7 @@ class Menu extends Model
     protected $casts = [
         'is_available' => 'boolean',
         'price' => 'decimal:2',
+        'price_online' => 'decimal:2',
         'stock_updated_at' => 'date',
     ];
     public function decreaseStock(int $quantity = 1): bool

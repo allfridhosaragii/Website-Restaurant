@@ -24,7 +24,7 @@ class OrderController extends Controller
         $voucherCode = $request->input('voucher_code');
         
         try {
-            $discountResult = \App\Services\DiscountService::applyDiscounts($request->items, $voucherCode, $user);
+            $discountResult = \App\Services\DiscountService::applyDiscounts($request->items, $voucherCode, $user, true);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

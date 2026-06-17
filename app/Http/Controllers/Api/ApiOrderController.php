@@ -52,7 +52,8 @@ class ApiOrderController extends Controller
                 ], 400);
             }
             $total = $cartItems->sum(function ($item) {
-                return $item->menu ? $item->quantity * $item->menu->price : 0;
+                $price = $item->menu->price_online ?? $item->menu->price;
+                return $item->menu ? $item->quantity * $price : 0;
             });
             $orderNumber = 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(5));
             DB::beginTransaction();
@@ -67,7 +68,7 @@ class ApiOrderController extends Controller
                 'updated_at' => now(),
             ]);
             foreach ($cartItems as $item) {
-                $price = $item->menu ? $item->menu->price : 0;
+                $price = $item->menu ? ($item->menu->price_online ?? $item->menu->price) : 0;
                 DB::table('order_items')->insert([
                     'order_id' => $orderId,
                     'menu_id' => $item->menu_id,

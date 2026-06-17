@@ -11,19 +11,21 @@ class ApiCartController extends Controller
             ->with('menu')
             ->get();
         $total = $cartItems->sum(function ($item) {
-            return $item->menu ? $item->quantity * $item->menu->price : 0;
+            $price = $item->menu->price_online ?? $item->menu->price;
+            return $item->menu ? $item->quantity * $price : 0;
         });
         return response()->json([
             'success' => true,
             'items' => $cartItems->map(function ($item) {
+                $price = $item->menu->price_online ?? $item->menu->price;
                 return [
                     'id' => $item->id,
                     'menu_id' => $item->menu_id,
                     'menu_name' => $item->menu?->name,
                     'menu_image' => $item->menu?->image_url,
-                    'price' => $item->menu?->price,
+                    'price' => $price,
                     'quantity' => $item->quantity,
-                    'subtotal' => $item->menu ? $item->quantity * $item->menu->price : 0,
+                    'subtotal' => $item->menu ? $item->quantity * $price : 0,
                 ];
             }),
             'total' => $total,

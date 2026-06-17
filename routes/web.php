@@ -437,6 +437,7 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
         return redirect('/admin/dashboard');
     });
     Route::get('/dashboard', [AdminDashboardController::class, 'index']);
+    Route::get('/dashboard/live-data', [AdminDashboardController::class, 'liveData']);
     Route::get('/profile', [\App\Http\Controllers\Admin\AdminProfileController::class, 'index']);
     Route::put('/profile', [\App\Http\Controllers\Admin\AdminProfileController::class, 'update']);
     Route::get('/menus', [AdminMenuController::class, 'index']);
@@ -496,13 +497,20 @@ Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\AdminMiddleware
     // Promos
     Route::resource('promos', \App\Http\Controllers\Admin\PromoController::class)->names('admin.promos');
     
+    // Payment Methods
+    Route::resource('payment_methods', \App\Http\Controllers\Admin\AdminPaymentMethodController::class)->names('admin.payment_methods');
+    Route::post('/payment_methods/{id}/toggle-active', [\App\Http\Controllers\Admin\AdminPaymentMethodController::class, 'toggleActive']);
+    
     Route::get('/pos', function () {
         $todayReservations = \App\Models\Reservation::with(['user', 'table'])
             ->where('date', \Carbon\Carbon::today()->format('Y-m-d'))
             ->whereNotIn('status', ['cancelled', 'rejected', 'completed', 'no_show'])
             ->orderBy('time')
             ->get();
-        return view('admin.pos.index', compact('todayReservations'));
+        
+        $paymentMethods = \App\Models\PaymentMethod::where('is_active', true)->orderBy('sort_order')->get();
+        
+        return view('admin.pos.index', compact('todayReservations', 'paymentMethods'));
     })->name('admin.pos.index');
 
     Route::get('/pos/table-map', [\App\Http\Controllers\Admin\AdminTableLayoutController::class, 'kasirMap'])->name('admin.pos.table-map');

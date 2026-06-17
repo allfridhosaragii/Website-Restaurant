@@ -4,45 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Struk #{{ $order->order_number }}</title>
+    <link rel="stylesheet" href="{{ asset('css/struk.css') }}">
     <style>
-        body {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 12px;
-            color: #000;
-            margin: 0;
-            padding: 0;
-            width: 58mm; /* Ukuran thermal 58mm */
-            background-color: #fff;
-        }
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-        .font-bold { font-weight: bold; }
-        .mt-1 { margin-top: 5px; }
-        .mt-2 { margin-top: 10px; }
-        .mb-1 { margin-bottom: 5px; }
-        .mb-2 { margin-bottom: 10px; }
-        
-        .receipt-header h3 { margin: 0; font-size: 16px; text-transform: uppercase; }
-        .receipt-header p { margin: 2px 0; font-size: 10px; }
-        
-        .divider { border-top: 1px dashed #000; margin: 5px 0; }
-        
-        table { width: 100%; border-collapse: collapse; }
-        table td { padding: 2px 0; vertical-align: top; }
-        
-        .item-row td { padding-bottom: 2px; }
-        .modifier-row td { font-size: 10px; color: #333; padding-left: 5px; }
-        
-        .totals-table td { padding: 1px 0; }
-        .grand-total { font-size: 14px; font-weight: bold; }
-        
         @media print {
-            body { width: 100%; margin: 0; padding: 0; }
-            @page { margin: 0; }
+            .no-print { display: none !important; }
         }
     </style>
 </head>
-<body onload="window.print()">
+<body>
+    <div class="no-print" style="text-align: center; margin-bottom: 10px; padding: 10px; background: #f0f0f0;">
+        <button onclick="window.print();" style="padding: 5px 15px; background: #28a745; color: #fff; border: none; border-radius: 3px; cursor: pointer;">Print</button>
+        <button onclick="window.close();" style="padding: 5px 15px; background: #dc3545; color: #fff; border: none; border-radius: 3px; cursor: pointer;">Tutup</button>
+    </div>
+
+    <script>
+        // Read printer size from localStorage (default 58mm)
+        let printerSize = localStorage.getItem('printer_size') || '58';
+        document.body.style.width = printerSize + 'mm';
+
+        // Auto print after a small delay to let CSS load
+        setTimeout(() => {
+            window.print();
+        }, 500);
+    </script>
 
     <div class="text-center receipt-header mb-2">
         <h3>RESTORAN MANTAP</h3>

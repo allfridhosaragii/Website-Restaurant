@@ -11,6 +11,9 @@
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <h6 class="m-0 font-weight-bold text-primary">Daftar Menu</h6>
                     <div class="d-flex gap-2 w-50 justify-content-end">
+                        <button class="btn btn-sm btn-secondary text-white mr-2" @click="openPrinterModal()">
+                            <i class="fas fa-print"></i> Setup Printer
+                        </button>
                         <a href="{{ route('admin.pos.table-map') }}" class="btn btn-sm btn-info text-white mr-2">
                             <i class="fas fa-map"></i> Visual Map
                         </a>
@@ -239,6 +242,34 @@
         </div>
     </div>
 
+    <!-- Printer Setup Modal -->
+    <div class="modal" tabindex="-1" :class="{'d-block': showPrinterModal, 'show': showPrinterModal}" :style="showPrinterModal ? 'background: rgba(0,0,0,0.5)' : ''">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Setup Printer Thermal</h5>
+                    <button type="button" class="close" @click="showPrinterModal = false">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Ukuran Kertas Printer</label>
+                        <select class="form-control" x-model="printerSize">
+                            <option value="58">58mm</option>
+                            <option value="80">80mm</option>
+                        </select>
+                        <small class="text-muted">Pilihan ukuran kertas akan disimpan di browser ini.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @click="showPrinterModal = false">Tutup</button>
+                    <button type="button" class="btn btn-primary" @click="savePrinterSetup()">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Payment Modal -->
     <div class="modal" tabindex="-1" :class="{'d-block': showPaymentModal, 'show': showPaymentModal}" :style="showPaymentModal ? 'background: rgba(0,0,0,0.5)' : ''">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -270,11 +301,9 @@
                                     <tr>
                                         <td>
                                             <select class="form-control" x-model="payment.method">
-                                                <option value="cash">Tunai (Cash)</option>
-                                                <option value="qris">QRIS</option>
-                                                <option value="debit_card">Kartu Debit</option>
-                                                <option value="credit_card">Kartu Kredit</option>
-                                                <option value="e_wallet">E-Wallet</option>
+                                                <template x-for="pm in paymentMethodsData" :key="pm.name">
+                                                    <option :value="pm.name.toLowerCase()" x-text="pm.name"></option>
+                                                </template>
                                                 <option value="deposit" x-show="selectedCustomer">Deposit Pelanggan</option>
                                             </select>
                                         </td>
@@ -350,7 +379,10 @@ document.addEventListener('alpine:init', () => {
         isProcessing: false,
         showModifierModal: false,
         showPaymentModal: false,
-        payments: [{ method: 'cash', amount: 0, reference_number: '' }],
+        showPrinterModal: false,
+        printerSize: localStorage.getItem('printer_size') || '58',
+        paymentMethodsData: @json($paymentMethods ?? []),
+        payments: [{ method: '', amount: 0, reference_number: '' }],
         currentModMenu: null,
         currentModTotal: 0,
 
@@ -380,6 +412,9 @@ document.addEventListener('alpine:init', () => {
         },
 
         initPos() {
+            if (this.paymentMethodsData.length > 0) {
+                this.payments[0].method = this.paymentMethodsData[0].name.toLowerCase();
+            }
             this.fetchMenus();
             this.fetchTables();
             this.fetchCustomers();
@@ -547,18 +582,29 @@ document.addEventListener('alpine:init', () => {
                 return;
             }
             // Reset payments to a single cash payment with exactly the total amount
-            this.payments = [{ method: 'cash', amount: this.total, reference_number: '' }];
+            let defaultMethod = this.paymentMethodsData.length > 0 ? this.paymentMethodsData[0].name.toLowerCase() : 'cash';
+            this.payments = [{ method: defaultMethod, amount: this.total, reference_number: '' }];
             this.showPaymentModal = true;
         },
 
         addPayment() {
             if (this.payments.length < 3) {
-                this.payments.push({ method: 'qris', amount: 0, reference_number: '' });
+                let defaultMethod = this.paymentMethodsData.length > 0 ? this.paymentMethodsData[0].name.toLowerCase() : 'cash';
+                this.payments.push({ method: defaultMethod, amount: 0, reference_number: '' });
             }
         },
-
         removePayment(index) {
             this.payments.splice(index, 1);
+        },
+
+        openPrinterModal() {
+            this.printerSize = localStorage.getItem('printer_size') || '58';
+            this.showPrinterModal = true;
+        },
+
+        savePrinterSetup() {
+            localStorage.setItem('printer_size', this.printerSize);
+            this.showPrinterModal = false;
         },
 
         checkout() {
@@ -587,12 +633,17 @@ document.addEventListener('alpine:init', () => {
             .then(res => {
                 if(res.data.success) {
                     this.showPaymentModal = false;
-                    alert('Pesanan ' + res.data.order_number + ' Berhasil Diproses!');
+                    
+                    // Open print receipt popup
+                    const printUrl = `/admin/orders/${res.data.order_id}/receipt/print`;
+                    window.open(printUrl, 'Cetak Struk', 'width=400,height=600');
+
                     this.cart = [];
                     this.selectedTable = '';
                     this.notes = '';
                     this.voucherCode = '';
-                    this.payments = [{ method: 'cash', amount: 0, reference_number: '' }];
+                    let defaultMethod = this.paymentMethodsData.length > 0 ? this.paymentMethodsData[0].name.toLowerCase() : 'cash';
+                    this.payments = [{ method: defaultMethod, amount: 0, reference_number: '' }];
                     this.initPos(); // refresh stock
                 }
             })

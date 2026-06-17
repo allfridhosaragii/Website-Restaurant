@@ -7,12 +7,14 @@
     </div>
     <nav>
         <ul class="sidebar-nav">
+            @if(auth()->user()->hasAdminPermission('dashboard_live'))
             <li class="sidebar-nav-item">
                 <a href="{{ url('/admin/dashboard') }}" class="sidebar-nav-link {{ request()->is('admin/dashboard*') ? 'active' : '' }}">
                     <i class="bi bi-speedometer2"></i>
-                    <span>Dashboard</span>
+                    <span>Dashboard Live</span>
                 </a>
             </li>
+            @endif
             <li class="sidebar-nav-item">
                 <a href="{{ url('/admin/pos') }}" class="sidebar-nav-link {{ request()->is('admin/pos*') ? 'active' : '' }}">
                     <i class="bi bi-calculator"></i>
@@ -104,24 +106,30 @@
                     Karyawan
                 </small>
             </li>
+            @if(auth()->user()->hasAdminPermission('shifts'))
             <li class="sidebar-nav-item">
                 <a href="{{ url('/admin/shifts') }}" class="sidebar-nav-link {{ request()->is('admin/shifts*') ? 'active' : '' }}">
                     <i class="bi bi-clock-history"></i>
                     <span>Riwayat Shift</span>
                 </a>
             </li>
+            @endif
+            @if(auth()->user()->hasAdminPermission('attendance'))
             <li class="sidebar-nav-item">
                 <a href="{{ url('/admin/attendance') }}" class="sidebar-nav-link {{ request()->is('admin/attendance*') ? 'active' : '' }}">
                     <i class="bi bi-person-check"></i>
                     <span>Absensi</span>
                 </a>
             </li>
+            @endif
+            @if(auth()->user()->hasAdminPermission('payroll'))
             <li class="sidebar-nav-item">
                 <a href="{{ url('/admin/payroll') }}" class="sidebar-nav-link {{ request()->is('admin/payroll*') ? 'active' : '' }}">
                     <i class="bi bi-cash-coin"></i>
                     <span>Payroll</span>
                 </a>
             </li>
+            @endif
             </li>
             
             <li class="sidebar-nav-item mt-4">
@@ -129,41 +137,59 @@
                     CRM & Promo
                 </small>
             </li>
+            @if(auth()->user()->hasAdminPermission('membership_tiers'))
             <li class="sidebar-nav-item">
                 <a href="{{ route('admin.membership_tiers.index') }}" class="sidebar-nav-link {{ request()->is('admin/membership_tiers*') ? 'active' : '' }}">
                     <i class="bi bi-star"></i>
                     <span>Membership Tiers</span>
                 </a>
             </li>
+            @endif
+            @if(auth()->user()->hasAdminPermission('promos'))
             <li class="sidebar-nav-item">
                 <a href="{{ route('admin.promos.index') }}" class="sidebar-nav-link {{ request()->is('admin/promos*') ? 'active' : '' }}">
                     <i class="bi bi-gift"></i>
                     <span>Promo Buy X Get Y</span>
                 </a>
             </li>
+            @endif
             <li class="sidebar-nav-item mt-4">
                 <small class="text-uppercase text-light opacity-50 px-3 mb-2 d-block" style="font-size: 0.7rem;">
                     Keuangan & Akuntansi
                 </small>
             </li>
+            @if(auth()->user()->hasAdminPermission('expenses'))
             <li class="sidebar-nav-item">
                 <a href="{{ url('/admin/expenses') }}" class="sidebar-nav-link {{ request()->is('admin/expenses*') ? 'active' : '' }}">
                     <i class="bi bi-wallet2"></i>
                     <span>Pengeluaran Ops.</span>
                 </a>
             </li>
+            @endif
+            @if(auth()->user()->hasAdminPermission('supplier_debts'))
             <li class="sidebar-nav-item">
                 <a href="{{ url('/admin/supplier-debts') }}" class="sidebar-nav-link {{ request()->is('admin/supplier-debts*') ? 'active' : '' }}">
                     <i class="bi bi-journal-minus"></i>
                     <span>Hutang Supplier</span>
                 </a>
             </li>
+            @endif
+            @if(auth()->user()->hasAdminPermission('finance'))
             <li class="sidebar-nav-item">
                 <a href="{{ url('/admin/finance') }}" class="sidebar-nav-link {{ request()->is('admin/finance*') ? 'active' : '' }}">
                     <i class="bi bi-bank"></i>
                     <span>Laporan Keuangan</span>
                 </a>
             </li>
+            @endif
+            @if(auth()->user()->hasAdminPermission('payment_methods'))
+            <li class="sidebar-nav-item">
+                <a href="{{ route('admin.payment_methods.index') }}" class="sidebar-nav-link {{ request()->is('admin/payment_methods*') ? 'active' : '' }}">
+                    <i class="bi bi-credit-card"></i>
+                    <span>Metode Pembayaran</span>
+                </a>
+            </li>
+            @endif
             <li class="sidebar-nav-item mt-4">
                 <small class="text-uppercase text-light opacity-50 px-3 mb-2 d-block" style="font-size: 0.7rem;">
                     Laporan &amp; Analitik
