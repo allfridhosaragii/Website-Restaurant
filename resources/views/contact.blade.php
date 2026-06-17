@@ -1,274 +1,305 @@
 @extends('layouts.guest')
+
 @section('title', 'Contact Us - Culinaire')
+
 @section('content')
-<div class="contact-wrapper">
-    <div class="luxury-bg">
-        <video autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;">
+<!-- Hero Section with Video Background -->
+<div class="contact-hero d-flex align-items-center justify-content-center position-relative">
+    <div class="video-background">
+        <video autoplay loop muted playsinline>
             <source src="https://res.cloudinary.com/dh9ysyfit/video/upload/v1766045650/IMG_7855_dv47s8.mov" type="video/mp4">
         </video>
+        <div class="overlay"></div>
     </div>
-    <div class="popup-overlay form-panel-overlay">
-        <div class="popup-container form-panel p-5">
-            <div class="h-100 d-flex flex-column justify-content-center px-lg-4">
-                <div class="mb-4 text-center">
-                    <h2 class="font-heading mb-3 text-dark">Send a Message</h2>
-                    <p class="text-muted">Your feedback and enquiries are paramount to us.</p>
-                </div>
-                <form action="#" method="POST" class="luxury-form">
-                    @csrf
-                    <div class="row g-4 mb-4">
-                        <div class="col-md-6">
-                            <div class="form-group floating-label">
-                                <input type="text" class="form-control" id="name" placeholder=" " required>
-                                <label for="name">Your Name</label>
-                                <span class="line-focus"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group floating-label">
-                                <input type="email" class="form-control" id="email" placeholder=" " required>
-                                <label for="email">Email Address</label>
-                                <span class="line-focus"></span>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group floating-label">
-                                <input type="text" class="form-control" id="subject" placeholder=" " required>
-                                <label for="subject">Subject</label>
-                                <span class="line-focus"></span>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group floating-label">
-                                <textarea class="form-control" id="message" rows="3" placeholder=" " required></textarea>
-                                <label for="message">Message</label>
-                                <span class="line-focus"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mt-4">
-                        <div class="privacy-note text-muted small">
-                            * Your details are kept strictly confidential.
-                        </div>
-                        <button type="button" class="btn-luxury">
-                            <span class="btn-text">Send Message</span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <div class="scroll-content">
-        <div class="scroll-spacer"></div>
-        <div class="container">
-            <div class="row justify-content-center mb-5">
-                <div class="col-lg-10">
-                    <div class="info-panel p-5">
-                        <div class="row align-items-center">
-                            <div class="col-md-5 mb-4 mb-md-0">
-                                <h6 class="text-gold text-uppercase letter-spacing-3 mb-3">Get in Touch</h6>
-                                <h1 class="display-5 font-heading text-white mb-4">Let's Start a<br>Conversation</h1>
-                                <p class="text-white-50 font-light">
-                                    We invite you to experience the extraordinary.
-                                </p>
-                                <div class="signature-line mt-4"></div>
-                            </div>
-                            <div class="col-md-1"></div>
-                            <div class="col-md-6 contact-details">
-                                <div class="contact-item mb-4">
-                                    <div class="d-flex align-items-baseline">
-                                        <span class="contact-number text-gold opacity-50 me-3">01</span>
-                                        <div>
-                                            <h5 class="text-white mb-1 font-heading">Visit Us</h5>
-                                            <p class="text-white-50 mb-0">Jl. Ketintang No.156, Surabaya<br>East Java, Indonesia 60231</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="contact-item mb-4">
-                                    <div class="d-flex align-items-baseline">
-                                        <span class="contact-number text-gold opacity-50 me-3">02</span>
-                                        <div>
-                                            <h5 class="text-white mb-1 font-heading">Call Us</h5>
-                                            <p class="text-white-50 mb-0">+62 31 828 6500<br>Mon - Sun, 08:00 - 20:00</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="contact-item">
-                                    <div class="d-flex align-items-baseline">
-                                        <span class="contact-number text-gold opacity-50 me-3">03</span>
-                                        <div>
-                                            <h5 class="text-white mb-1 font-heading">Write Us</h5>
-                                            <p class="text-white-50 mb-0">info@surabaya.telkomuniversity.ac.id</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row justify-content-center mb-5">
-                <div class="col-lg-10">
-                    <div class="map-section">
-                        <div class="map-frame">
-                            <iframe src="https://maps.google.com/maps?q=Universitas%20Telkom%20Surabaya,%20Jl.%20Ketintang%20No.156,%20Surabaya&t=&z=15&ie=UTF8&iwloc=&output=embed" 
-                                width="100%" height="400" style="border:0; filter: grayscale(100%) invert(92%) contrast(83%);" allowfullscreen="" loading="lazy"></iframe>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    
+    <div class="container position-relative z-index-2 text-center mt-5">
+        <h6 class="text-gold text-uppercase letter-spacing-3 mb-3" data-aos="fade-down" data-aos-duration="1000">Get in Touch</h6>
+        <h1 class="display-3 font-heading text-white mb-4" data-aos="fade-up" data-aos-duration="1200">Let's Start a Conversation</h1>
+        <p class="text-white-50 font-light lead mx-auto" style="max-width: 600px;" data-aos="fade-up" data-aos-duration="1400">
+            Whether you wish to make a reservation, inquire about a private event, or simply share your experience, we invite you to reach out.
+        </p>
+        
+        <a href="#contact-details" class="scroll-down mt-5" data-aos="fade-in" data-aos-delay="1000" data-aos-duration="2000">
+            <span class="d-block text-white-50 small text-uppercase mb-2">Scroll Down</span>
+            <i class="bi bi-chevron-down text-gold fs-4"></i>
+        </a>
     </div>
 </div>
+
+<!-- Main Contact Section -->
+<section id="contact-details" class="contact-main-section py-5">
+    <div class="container py-5">
+        <div class="row g-0 luxury-glass-panel rounded-4 overflow-hidden shadow-lg">
+            
+            <!-- Left Side: Contact Form -->
+            <div class="col-lg-7 p-5 p-md-5 bg-dark-glass position-relative">
+                <div class="form-wrapper z-index-2 position-relative">
+                    <h3 class="font-heading text-white mb-4">Send a Message</h3>
+                    <p class="text-white-50 mb-5">Your feedback and enquiries are paramount to us. Please fill out the form below and our team will get back to you shortly.</p>
+                    
+                    <form action="#" method="POST" class="luxury-form">
+                        @csrf
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-group floating-label">
+                                    <input type="text" class="form-control" id="name" placeholder=" " required>
+                                    <label for="name">Your Name</label>
+                                    <span class="line-focus"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group floating-label">
+                                    <input type="email" class="form-control" id="email" placeholder=" " required>
+                                    <label for="email">Email Address</label>
+                                    <span class="line-focus"></span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group floating-label">
+                                    <input type="text" class="form-control" id="subject" placeholder=" " required>
+                                    <label for="subject">Subject / Inquiry Type</label>
+                                    <span class="line-focus"></span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group floating-label">
+                                    <textarea class="form-control" id="message" rows="4" placeholder=" " required></textarea>
+                                    <label for="message">Your Message</label>
+                                    <span class="line-focus"></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mt-5 gap-3">
+                            <div class="privacy-note text-white-50 small">
+                                <i class="bi bi-shield-lock me-1 text-gold"></i> Your details are kept strictly confidential.
+                            </div>
+                            <button type="button" class="btn-luxury">
+                                <span class="btn-text">Send Message</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right Side: Contact Information -->
+            <div class="col-lg-5 p-5 p-md-5 bg-gold-dark text-white d-flex flex-column justify-content-between">
+                <div>
+                    <h3 class="font-heading mb-5">Information</h3>
+                    
+                    <div class="contact-info-item d-flex mb-4">
+                        <div class="icon-wrapper text-gold me-4">
+                            <i class="bi bi-geo-alt fs-3"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-uppercase letter-spacing-1 mb-2 opacity-75">Visit Us</h6>
+                            <p class="mb-0 fw-light">
+                                Jl. Ketintang No.156, Surabaya<br>
+                                East Java, Indonesia 60231
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info-item d-flex mb-4">
+                        <div class="icon-wrapper text-gold me-4">
+                            <i class="bi bi-telephone fs-3"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-uppercase letter-spacing-1 mb-2 opacity-75">Call Us</h6>
+                            <p class="mb-0 fw-light">
+                                +62 31 828 6500<br>
+                                <span class="opacity-75 small">Mon - Sun, 08:00 - 20:00</span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info-item d-flex mb-4">
+                        <div class="icon-wrapper text-gold me-4">
+                            <i class="bi bi-envelope fs-3"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-uppercase letter-spacing-1 mb-2 opacity-75">Write Us</h6>
+                            <p class="mb-0 fw-light">
+                                info@surabaya.telkomuniversity.ac.id<br>
+                                <span class="opacity-75 small">We reply within 24 hours</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-5">
+                    <h6 class="text-uppercase letter-spacing-1 mb-3 opacity-75">Follow Us</h6>
+                    <div class="social-links d-flex gap-3">
+                        <a href="#" class="social-btn"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="social-btn"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="social-btn"><i class="bi bi-twitter-x"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<!-- Full Width Map Section -->
+<section class="map-section pb-0">
+    <div class="container-fluid p-0">
+        <div class="map-container position-relative">
+            <iframe 
+                src="https://maps.google.com/maps?q=Universitas%20Telkom%20Surabaya,%20Jl.%20Ketintang%20No.156,%20Surabaya&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+                width="100%" 
+                height="450" 
+                style="border:0; filter: grayscale(100%) invert(92%) contrast(83%);" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+            <div class="map-overlay-pointer d-none d-md-flex align-items-center justify-content-center">
+                <div class="pulse-pointer"></div>
+            </div>
+        </div>
+    </div>
+</section>
 @endsection
+
 @push('styles')
+<!-- AOS Animation CSS -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
 <style>
     :root {
         --gold: #D4AF37;
-        --dark-bg: #1a1a1a;
-        --transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        --gold-dark: #b5952f;
+        --dark-bg: #0a0a0a;
+        --glass-bg: rgba(20, 20, 20, 0.85);
+        --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     }
-    body { background-color: #111; }
-    .contact-wrapper {
-        position: relative;
-        min-height: 100vh;
+    
+    body { 
+        background-color: var(--dark-bg); 
     }
-    .luxury-bg {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
-        background: #111;
-        z-index: -1;
-    }
-    .popup-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 100;
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-        transition: all 0.8s ease;
-    }
-    .popup-overlay.visible {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: auto;
-    }
-    .popup-container {
-        max-width: 900px;
-        width: 90%;
-        max-height: 90vh;
-        overflow-y: auto;
-        border-radius: 8px;
-        transform: translateY(50px) scale(0.95);
-        transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-    }
-    .popup-overlay.visible .popup-container {
-        transform: translateY(0) scale(1);
-    }
-    .scroll-content {
-        position: relative;
-        z-index: 10;
-    }
-    .scroll-spacer {
-        height: 300vh;
-    }
-    .form-panel {
-        background: rgba(255, 255, 255, 0.25);
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-    }
-    .info-panel {
-        background: rgba(0, 0, 0, 0.4);
-        backdrop-filter: blur(30px);
-        -webkit-backdrop-filter: blur(30px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        border-radius: 8px;
-        opacity: 0;
-        transform: translateY(50px);
-        transition: all 1s ease;
-    }
-    .info-panel.visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    .map-section {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: all 1s ease;
-    }
-    .map-section.visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    .map-frame {
-        border: none;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        height: 400px;
-        overflow: hidden;
-        border-radius: 8px;
-    }
+    
+    /* Typography Utilities */
     .text-gold { color: var(--gold) !important; }
+    .bg-gold-dark { background-color: #1a1610; border-left: 1px solid rgba(212, 175, 55, 0.2); }
+    .bg-dark-glass { background-color: var(--glass-bg); }
+    .letter-spacing-1 { letter-spacing: 1px; }
     .letter-spacing-3 { letter-spacing: 3px; }
     .font-heading { font-family: 'Playfair Display', serif; }
     .font-light { font-weight: 300; }
-    .contact-number {
-        font-family: 'Playfair Display', serif;
-        font-size: 1.5rem;
-        font-style: italic;
+    .z-index-2 { z-index: 2; }
+    
+    /* Hero Section */
+    .contact-hero {
+        min-height: 100vh;
+        width: 100%;
+        overflow: hidden;
     }
-    .signature-line {
-        width: 50px;
-        height: 2px;
-        background: var(--gold);
-        opacity: 0.5;
+    
+    .video-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
     }
-    .form-group { position: relative; margin-bottom: 1.5rem; }
+    
+    .video-background video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .video-background .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(10,10,10,1) 100%);
+    }
+
+    /* Scroll Down Indicator */
+    .scroll-down {
+        display: inline-block;
+        text-decoration: none;
+        transition: var(--transition);
+        animation: bounce 2s infinite;
+    }
+    
+    .scroll-down:hover {
+        opacity: 0.7;
+    }
+    
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-15px); }
+        60% { transform: translateY(-7px); }
+    }
+
+    /* Form Layout */
+    .luxury-glass-panel {
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .form-group { 
+        position: relative; 
+        margin-bottom: 1.5rem; 
+    }
+    
     .form-control {
         border: none;
-        border-bottom: 1px solid #ddd;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 0;
         padding: 0.8rem 0;
         font-family: inherit;
-        background: transparent;
+        background: transparent !important;
         transition: var(--transition);
         font-size: 0.95rem;
-        color: #333;
+        color: #fff !important;
     }
+    
     .form-control:focus {
         box-shadow: none;
-        background: transparent;
         border-bottom-color: var(--gold);
     }
-    .form-control::placeholder { color: transparent; }
+    
+    .form-control::placeholder { 
+        color: transparent; 
+    }
+    
     .floating-label label {
         position: absolute;
         top: 0.8rem;
         left: 0;
-        color: #555;
+        color: rgba(255, 255, 255, 0.5);
         font-size: 0.95rem;
         pointer-events: none;
         transition: var(--transition);
     }
+    
     .form-control:focus ~ label,
     .form-control:not(:placeholder-shown) ~ label {
         top: -1.2rem;
         font-size: 0.75rem;
         color: var(--gold);
-        font-weight: 600;
+        font-weight: 500;
         letter-spacing: 1px;
     }
+    
+    /* Remove autofill background in webkit */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    textarea:-webkit-autofill,
+    textarea:-webkit-autofill:hover,
+    textarea:-webkit-autofill:focus {
+        -webkit-text-fill-color: white;
+        -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+    
     .line-focus {
         position: absolute;
         bottom: 0;
@@ -278,14 +309,19 @@
         background-color: var(--gold);
         transition: var(--transition);
     }
-    .form-control:focus ~ .line-focus { width: 100%; }
+    
+    .form-control:focus ~ .line-focus { 
+        width: 100%; 
+    }
+
+    /* Buttons & Socials */
     .btn-luxury {
         background: transparent;
-        border: 1px solid #333;
-        padding: 12px 30px;
+        border: 1px solid var(--gold);
+        padding: 12px 35px;
         font-family: 'Playfair Display', serif;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 2px;
         font-size: 0.85rem;
         position: relative;
         overflow: hidden;
@@ -293,49 +329,101 @@
         display: inline-flex;
         align-items: center;
         cursor: pointer;
+        color: var(--gold);
     }
+    
     .btn-luxury .btn-text {
-         position: relative; z-index: 2; color: #333; transition: color 0.3s; 
+        position: relative; 
+        z-index: 2; 
+        transition: color 0.3s; 
     }
+    
     .btn-luxury::after {
-        content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 0; background-color: #333; transition: var(--transition); z-index: 1;
+        content: ''; 
+        position: absolute; 
+        bottom: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 0; 
+        background-color: var(--gold); 
+        transition: var(--transition); 
+        z-index: 1;
     }
-    .btn-luxury:hover::after { height: 100%; }
-    .btn-luxury:hover .btn-text { color: #fff; }
+    
+    .btn-luxury:hover::after { 
+        height: 100%; 
+    }
+    
+    .btn-luxury:hover .btn-text, .btn-luxury:hover { 
+        color: #000 !important; 
+    }
+    
+    .social-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid rgba(255,255,255,0.2);
+        color: #fff;
+        transition: var(--transition);
+        text-decoration: none;
+    }
+    
+    .social-btn:hover {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #000;
+        transform: translateY(-3px);
+    }
+
+    /* Map Specific */
+    .map-container {
+        overflow: hidden;
+    }
+    
+    .map-overlay-pointer {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 991px) {
+        .bg-gold-dark { border-left: none; border-top: 1px solid rgba(212, 175, 55, 0.2); }
+        .contact-hero { min-height: 80vh; }
+    }
 </style>
 @endpush
+
 @push('scripts')
+<!-- AOS Animation JS -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const formOverlay = document.querySelector('.form-panel-overlay');
-        const infoPanel = document.querySelector('.info-panel');
-        const mapSection = document.querySelector('.map-section');
-        checkScroll();
-        window.addEventListener('scroll', checkScroll);
-        function checkScroll() {
-            const scrollY = window.scrollY;
-            const windowHeight = window.innerHeight;
-            // 1. Form Panel Popup: Appear 300-2000px (fixed centered, stays long)
-            if (scrollY > 300 && scrollY < 2000) {
-                formOverlay.classList.add('visible');
-            } else {
-                formOverlay.classList.remove('visible');
-            }
-            // 2. Info Panel: Animate in/out when scrolled into/out of view
-            const infoPanelTop = infoPanel.getBoundingClientRect().top;
-            if (infoPanelTop < windowHeight * 0.8) {
-                infoPanel.classList.add('visible');
-            } else {
-                infoPanel.classList.remove('visible');
-            }
-            // 3. Map: Animate in/out when scrolled into/out of view
-            const mapTop = mapSection.getBoundingClientRect().top;
-            if (mapTop < windowHeight * 0.9) {
-                mapSection.classList.add('visible');
-            } else {
-                mapSection.classList.remove('visible');
-            }
-        }
+        // Initialize AOS animations
+        AOS.init({
+            once: true,
+            offset: 50,
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const navbarHeight = document.querySelector('.navbar-culinaire') ? document.querySelector('.navbar-culinaire').offsetHeight : 0;
+                    window.scrollTo({
+                        top: target.offsetTop - navbarHeight,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
     });
 </script>
 @endpush
