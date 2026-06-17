@@ -35,6 +35,7 @@
         </div>
 
         <!-- Modal -->
+        @push('modals')
         <div class="modal fade" id="lowStockModal" tabindex="-1" aria-labelledby="lowStockModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content border-danger">
@@ -61,6 +62,7 @@
                 </div>
             </div>
         </div>
+        @endpush
         @endif
         <div class="card">
             <div class="card-body p-0">

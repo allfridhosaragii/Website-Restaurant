@@ -43,6 +43,7 @@
                 </div>
 
                 <!-- Modal -->
+                @push('modals')
                 <div class="modal fade" id="lowStockDashboardModal" tabindex="-1" aria-labelledby="lowStockDashboardModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                         <div class="modal-content border-danger">
@@ -69,6 +70,7 @@
                         </div>
                     </div>
                 </div>
+                @endpush
             </div>
         </div>
         @endif
