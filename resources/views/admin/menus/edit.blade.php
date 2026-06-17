@@ -54,10 +54,10 @@
                                     <label for="category" class="form-label">Kategori <span class="text-danger">*</span></label>
                                     <select class="form-select @error('category') is-invalid @enderror" 
                                             id="category" name="category" required>
-                                        <option value="Makanan" {{ old('category', $menu->category) == 'Makanan' ? 'selected' : '' }}>Makanan</option>
-                                        <option value="Minuman" {{ old('category', $menu->category) == 'Minuman' ? 'selected' : '' }}>Minuman</option>
-                                        <option value="Dessert" {{ old('category', $menu->category) == 'Dessert' ? 'selected' : '' }}>Dessert</option>
-                                        <option value="Appetizer" {{ old('category', $menu->category) == 'Appetizer' ? 'selected' : '' }}>Appetizer</option>
+                                        <option value="Makanan" {{ old('category', $menu->category->name ?? 'Makanan') == 'Makanan' ? 'selected' : '' }}>Makanan</option>
+                                        <option value="Minuman" {{ old('category', $menu->category->name ?? '') == 'Minuman' ? 'selected' : '' }}>Minuman</option>
+                                        <option value="Dessert" {{ old('category', $menu->category->name ?? '') == 'Dessert' ? 'selected' : '' }}>Dessert</option>
+                                        <option value="Appetizer" {{ old('category', $menu->category->name ?? '') == 'Appetizer' ? 'selected' : '' }}>Appetizer</option>
                                     </select>
                                     @error('category')
                                         <div class="invalid-feedback">{{ $message }}</div>

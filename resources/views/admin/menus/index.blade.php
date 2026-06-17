@@ -74,7 +74,7 @@
                                             <br><small class="text-muted">{{ Str::limit($menu->description, 50) }}</small>
                                         @endif
                                     </td>
-                                    <td><span class="badge bg-secondary">{{ $menu->category }}</span></td>
+                                    <td><span class="badge bg-secondary">{{ $menu->category_name ?? '-' }}</span></td>
                                     <td><strong>Rp {{ number_format($menu->price, 0, ',', '.') }}</strong></td>
                                     <td>
                                         <strong>{{ $menu->stock }}</strong>

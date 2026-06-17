@@ -11,7 +11,11 @@ class ApiAdminMenuController extends Controller
         if (!$request->user()->isAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
-        $menus = \DB::table('menus')->orderBy('created_at', 'desc')->get();
+        $menus = \DB::table('menus')
+            ->leftJoin('categories', 'menus.category_id', '=', 'categories.id')
+            ->select('menus.*', 'categories.name as category_name')
+            ->orderBy('menus.created_at', 'desc')
+            ->get();
         return response()->json(['success' => true, 'menus' => $menus]);
     }
     public function store(Request $request)
@@ -27,12 +31,26 @@ class ApiAdminMenuController extends Controller
             'image_url' => 'nullable|url',
         ]);
         $imageUrl = $request->image_url ?: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop';
+        $categorySlug = Str::slug($request->category);
+        $category = \DB::table('categories')->where('slug', $categorySlug)->first();
+        if (!$category) {
+            $categoryId = \DB::table('categories')->insertGetId([
+                'name' => $request->category,
+                'slug' => $categorySlug,
+                'color' => '#10B981',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } else {
+            $categoryId = $category->id;
+        }
+
         $id = \DB::table('menus')->insertGetId([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
             'price' => $request->price,
-            'category' => $request->category,
+            'category_id' => $categoryId,
             'image_url' => $imageUrl,
             'is_available' => $request->boolean('is_available', true),
             'created_at' => now(),
@@ -57,12 +75,26 @@ class ApiAdminMenuController extends Controller
             'image_url' => 'nullable|url',
         ]);
         $imageUrl = $request->image_url ?: $menu->image_url;
+        $categorySlug = Str::slug($request->category);
+        $category = \DB::table('categories')->where('slug', $categorySlug)->first();
+        if (!$category) {
+            $categoryId = \DB::table('categories')->insertGetId([
+                'name' => $request->category,
+                'slug' => $categorySlug,
+                'color' => '#10B981',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } else {
+            $categoryId = $category->id;
+        }
+
         \DB::table('menus')->where('id', $menu->id)->update([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
             'price' => $request->price,
-            'category' => $request->category,
+            'category_id' => $categoryId,
             'image_url' => $imageUrl,
             'is_available' => $request->boolean('is_available', true),
             'updated_at' => now(),

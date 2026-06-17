@@ -210,7 +210,12 @@ Route::middleware([\App\Http\Middleware\MaintenanceMiddleware::class])->group(fu
         return view('welcome', compact('featuredMenus'));
     });
 Route::get('/menu', function () {
-    $menus = \DB::table('menus')->where('is_available', true)->orderBy('category')->get();
+    $menus = \DB::table('menus')
+        ->join('categories', 'menus.category_id', '=', 'categories.id')
+        ->where('menus.is_available', true)
+        ->orderBy('categories.name')
+        ->select('menus.*', 'categories.name as category_name')
+        ->get();
     $favorites = [];
     if (auth()->check()) {
         $favorites = \App\Models\Favorite::where('user_id', auth()->id())->pluck('menu_id')->toArray();

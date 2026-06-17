@@ -37,7 +37,7 @@
         </div>
         <div class="row g-4" id="menuGrid">
             @forelse($menus as $index => $menu)
-            <div class="col-6 col-md-4 col-lg-3 menu-item" data-category="{{ strtolower($menu->category) }}">
+            <div class="col-6 col-md-4 col-lg-3 menu-item" data-category="{{ strtolower($menu->category_name ?? '') }}">
                 <div class="card menu-card h-100">
                     <div class="position-relative">
                         @if($menu->image_url)

@@ -18,7 +18,11 @@ class AdminMenuController extends Controller
     }
     public function index()
     {
-        $menus = DB::table('menus')->orderBy('created_at', 'desc')->get();
+        $menus = DB::table('menus')
+            ->leftJoin('categories', 'menus.category_id', '=', 'categories.id')
+            ->select('menus.*', 'categories.name as category_name')
+            ->orderBy('menus.created_at', 'desc')
+            ->get();
         $lowStockMenus = DB::table('menus')->whereRaw('stock <= min_stock')->get();
         return view('admin.menus.index', compact('menus', 'lowStockMenus'));
     }
@@ -44,13 +48,27 @@ class AdminMenuController extends Controller
         if (empty($imageUrl)) {
             $imageUrl = self::DEFAULT_IMAGE;
         }
+        $categorySlug = Str::slug($request->category);
+        $category = DB::table('categories')->where('slug', $categorySlug)->first();
+        if (!$category) {
+            $categoryId = DB::table('categories')->insertGetId([
+                'name' => $request->category,
+                'slug' => $categorySlug,
+                'color' => '#10B981',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } else {
+            $categoryId = $category->id;
+        }
+
         $menuId = DB::table('menus')->insertGetId([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
             'price' => $request->price,
             'price_online' => $request->price_online,
-            'category' => $request->category,
+            'category_id' => $categoryId,
             'image_url' => $imageUrl,
             'stock' => $request->stock,
             'min_stock' => $request->min_stock,
@@ -110,13 +128,27 @@ class AdminMenuController extends Controller
             abort(404);
         }
         $imageUrl = $request->image_url ?: $menu->image_url;
+        $categorySlug = Str::slug($request->category);
+        $category = DB::table('categories')->where('slug', $categorySlug)->first();
+        if (!$category) {
+            $categoryId = DB::table('categories')->insertGetId([
+                'name' => $request->category,
+                'slug' => $categorySlug,
+                'color' => '#10B981',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } else {
+            $categoryId = $category->id;
+        }
+
         DB::table('menus')->where('id', $menu->id)->update([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description,
             'price' => $request->price,
             'price_online' => $request->price_online,
-            'category' => $request->category,
+            'category_id' => $categoryId,
             'image_url' => $imageUrl,
             'stock' => $request->stock,
             'min_stock' => $request->min_stock,

@@ -7,9 +7,12 @@ class ApiMenuController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = \DB::table('menus')->where('is_available', true);
+            $query = \DB::table('menus')
+                ->join('categories', 'menus.category_id', '=', 'categories.id')
+                ->where('menus.is_available', true)
+                ->select('menus.*', 'categories.name as category_name');
             if ($request->has('category') && $request->category !== 'all') {
-                $query->where('category', $request->category);
+                $query->where('categories.name', $request->category);
             }
             if ($request->has('search') && $request->search) {
                 $query->where(function ($q) use ($request) {
@@ -27,11 +30,10 @@ class ApiMenuController extends Controller
                     ->pluck('menu_id')
                     ->toArray();
             }
-            $categories = \DB::table('menus')
-                ->where('is_available', true)
-                ->select('category')
+            $categories = \DB::table('categories')
+                ->select('name')
                 ->distinct()
-                ->pluck('category');
+                ->pluck('name');
             return response()->json([
                 'success' => true,
                 'menus' => $menus->map(function ($menu) use ($favorites) {
@@ -41,7 +43,7 @@ class ApiMenuController extends Controller
                         'slug' => $menu->slug,
                         'description' => $menu->description,
                         'price' => $menu->price,
-                        'category' => $menu->category,
+                        'category' => $menu->category_name,
                         'image_url' => $menu->image_url,
                         'is_available' => $menu->is_available,
                         'is_favorite' => in_array($menu->id, $favorites),
@@ -59,7 +61,11 @@ class ApiMenuController extends Controller
     }
     public function show($slug)
     {
-        $menu = \DB::table('menus')->where('slug', $slug)->first();
+        $menu = \DB::table('menus')
+            ->leftJoin('categories', 'menus.category_id', '=', 'categories.id')
+            ->select('menus.*', 'categories.name as category_name')
+            ->where('menus.slug', $slug)
+            ->first();
         if (!$menu) {
             return response()->json([
                 'success' => false,
@@ -74,7 +80,7 @@ class ApiMenuController extends Controller
                 'slug' => $menu->slug,
                 'description' => $menu->description,
                 'price' => $menu->price,
-                'category' => $menu->category,
+                'category' => $menu->category_name,
                 'image_url' => $menu->image_url,
                 'is_available' => $menu->is_available,
             ],
