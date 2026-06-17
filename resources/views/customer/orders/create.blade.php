@@ -97,7 +97,7 @@
                     <div class="card-body">
                         <div class="row g-3">
                             @forelse($menus as $menu)
-                            <div class="col-md-6 menu-item-container" data-category="{{ strtolower($menu->category) }}">
+                            <div class="col-md-6 menu-item-container" data-category="{{ strtolower($menu->category->name ?? '') }}">
                                 <div class="d-flex align-items-center p-3 border rounded-3 menu-item" data-id="{{ $menu->id }}" data-name="{{ $menu->name }}" data-price="{{ $menu->price }}">
                                     @if($menu->image_url)
                                     <img src="{{ $menu->image_url }}" 

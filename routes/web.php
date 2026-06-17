@@ -261,7 +261,9 @@ Route::prefix('customer')->group(function () {
                     ->withAvg(['reviews' => function($q) { $q->where('is_approved', true); }], 'rating')
                     ->withCount(['reviews' => function($q) { $q->where('is_approved', true); }])
                     ->where('is_available', true)
-                    ->orderBy('category')
+                    ->join('categories', 'menus.category_id', '=', 'categories.id')
+                    ->orderBy('categories.name')
+                    ->select('menus.*')
                     ->get();
         return view('customer.orders.create', compact('menus'));
     });

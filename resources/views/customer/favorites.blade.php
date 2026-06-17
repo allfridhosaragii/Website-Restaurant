@@ -33,7 +33,7 @@
                             </div>
                             <div class="card-body text-center">
                                 <h5 class="card-title fw-bold mb-1">{{ $fav->menu->name }}</h5>
-                                <p class="text-muted small mb-2">{{ $fav->menu->category }}</p>
+                                <p class="text-muted small mb-2">{{ $fav->menu->category->name ?? '-' }}</p>
                                 <h6 class="text-primary fw-bold mb-3">Rp {{ number_format($fav->menu->price, 0, ',', '.') }}</h6>
                                 <a href="{{ url('/customer/orders/create') }}" class="btn btn-outline-primary btn-sm rounded-pill px-4">Order Now</a>
                             </div>

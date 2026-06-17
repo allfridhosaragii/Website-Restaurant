@@ -241,7 +241,7 @@
                                     <strong>{{ $menu->name }}</strong>
                                     <br><small class="text-muted">Rp {{ number_format($menu->price, 0, ',', '.') }}</small>
                                 </td>
-                                <td><span class="category-badge">{{ $menu->category }}</span></td>
+                                <td><span class="category-badge">{{ $menu->category->name ?? '-' }}</span></td>
                                 <td>
                                     <div class="stock-controls">
                                         <button class="stock-btn minus" onclick="adjustStock({{ $menu->id }}, 'decrease')">

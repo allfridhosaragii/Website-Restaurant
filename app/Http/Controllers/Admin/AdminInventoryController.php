@@ -7,9 +7,13 @@ class AdminInventoryController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Menu::query()->orderBy('category')->orderBy('name');
+        $query = Menu::query()
+            ->select('menus.*')
+            ->join('categories', 'menus.category_id', '=', 'categories.id')
+            ->orderBy('categories.name')
+            ->orderBy('menus.name');
         if ($request->category && $request->category !== 'all') {
-            $query->where('category', $request->category);
+            $query->where('categories.name', $request->category);
         }
         if ($request->status === 'available') {
             $query->where('is_available', true)->where('daily_stock', '>', 0);
@@ -19,7 +23,7 @@ class AdminInventoryController extends Controller
             $query->where('daily_stock', '<=', 0);
         }
         $menus = $query->get();
-        $categories = Menu::distinct()->pluck('category');
+        $categories = \App\Models\Category::pluck('name');
         $totalMenus = Menu::count();
         $availableMenus = Menu::where('is_available', true)->where('daily_stock', '>', 0)->count();
         $lowStockMenus = Menu::where('daily_stock', '<=', 10)->where('daily_stock', '>', 0)->count();
@@ -96,14 +100,19 @@ class AdminInventoryController extends Controller
     }
     public function getMenusApi()
     {
-        $menus = Menu::orderBy('category')->orderBy('name')->get();
+        $menus = Menu::with('category')
+            ->join('categories', 'menus.category_id', '=', 'categories.id')
+            ->orderBy('categories.name')
+            ->orderBy('menus.name')
+            ->select('menus.*')
+            ->get();
         return response()->json([
             'success' => true,
             'data' => $menus->map(function ($menu) {
                 return [
                     'id' => $menu->id,
                     'name' => $menu->name,
-                    'category' => $menu->category,
+                    'category' => $menu->category ? $menu->category->name : '-',
                     'daily_stock' => $menu->daily_stock,
                     'max_daily_stock' => $menu->max_daily_stock,
                     'is_available' => $menu->is_available,
