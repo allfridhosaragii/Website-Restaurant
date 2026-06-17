@@ -39,6 +39,16 @@
             from { opacity: 0; transform: scale(1.02); }
             to { opacity: 1; transform: scale(1); }
         }
+        
+        /* Ensure background does not scroll when modal is open */
+        body.modal-open {
+            overflow: hidden !important;
+            touch-action: none;
+        }
+        body.modal-open .modal {
+            touch-action: auto;
+            pointer-events: auto;
+        }
     </style>
     @stack('styles')
 </head>
