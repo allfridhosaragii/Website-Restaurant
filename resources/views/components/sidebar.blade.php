@@ -207,14 +207,7 @@
                     </a>
                 </li>
             @endif
-            @if(auth()->user()->hasAdminPermission('developer'))
-            <li class="sidebar-nav-item">
-                <a href="{{ url('/admin/developer') }}" class="sidebar-nav-link {{ request()->is('admin/developer') ? 'active' : '' }}">
-                    <i class="bi bi-code-slash"></i>
-                    <span>{{ __('messages.developer') }}</span>
-                </a>
-            </li>
-            @endif
+
 
             <li class="sidebar-nav-item mt-4">
                 <small class="text-uppercase text-light opacity-50 px-3 mb-2 d-block" style="font-size: 0.7rem;">
