@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
 
-class AdminPaymentMethodController extends Controller
+class AdminPaymentMethodController extends \App\Http\Controllers\Controller
 {
     public function index()
     {
