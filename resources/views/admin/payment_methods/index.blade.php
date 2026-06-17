@@ -65,6 +65,7 @@
                     </tr>
 
                     <!-- Edit Modal -->
+                    @push('modals')
                     <div class="modal fade" id="editModal{{ $pm->id }}" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog">
                             <form action="{{ route('admin.payment_methods.update', $pm->id) }}" method="POST">
@@ -97,6 +98,7 @@
                             </form>
                         </div>
                     </div>
+                    @endpush
                     @empty
                     <tr>
                         <td colspan="4" class="text-center py-4 text-muted">Belum ada metode pembayaran yang ditambahkan.</td>
@@ -109,6 +111,7 @@
 </div>
 
 <!-- Create Modal -->
+@push('modals')
 <div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <form action="{{ route('admin.payment_methods.store') }}" method="POST">
@@ -140,6 +143,7 @@
         </form>
     </div>
 </div>
+@endpush
 
 @push('scripts')
 <script>
