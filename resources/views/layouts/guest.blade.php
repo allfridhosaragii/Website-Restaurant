@@ -139,6 +139,14 @@
                 }
             }
         });
+
+        // Global fix for Bootstrap modals being covered by their backdrops
+        // This breaks all modals out of stacking contexts by moving them to the body
+        document.querySelectorAll('.modal').forEach(function(modal) {
+            if (!modal.hasAttribute('x-data') && !modal.closest('[x-data]')) {
+                document.body.appendChild(modal);
+            }
+        });
     </script>
     <script src="{{ asset('js/cursor.js') }}"></script>
     <script src="{{ asset('js/performance-core.js') }}"></script>
