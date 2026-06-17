@@ -13,7 +13,6 @@ use App\Http\Controllers\Api\Admin\ApiAdminReservationController;
 use App\Http\Controllers\Api\Admin\ApiAdminUserController;
 use App\Http\Controllers\Api\Admin\ApiAdminMenuController;
 use App\Http\Controllers\Api\Admin\ApiAdminReportController;
-use App\Http\Controllers\Api\Admin\ApiAdminCmsController;
 use App\Http\Controllers\Api\PosController;
 use App\Http\Controllers\Api\ApiPointController;
 
@@ -226,8 +225,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/menus', [ApiAdminMenuController::class, 'store']);
         Route::put('/menus/{slug}', [ApiAdminMenuController::class, 'update']);
         Route::delete('/menus/{slug}', [ApiAdminMenuController::class, 'destroy']);
-        Route::get('/cms', [ApiAdminCmsController::class, 'index']);
-        Route::post('/cms/maintenance', [ApiAdminCmsController::class, 'toggleMaintenance']);
     });
 });
 

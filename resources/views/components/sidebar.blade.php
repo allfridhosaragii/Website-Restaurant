@@ -215,51 +215,7 @@
                 </a>
             </li>
             @endif
-            <li class="sidebar-nav-item mt-4">
-                <small class="text-uppercase text-light opacity-50 px-3 mb-2 d-block" style="font-size: 0.7rem;">
-                    Content Management
-                </small>
-            </li>
-            @if(auth()->user()->hasAdminPermission('cms_dashboard'))
-            <li class="sidebar-nav-item">
-                <a href="{{ url('/admin/developer') }}" class="sidebar-nav-link {{ request()->is('admin/developer') ? 'active' : '' }}">
-                    <i class="bi bi-collection"></i>
-                    <span>CMS Dashboard</span>
-                </a>
-            </li>
-            @endif
-            @if(auth()->user()->hasAdminPermission('cms_pages'))
-            <li class="sidebar-nav-item">
-                <a href="{{ url('/admin/developer/pages') }}" class="sidebar-nav-link {{ request()->is('admin/developer/pages*') ? 'active' : '' }}">
-                    <i class="bi bi-file-richtext"></i>
-                    <span>Pages</span>
-                </a>
-            </li>
-            @endif
-            @if(auth()->user()->hasAdminPermission('cms_media'))
-            <li class="sidebar-nav-item">
-                <a href="{{ url('/admin/developer/media') }}" class="sidebar-nav-link {{ request()->is('admin/developer/media*') ? 'active' : '' }}">
-                    <i class="bi bi-images"></i>
-                    <span>Media Library</span>
-                </a>
-            </li>
-            @endif
-            @if(auth()->user()->hasAdminPermission('cms_settings'))
-            <li class="sidebar-nav-item">
-                <a href="{{ url('/admin/developer/settings') }}" class="sidebar-nav-link {{ request()->is('admin/developer/settings*') ? 'active' : '' }}">
-                    <i class="bi bi-sliders"></i>
-                    <span>Site Settings</span>
-                </a>
-            </li>
-            @endif
-            @if(auth()->user()->hasAdminPermission('cms_settings'))
-            <li class="sidebar-nav-item">
-                <a href="{{ url('/admin/application') }}" class="sidebar-nav-link {{ request()->is('admin/application*') ? 'active' : '' }}">
-                    <i class="bi bi-phone"></i>
-                    <span>Aplikasi</span>
-                </a>
-            </li>
-            @endif
+
             <li class="sidebar-nav-item mt-4">
                 <small class="text-uppercase text-light opacity-50 px-3 mb-2 d-block" style="font-size: 0.7rem;">
                     Admin
