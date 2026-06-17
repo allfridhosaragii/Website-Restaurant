@@ -194,6 +194,38 @@
         min-height: 100vh;
         width: 100%;
         overflow: hidden;
+        margin-top: -80px; /* Pull up under navbar */
+    }
+    
+    .contact-hero .container {
+        padding-top: 80px; /* Offset content from navbar */
+    }
+
+    /* Navbar transparent state on hero */
+    .navbar-culinaire:not(.scrolled) {
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+    .navbar-culinaire:not(.scrolled) .nav-link,
+    .navbar-culinaire:not(.scrolled) .navbar-brand {
+        color: #F6F2EE !important;
+    }
+    .navbar-culinaire:not(.scrolled) .navbar-brand span {
+        color: #C89B3A !important;
+    }
+    .navbar-culinaire:not(.scrolled) .btn-outline-primary {
+        color: #F6F2EE !important;
+        border-color: #F6F2EE !important;
+    }
+    .navbar-culinaire:not(.scrolled) .btn-outline-primary:hover {
+        background-color: #F6F2EE !important;
+        color: #0C2A36 !important;
+    }
+    .navbar-culinaire:not(.scrolled) .lang-link {
+        color: rgba(246, 242, 238, 0.6);
+    }
+    .navbar-culinaire:not(.scrolled) .navbar-toggler i {
+        color: #F6F2EE;
     }
     
     .video-background {
