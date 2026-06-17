@@ -330,6 +330,8 @@
             });
         }
     </script>
-    @include('components.app-promo')
+    @if(request()->is('/'))
+        @include('components.app-promo')
+    @endif
 </body>
 </html>
