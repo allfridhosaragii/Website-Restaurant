@@ -228,7 +228,14 @@ Route::get('/about', function () {
 Route::get('/contact', function () {
     return view('contact');
 });
-
+Route::get('/project', [\App\Http\Controllers\ProjectController::class, 'index'])
+    ->middleware(['auth', \App\Http\Middleware\ProjectAccess::class]);
+Route::get('/project/progress', [\App\Http\Controllers\ProjectController::class, 'getProgress'])
+    ->middleware(['auth', \App\Http\Middleware\ProjectAccess::class]);
+Route::post('/project/progress', [\App\Http\Controllers\ProjectController::class, 'saveProgress'])
+    ->middleware(['auth', \App\Http\Middleware\ProjectAccess::class]);
+Route::delete('/project/updates/{id}', [\App\Http\Controllers\ProjectController::class, 'deleteUpdate'])
+    ->middleware(['auth', \App\Http\Middleware\ProjectAccess::class]);
 Route::get('/reservation', [ReservationController::class, 'create']);
 Route::post('/reservation', [ReservationController::class, 'store'])->middleware('auth');
 Route::get('/login', function () {

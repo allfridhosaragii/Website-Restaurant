@@ -236,6 +236,14 @@
                 </a>
             </li>
             @endif
+            @if(auth()->user()->hasAdminPermission('project') || auth()->user()->isSuperAdmin())
+            <li class="sidebar-nav-item">
+                <a href="{{ url('/project') }}" class="sidebar-nav-link {{ request()->is('project*') ? 'active' : '' }}">
+                    <i class="bi bi-kanban"></i>
+                    <span>Project</span>
+                </a>
+            </li>
+            @endif
         </ul>
     </nav>
     <div class="mt-auto p-3 border-top border-light border-opacity-10">
